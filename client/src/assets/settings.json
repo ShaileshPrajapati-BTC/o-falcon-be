@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Rohak",
+        "svg": "Rohak",
+        "port": "7025"
+    },
+    {
+        "name": "Fly",
+        "svg": "Fly",
+        "port": "7030"
+    },
+    {
+        "name": "Freend",
+        "svg": "Freend",
+        "port": "7029"
+    }
+]

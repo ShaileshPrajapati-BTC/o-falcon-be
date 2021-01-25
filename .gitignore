@@ -1,0 +1,6 @@
+.history
+.idea
+.idea/escooter.iml
+.idea/modules.xml
+.idea/workspace.xml
+client/package-lock.json

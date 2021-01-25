@@ -1,0 +1,418 @@
+@import "../../styles/variables";
+.dashboardMain {
+    display: flex;
+    height: calc(100vh - 59px);
+    background: @es-grey-2;
+}
+.dashboardRight{
+    height: 100%;
+    width: 300px;
+    margin-left: 22px;
+    float: left;
+}
+
+.dashboardLeft {
+    width: calc(100% - 323px);
+    padding: 10px 3px 0px 25px;
+    height: 100%;
+    overflow-y: auto;
+    float: left;
+}
+.dashboardRightInner {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-top-left-radius: 35px;
+    box-shadow: -10px 0px 8px rgba(0, 0, 0, 0.02);
+    padding: 35px 15px 15px;
+}
+main.gx-layout-content.eScooter-Panel .gx-module-box-header.headerRadius {
+    background: #fff !important;
+    padding: 0px;
+}
+
+main.gx-layout-content.eScooter-Panel .gx-module-box-header.headerRadius .ant-row-flex {
+    padding: 13px 25px;
+    background: @es-grey-2;
+    border-bottom-right-radius: 35px;
+}
+
+.ant-card.CardTwoSec {
+    width: 100%;
+    border: 0;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.01);
+    border-radius: 16px;
+}
+
+h3.dashboardCardTitle {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: @es-dark-blue;
+    margin-bottom: 0;
+}
+
+h3.dashboardCardTitle i {
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+.cardInnerHead{
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cardInnerHead label.ant-radio-button-wrapper {
+    margin: 0;
+}
+
+.cardInnerHead .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background: @es-list-dropdown;
+    border-color: @es-list-dropdown;
+}
+.cardInnerHead .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+    color: #fff;
+    background: @es-list-dropdown;
+    border-color: @es-list-dropdown;
+}
+.cardInnerHead  .ant-radio-button-wrapper:hover {
+    color: @es-list-dropdown;
+}
+
+.cardSummeryInsight {
+    display: flex;
+    // align-items: center;
+    // justify-content: space-between;
+    flex-wrap:wrap;
+}
+
+.cardSummeryInsight .cardSummeryInsightInsight {
+    // width: calc(20% - 10px);
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    min-width: calc(18% - 10px);
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.countBox h4 {
+    color: @es-dark-blue;
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 5px;
+    font-weight: 800;
+}
+
+.countLabel {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.iconBox svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+    margin-right: 16px;
+}
+
+.ant-card.CardTwoSecHalf {
+    width: 100%;
+    border: 0;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.01);
+    border-radius: 16px;
+}
+
+.cardHalfCont {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    width:48%;
+}
+.cardHalfContBorder {
+    border-right: 1px solid #e2e2e2;
+    height: 50px;
+}
+.cardHalfContInSect {
+    padding: 16px;
+    width: 33%;
+}
+.cardHalfSeparated {
+    width: 1px;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+}
+.cardHalfContInSect h4 {
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.55);
+    margin-bottom: 12px;
+}
+
+.cardHalfContInSect h2 {
+    margin-bottom: 0;
+    font-size: 46px;
+    line-height: 46px;
+    color: @es-dark-blue;
+}
+
+.ant-card.cardPaddingLess.chartCard.ant-card-bordered {
+    width: 100%;
+    border: 0;
+    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.01);
+    border-radius: 16px;
+    background: #fff !important;
+}
+
+.habitTable table {
+    width: 100%;
+}
+
+.habitDots {
+    width: 24px;
+    height: 24px;
+    background: #dee0eb;
+    border-radius: 50%;
+    margin: auto;
+}
+
+.habitTable table tbody tr:last-child td {
+    text-align: center;
+}
+
+.habitTable table td {
+    padding: 7px 0px;
+}
+
+.habitDots.habitActiveDot {
+    background: -webkit-linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%);
+    background: linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%);
+}
+
+.habitDots.habitActiveAverageDot {
+    background: -webkit-linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%);
+    background: linear-gradient(45deg, @es-bg-gradient-start 0%, @es-bg-gradient-start 100%);
+    opacity: 0.8;
+}
+
+.habitDots.habitActiveLowDot {
+    background: -webkit-linear-gradient(45deg, @es-bg-gradient-booking-habit-end 0%, @es-bg-gradient-start 100%);
+    background: linear-gradient(45deg, @es-bg-gradient-booking-habit-end 0%, @es-bg-gradient-start 100%);
+    opacity: 0.5;
+}
+
+.ant-popover-inner-content p:last-child {
+    margin: 0;
+}
+
+.ant-popover-inner-content p {
+    font-size: 15px;
+}
+
+.ant-popover-inner-content p span {
+    color: var(--es--db--popover--content);
+    margin-left: 5px;
+}
+
+.statisticsBox {
+    display: flex;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: -webkit-linear-gradient(45deg, rgba(var(--es--end), 0.1) 0%, rgba(var(--es--start), 0.1) 100%);
+    background: linear-gradient(45deg, rgba(var(--es--end), 0.1) 0%, rgba(var(--es--start), 0.1) 100%);
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.statisticLeft, .statisticRight {
+    width: 25%;
+}
+
+.statisticCenter {
+    width: 75%;
+}
+
+.statisticInnerGradient {
+    // width: 90px;
+    // height: 90px;
+    // border-radius: 50%;
+    margin: auto;
+    // background: -webkit-linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%);
+    // background: linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%);
+    padding: 5px;
+}
+.statisticInnerWhite {
+    // background: #fff;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 21px;
+    color: @es-list-sidebar-dark;
+}
+
+.statisticRight {
+    font-size: 16px;
+    width: 26%;
+    color: @es-list-sidebar-dark;
+    font-weight: 600;
+}
+
+.cardHalfContInSect h2 span {
+    font-size: 28px;
+    color: #a5a5a5;
+}
+@media(min-width:767px) and (max-width: 991px){
+    .cardInnerHead{
+        display: block;
+    }
+    h3.dashboardCardTitle {
+        margin-bottom: 10px;
+    }
+    .cardSummeryInsight{
+        display: flex;
+        padding-bottom: 10px;
+        flex-wrap: wrap;
+    }
+    .cardSummeryInsight .cardSummeryInsightInsight {
+        width: calc(50% - 10px);
+        margin-right: 10px;
+        margin-bottom: 10px;
+        float: left;
+    }
+    .countBox h4{
+        font-size: 32px;
+    }
+    .cardHalfContInSect h2{
+        font-size: 28px;
+    }
+    .statisticLeft, .statisticRight {
+        width: 35%;
+        font-size: 12px;
+    }
+    .statisticCenter {
+        width: 30%;
+    }
+    .statisticInnerGradient {
+        width: 40px;
+        height: 40px;
+        padding: 3px;
+    }
+    .statisticsBox{
+        padding: 9px 8px;
+    }
+    .statisticRight {
+        font-size: 12px;
+    }
+    .statisticInnerWhite{
+        font-size: 12px;
+    }
+    .cardHalfContInSect h2 span{
+        font-size: 18px;
+    }
+    .dashboardMain .ant-row-flex{
+        display: block;
+    }
+    .cardHalfContBorder{
+        display: none;
+    }
+    .cardHalfCont{
+        width: 100%;
+    }
+    .cardHalfCont:first-child{
+        margin-bottom: 20px;
+    }
+    .habitTable{
+        overflow: auto;
+    }
+    .dashboardLeft{
+        width: calc(100% - 200px);
+        padding: 10px 3px 0px 15px;
+    }
+    .dashboardRight{
+        width: 200px;
+        margin-left: 15px;
+    }
+    .gx-main-content-wrapper{
+        width: 100%;
+    }
+    .ant-layout.ant-layout-has-sider > .ant-layout{
+        width: calc(100% - 120px);
+    }
+
+    .ant-card.cardPaddingLess .filterChart ul li {
+        padding: 12px 5px;
+    }
+    .ant-card-body{
+        padding: 15px;
+    }
+}
+@media (min-width:992px) and (max-width: 1199px){
+    .gx-main-content-wrapper{
+        width: 100%;
+    }
+    .cardSummeryInsight{
+        display: block;
+    }
+    .cardSummeryInsight .cardSummeryInsightInsight {
+        width: calc(33.33% - 10px);
+        float: left;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .countBox h4{
+        font-size: 34px;
+    }
+    .CardTwoSecHalf .ant-row-flex{
+        display: block;
+    }
+    .cardHalfContBorder{
+        display: none;
+    }
+    .cardHalfCont{
+        width: 100%;
+    }
+    .cardHalfCont:first-child{
+        margin-bottom: 20px;
+    }
+    .habitTable{
+        overflow: auto;
+    }
+}
+@media (min-width:1200px) and (max-width: 1399px){
+    .habitTable{
+        overflow: auto;
+    }
+    .cardSummeryInsight{
+        display: block;
+    }
+    .cardSummeryInsight .cardSummeryInsightInsight {
+        width: calc(33.33% - 10px);
+        margin-right: 10px;
+        margin-bottom: 10px;
+        float: left;
+    }
+    .gx-main-content-wrapper{
+        width: 100%;
+    }
+    .cardHalfContInSect h2 {
+        font-size: 28px;
+    }
+    .cardHalfContInSect h2 span {
+        font-size: 18px;
+    }
+    .dashboardTab .ant-tabs-bar, .dashboardTab .ant-tabs-nav-container{
+        padding-left: 12px;
+    }
+}

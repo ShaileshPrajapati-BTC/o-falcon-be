@@ -1,0 +1,5 @@
+./test/bootstrap.js
+./test/unit/Admin/Master/*.test.js
+--timeout 50000
+--reporter spec
+--recursive

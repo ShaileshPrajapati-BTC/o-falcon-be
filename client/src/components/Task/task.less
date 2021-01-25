@@ -1,0 +1,328 @@
+@import '../../../src/styles/variables';
+
+.task-list-popup.ant-modal{
+    width: 950px !important;
+}
+
+.task_list_top{
+    display: flex;
+    padding: 10px 0 0 0;
+}
+
+.task_list-col{
+    flex-grow: 1;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #262626;
+    display: flex;
+    align-items: center;
+}
+.task_list-col_1{
+    display: flex;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #262626;
+}
+.task_list_col_sub {
+    width: 100px;
+}
+.task_list_wrapper {
+    padding: 0 15px;
+    margin-bottom: 20px;
+}
+.task_list_detail {
+    padding: 6px 10px;
+    background: #fff;
+    display: flex;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.05);
+    align-items: center;
+    border-left: 2px solid #667684;
+}
+.task_title{
+    font-size: 14px;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.task_detail_col{
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+.task_detail_sub_col{
+    width: 100px;
+    display: flex;
+    padding: 0 10px;
+    align-items: center;
+}
+.task_detail_sub_col svg{
+    width: 26px;
+    height: 26px;
+}
+.task_detail_col_1{
+    display: flex;
+}
+.due-date .ant-input{
+    display: none;
+}
+.due-date .ant-calendar-picker-icon{
+    margin: 0;
+    right: 0;
+    top: 0;
+    position: relative;
+    cursor: pointer;
+}
+.due-date .ant-calendar-picker-icon svg{
+    width: 18px;
+    height: 18px;
+}
+.due-date.ant-calendar-picker{
+    min-width: min-content !important;
+}
+/*.task_priority svg{
+    width: 30px;
+    height: 30px;
+}*/
+.priority-dropdown{
+    width: 150px;
+}
+.assign-user-dropdown{
+    width:250px;
+}
+.priority-dropdown .ant-dropdown-menu-item{
+    border-bottom: 1px solid #f4f4f4;
+    padding: 9px;
+}
+.priority-dropdown .ant-dropdown-menu-item:last-child{
+    border-bottom: none ;
+}
+.priority-dropdown .ant-dropdown-menu-item > a{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+}
+.priority-dropdown .ant-dropdown-menu-item svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+.task-priority-dropdown .anticon {
+    display: none !important;
+}
+.priority-dropdown .ant-dropdown-menu-item > a.urgent{
+    fill: rgb(245, 0, 0);
+}
+.priority-dropdown .ant-dropdown-menu-item > a.high{
+    fill: rgb(255, 204, 0);
+}
+.priority-dropdown .ant-dropdown-menu-item > a.normal{
+    fill: rgb(167, 228, 246);
+}
+.priority-dropdown .ant-dropdown-menu-item > a.low{
+    fill: rgb(203, 201, 207);
+}
+.priority-dropdown .ant-dropdown-menu-item > a.clear svg{
+    fill: #ff8176;
+    height: 12px;
+    width: 12px;
+}
+
+.status_icon{
+    width: 20px;
+    height: 20px;
+    border: 1px dashed #2fafbc;
+    border-radius: 100%;
+    line-height: 20px;
+    text-align: center;
+    margin: 0 5px;
+    cursor: pointer;
+}
+.status_icon svg{
+    width: 10px;
+    height: 10px;
+}
+.task_detail_hover{
+    display: flex;
+    cursor: pointer;
+}
+
+.status-block{
+    background: rgb(102, 118, 132);
+    padding: 0 9px;
+    height: 20px;
+    color: #FFF;
+    text-transform: uppercase;
+    display: block;
+    line-height: 20px;
+    font-size: 14px;
+    margin-right: 5px;
+}
+.status-done{
+    height: 18px;
+}
+.done_block{
+    background-color: rgb(107, 201, 80);
+}
+.status-done svg{
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+}
+
+.task_detail_hover .status_icon_wrapper{
+    display: none;
+}
+.task_detail_hover:hover .status_icon_wrapper{
+    display: flex;
+}
+.task_progress{
+    margin: 0;
+}
+.task_progress .ant-progress-inner{
+    width: 30px !important;
+    height: 30px !important;
+    display: flex;
+    align-items: center;
+}
+.task_progress .ant-progress-inner svg{
+    margin: 0;
+}
+.task_progress .ant-progress-inner .ant-progress-text{
+    font-size: 9px;
+}
+.task_progress.ant-progress .ant-progress-circle-path{
+    stroke: @es-vehicle-btn-remark-hover !important;
+}
+.task_progress_block{
+    display: flex;
+    justify-content: space-between;
+}
+.task_more_icon svg{
+    /*fill: #222;*/
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.todo-modal-title{
+    margin-left: 25px;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.user-title-note{
+    display: flex;
+}
+
+.task-list-popup .ant-modal-close{
+    right: -14px;
+    top: -14px;
+    background: #fff;
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+}
+.task-list-popup .ant-modal-close-x{
+    width: 100%;
+    height: 100%;
+    line-height: 35px;
+}
+.task-list-popup .anticon svg{
+    fill: @es-vehicle-btn-remark-hover;
+    width: 14px;
+    height: 14px;
+}
+.notes-list-top-block{
+    text-align: center;
+}
+.task-list-popup .ant-modal-body{
+    background: @es-grey-2;
+    padding: 0 0 24px 0;
+    border-radius: 10px;
+}
+.task-title{
+    font-size: 24px;
+    color: #535353;
+    display: block;
+    margin: auto;
+}
+.task-list{
+    max-height: 520px;
+    overflow: auto;
+}
+
+.assign-block .ant-avatar {
+    margin-right: 8px;
+}
+.assign-block span.avatar-user-name{
+    width: calc(100% - 32px);
+}
+.search-assign-block {
+    padding: 9px;
+}
+.done_stauts .task_list_detail{
+    border-left: 2px solid #6bc950;
+}
+.new-task-add{
+    margin-top: 6px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.new-task-add svg{
+    width: 10px;
+    height: 10px;
+    color: #222;
+    margin-right: 4px;
+}
+.new-task-add  span{
+    font-size: 13px;
+}
+
+
+//new task
+.task-close svg{
+    width: 8px;
+    height: 8px;
+}
+.New_task_add .task_detail_hover,
+.New_task_add .task_title{
+    width: 100%;
+}
+.New_task_add .task_title input{
+    padding: 0 10px;
+    border: none;
+    width: 100%;
+}
+.New_task_add .task_title input:focus{
+    outline: none;
+}
+.New_task_add{
+    border: 1px solid @es-vehicle-btn-remark-hover;
+    border-left: 2px solid #667684;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.15);
+    //padding: 1px 10px;
+}
+.New_task_add .task_detail_sub_col{
+    width: auto;
+}
+.New_task_add .due-date,
+.New_task_add .task-priority-dropdown {
+    width: 26px;
+    height: 26px;
+    border-radius: 100%;
+    border: 1px dashed @es-vehicle-btn-remark-hover;
+    line-height: 26px;
+    text-align: center;
+}
+.New_task_add .ant-btn{
+    line-height: 25px;
+    height: 25px;
+    font-size: 13px;
+}

@@ -1,0 +1,7 @@
+<svg height="36" viewBox="0 0 36 36" width="36" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <circle class="cu-stroke cu-stroke-dasharray" cx="18" cy="18" r="17.5" stroke-dasharray="3"></circle>
+        <rect class="cu-fill" height="16.2" rx=".5" width="1" x="13.5" y="9.9" stroke="#047480"></rect>
+        <path class="cu-stroke" d="M14 11.3h11.6l-3 3.5 3 3.6H14z" stroke="#047480"></path>
+    </g>
+</svg>

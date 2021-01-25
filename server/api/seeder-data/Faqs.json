@@ -1,0 +1,13 @@
+[
+    {
+        "question": "How to unlock Scooter?",
+        "answer": "Please go to vehicle detail and press unlock button.",
+        "multiLanguageData": {
+            "en-US": {
+                "question": "How to unlock Scooter?",
+                "answer": "Please go to vehicle detail and press unlock button."
+            }
+        },
+        "sequence": 2
+    }
+]

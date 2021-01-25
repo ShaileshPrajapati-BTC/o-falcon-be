@@ -1,0 +1,173 @@
+[
+  {
+    "isActive": true,
+    "name": "Manufacturer",
+    "code": "MANUFACTURER",
+    "slug": "manufacturer",
+    "normalizeName": "manufacturer",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "multiLanguageData": {
+      "en-US": {
+        "name": "Manufacturer"
+      }
+    }
+  },
+  {
+    "isActive": true,
+    "name": "Lock Manufacturer",
+    "code": "LOCK_MANUFACTURER",
+    "slug": "lock-manufacturer",
+    "normalizeName": "lock manufacturer",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "multiLanguageData": {
+      "en-US": {
+        "name": "Lock Manufacturer"
+      }
+    }
+  },
+  {
+    "isActive": true,
+    "name": "Charging Plug",
+    "code": "CHARGING_PLUG",
+    "slug": "charging-plug",
+    "normalizeName": "charging plug",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "multiLanguageData": {
+      "en-US": {
+        "name": "Charging Plug"
+      }
+    }
+  },
+  {
+    "isActive": true,
+    "name": "Charging Power",
+    "code": "CHARGING_POWER",
+    "slug": "charging-power",
+    "normalizeName": "charging power",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "multiLanguageData": {
+      "en-US": {
+        "name": "Charging Power"
+      }
+    }
+  },
+  {
+    "isActive": true,
+    "name": "Rating Type",
+    "code": "RATING_TYPE",
+    "slug": "rating-type",
+    "normalizeName": "rating type",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "children": [
+      {
+        "name": "General",
+        "code": "GENERAL",
+        "isActive": true,
+        "isDefault": false,
+        "image": "",
+        "icon": "",
+        "description": "",
+        "multiLanguageData": {
+          "en-US": {
+            "name": "General"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "isActive": true,
+    "name": "Bank Name",
+    "code": "BANK_NAME",
+    "slug": "bank-name",
+    "normalizeName": "bank name",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false
+  },
+  {
+    "isActive": true,
+    "name": "Document",
+    "code": "DOCUMENT",
+    "slug": "document",
+    "normalizeName": "document",
+    "group": "",
+    "description": "",
+    "image": "",
+    "icon": "",
+    "parentId": null,
+    "isDeleted": false,
+    "children": [
+      {
+        "name": "Business Proof",
+        "code": "BUSINESS_PROOF",
+        "isActive": true,
+        "isDefault": false,
+        "image": "",
+        "icon": "",
+        "description": "",
+        "multiLanguageData": {
+          "en-US": {
+            "name": "Business Proof"
+          }
+        }
+      },
+      {
+        "name": "Agreement",
+        "code": "AGREEMENT",
+        "isActive": true,
+        "isDefault": false,
+        "image": "",
+        "icon": "",
+        "description": "",
+        "multiLanguageData": {
+          "en-US": {
+            "name": "Agreement"
+          }
+        }
+      },
+      {
+        "name": "Other",
+        "code": "OTHER",
+        "isActive": true,
+        "isDefault": false,
+        "image": "",
+        "icon": "",
+        "description": "",
+        "multiLanguageData": {
+          "en-US": {
+            "name": "Other"
+          }
+        }
+      }
+    ]
+  }
+]

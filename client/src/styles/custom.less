@@ -1,0 +1,1343 @@
+//===================================================================================================================
+//By changing 'gradient' to 'no-gradient' theme can be changed. Also need to change import statement in variable.less
+//We are using this file for any design change.
+//Mostly variables used in this file are from e-scooter/client/styles/varibles.less e-scooter/client/styles/which has
+//one import statement initially which contains all the colors for a theme.
+//===================================================================================================================
+
+@import 'no-gradient';
+@import './custom-group.less';
+@import './custom-class.less';
+
+/******************** Application-wide Settings ********************/
+@layout-footer-padding: 14px 15px;
+
+// Use gx-mw-100 instead
+.@{class-prefix}-module-box-100 {
+    max-width: 100% !important;
+}
+
+.@{class-prefix}-layout-sider-scrollbar {
+    height: calc(100vh ~'-' @layout-header-height) !important;
+}
+
+.@{class-prefix}-app-module {
+    margin: 0;
+}
+
+.@{class-prefix}-module-box-header {
+    background-color: #efefef !important;
+    border-bottom: solid 1px #e8e8e8;
+    padding: 10px 15px;
+    min-height: 59px;
+}
+
+.@{class-prefix}-main-content-wrapper {
+    padding: 0;
+}
+
+@new-layout-header-height: @layout-header-height * 1 + 109;
+
+.@{class-prefix}-module-content-scroll {
+    height: calc(100vh ~'-' @new-layout-header-height) !important;
+}
+
+.@{class-prefix}-minw100 {
+    min-width: 100px;
+}
+
+.no-gutter > [class*='col-'] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/******************** /Application-wide Settings ********************/
+.gx-logo img {
+    height: 40px;
+}
+
+.gx-header-horizontal-top {
+    display: none;
+}
+
+.gx-header-horizontal-dark:before {
+    display: none;
+}
+
+.signinlogo img {
+    width: 125px;
+}
+.gx-bg-primary {
+    background: @es-databank-primary !important;
+    color: #fff;
+}
+.gx-bg-primary a{
+    color: #fff;
+}
+.gx-bg-primary a:hover{
+    color:#fff !important;
+}
+
+.gx-link {
+    color: @es-bg-gradient-start;
+}
+
+@iterations: 50;
+
+.m-loop (@i) when (@i >= 0) {
+    .m-l-@{i} {
+        margin-left: ~'@{i}px';
+    }
+
+    .m-r-@{i} {
+        margin-right: ~'@{i}px';
+    }
+
+    .m-t-@{i} {
+        margin-top: ~'@{i}px';
+    }
+
+    .m-b-@{i} {
+        margin-bottom: ~'@{i}px';
+    }
+
+    .m-h-@{i} {
+        margin: ~'0px @{i}px';
+    }
+
+    .m-v-@{i} {
+        margin: ~'@{i}px 0px';
+    }
+
+    .m-loop(@i - 5);
+}
+
+.m-loop(@iterations);
+
+.p-l-20 {
+    padding-left: 15px;
+}
+
+.ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+    background: #efefef;
+}
+
+.inlineRow {
+    display: inline-block;
+    width: 50%;
+}
+
+.upload-list-inline .ant-upload-list-item {
+    float: left;
+    width: 200px;
+    margin-right: 8px;
+}
+
+.upload-list-inline .ant-upload-animate-enter {
+    animation-name: uploadAnimateInlineIn;
+}
+
+.upload-list-inline .ant-upload-animate-leave {
+    animation-name: uploadAnimateInlineOut;
+}
+
+.custom-header-title {
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.preText {
+    white-space: pre-wrap;
+}
+
+// Use gx-mb-0 instead
+.m-b-none-imp {
+    margin-bottom: 0 !important;
+}
+
+.locationBreadCrumb .ant-card-body {
+    padding: 5px !important;
+}
+
+.gx-customizer-option {
+    display: none;
+}
+
+.ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+    background: #efefef !important;
+}
+
+.gx-module-box-header {
+    background-color: #efefef !important;
+    border-bottom: solid 1px #e8e8e8;
+}
+
+.chargingPointUpsert .ant-card-body {
+    padding-bottom: 0 !important;
+}
+
+.geoLocation .has-feedback .ant-form-item-children-icon {
+    left: 315px;
+    margin-top: -28px;
+}
+
+.locationList .gx-module-content-scroll {
+    height: calc(100vh ~'-' 192px) !important;
+}
+
+.user-info-content-scroll {
+    height: calc(100vh ~'-' 265px) !important;
+}
+
+.ant-layout-footer {
+    z-index: 2;
+}
+
+// For collapse with DnD, Help module
+.collapsibleZindex {
+    z-index: 2;
+}
+
+.ant-list-item:hover {
+    background-color: @grey-2;
+}
+
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+    padding: 11px 10px !important;
+}
+
+/************************************* Style Guide *************************************/
+
+.styleCode {
+    padding: 5px;
+    background-color: @grey-2;
+    border: 1px solid @grey-5;
+    border-radius: 3px;
+}
+
+.exampleCodeArea {
+    padding: 3px;
+    margin: 3px 0;
+    border: 1px solid @cyan-3;
+    border-radius: 2px;
+    background-color: @cyan-1;
+}
+
+/************************************* /Style Guide *************************************/
+
+/******************** sidebar CSS ********************/
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark {
+    background: @es-grey-2;
+    width: 120px !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-layout-sider-header,
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .ant-menu-dark {
+    background: transparent !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-layout-sider-scrollbar > div {
+    overflow-x: hidden !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-site-logo {
+    display: block;
+    margin: auto;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark a.gx-site-logo svg {
+    width: @es-logo-width;
+    height: auto;
+    display: block;
+    margin: auto;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-layout-sider-header {
+    padding: 10px !important;
+}
+
+section.ant-layout {
+    border-top-left-radius: 25px;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark:before {
+    content: '';
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    background: #fff;
+    opacity: 0.07;
+    border-radius: 15px;
+    left: -20px;
+    top: -201px;
+    -webkit-transform: rotate(-42deg);
+    transform: rotate(-42deg);
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark:after {
+    content: '';
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    background: #fff;
+    opacity: 0.07;
+    border-radius: 15px;
+    left: -70px;
+    top: -194px;
+    -webkit-transform: rotate(-42deg);
+    transform: rotate(-42deg);
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-sidebar-notifications {
+    margin: 0;
+    padding-bottom: 0;
+    border: none;
+    padding-top: 15px;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-sidebar-notifications .gx-avatar-row .ant-avatar {
+    display: block;
+    margin: auto !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-sidebar-notifications .gx-avatar-row > span {
+    display: block;
+    width: 100%;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item {
+    padding: 12px 10px !important;
+    height: auto;
+    opacity: 0.7;
+    -webkit-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item:hover {
+    opacity: 1;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item > a i {
+    display: block;
+    margin: 0 auto;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item > a span {
+    display: block;
+    text-align: center;
+    line-height: 1;
+    margin-top: 6px;
+    color: @es-sidebar-content;
+    word-break: break-word;
+    white-space: normal;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item > a i svg {
+    width: 22px;
+    height: 22px;
+    fill: @es-sidebar-content;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-layout-sider-scrollbar {
+    height: calc(100vh - 176px) !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-sidebar-notifications .gx-flex-row {
+    margin-bottom: 15px !important;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item.active-menu-escooter {
+    background: @es-grey-2;
+    opacity: 1;
+    overflow: visible;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item.active-menu-escooter > a span {
+    color: @es-list-sidebar-dark;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item.active-menu-escooter > a i svg {
+    fill: @es-list-sidebar-dark;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item.active-menu-escooter:before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 0;
+    top: -20px;
+    background-image: url('/img/shape.png');
+    background-repeat: no-repeat;
+}
+
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark li.ant-menu-item.active-menu-escooter:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px !important;
+    right: 0;
+    bottom: -20px;
+    background-image: url('/img/shape.png');
+    background-repeat: no-repeat;
+    top: inherit;
+    opacity: 1;
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg);
+}
+
+/******************** main panel CSS ********************/
+.gx-main-content{
+    width:calc(100%-6px);
+}
+main.gx-layout-content.eScooter-Panel .gx-module-box-header {
+    background: @es-grey-2 !important;
+    border: 0;
+    width:calc(100% - 6px);
+}
+
+main.gx-layout-content.eScooter-Panel .gx-module-box-content {
+    background-color: @es-grey-2;
+}
+
+main.gx-layout-content.eScooter-Panel .ant-layout-footer {
+    display: none;
+}
+
+main.gx-layout-content.eScooter-Panel .gx-module-box-content .gx-module-content-scroll {
+    height: calc(100vh - 59px) !important;
+    overflow-x: hidden !important;
+}
+
+main.gx-layout-content.eScooter-Panel .gx-module-box-content .gx-module-content-scroll > div:first-child {
+    overflow-x: hidden !important;
+}
+
+.ant-layout.ant-layout-has-sider > .ant-layout {
+    background: @grey-2 !important;
+}
+
+h1.pageHeading {
+    margin-bottom: 0;
+    font-weight: 700;
+    color: @es-dark-blue;
+}
+
+.topbarCommonBtn .ant-btn {
+    margin: 0;
+    margin-left: 15px;
+    background: -webkit-linear-gradient(
+        top,
+        rgba(var(--es--start), 0.2) 0%,
+        rgba(var(--es--middle), 0.2) 1%,
+        rgba(var(--es--end), 0.2) 100%
+    );
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(var(--es--start), 0.2)),
+        color-stop(1%, rgba(var(--es--middle), 0.2)),
+        to(rgba(var(--es--end), 0.2))
+    );
+    background: linear-gradient(
+        to bottom,
+        rgba(var(--es--start), 0.2) 0%,
+        rgba(var(--es--middle), 0.2) 1%,
+        rgba(var(--es--end), 0.2) 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@es-bg-gradient-start-4d', endColorstr='@es-bg-gradient-end-4d', GradientType=0);
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: @es-color-active !important;
+    text-shadow: none !important;
+    display: flex;
+    align-items: center;
+}
+
+.topbarCommonBtn .ant-btn span:first-child {
+    margin-right: 8px;
+    display: flex;
+}
+
+li.ant-rate-star {
+    font-size: 16px;
+}
+
+.startRatingWithCount {
+    display: flex;
+    align-items: flex-end;
+}
+
+.totalRatings {
+    font-size: 14px;
+    line-height: 22px;
+    color: #595959;
+}
+
+
+.rateStars {
+    font-size: 14px;
+    font-weight: 600;
+    color: @es-dark-blue;
+}
+
+.cardRightThumb {
+    margin-left: auto;
+}
+
+.cardRightContainer {
+    display: flex;
+    align-items: flex-start;
+}
+.tagDisplay{
+    display: flex;
+    align-items: center;
+    height:70px;
+}
+.totalRideCounter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.totalRideCounter h2 {
+    color: @es-color-active;
+    font-weight: 700;
+    margin-bottom: 0;
+    font-size: 23px;
+    text-align: center;
+}
+.totalRideCounter .ant-avatar h2{
+    line-height: 70px;
+}
+.lbl {
+    color: @es-dark-blue;
+    font-size: 14px;
+    text-align: center;
+}
+
+a.active-btn {
+    font-size: 16px;
+    color: #088004;
+    padding: 8px 40px;
+    border: 1px solid rgba(8, 128, 4, 0.2);
+    display: inline-block;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+a.active-btn:hover {
+    color: #088004;
+}
+
+a.deactive-btn {
+    font-size: 16px;
+    color: @es-deactive-btn;
+    padding: 8px 40px;
+    border: 1px solid rgba(var(--es--deactive), 0.2) !important;
+    display: inline-block;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+a.deactive-btn-btn:hover {
+    color: @es-deactive-btn;
+}
+
+.signupDate {
+    font-size: 15px;
+    margin-top: 7px;
+}
+
+.action-btnsWithSignupDate .ActionNotification {
+    display: flex;
+}
+
+.action-btnsWithSignupDate .ActionNotification .filterIC a {
+    width: 38px;
+    height: 38px;
+}
+
+.action-btnsWithSignupDate {
+    text-align: right;
+    margin-left: 50px;
+}
+
+.cardWithScooterImage {
+    margin-top: 75px;
+}
+
+.scooterImageCard {
+    margin-top: -90px;
+    margin-bottom: 15px;
+}
+
+.latest-location {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.latest-location h3 {
+    margin: 0;
+    color: @es-dark-blue;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.latest-location a {
+    font-weight: 600;
+    color: @es-list-dropdown !important;
+}
+
+.latest-location a:hover {
+    color: @es-list-dropdown !important;
+}
+
+.filterChart ul {
+    display: flex;
+    align-items: center;
+}
+
+.dateRanges {
+    padding-right: 20px;
+}
+
+.statisticUi {
+    background: @es-list-sidebar-dark;
+    display: flex;
+}
+
+.graphCanvas {
+    padding: 10px;
+}
+
+.graphCanvas img {
+    width: 100%;
+}
+
+.StatusVehicle {
+    margin-bottom: 25px;
+}
+
+.StatusVehicle:last-child {
+    margin-bottom: 0;
+}
+
+.StatusVehicle h4 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 0;
+    color: #002121;
+}
+
+.StatusLabel {
+    color: #002121;
+    text-transform: uppercase;
+}
+
+.VehicleImage img {
+    position: absolute;
+    height: 100%;
+    right: 0;
+}
+
+.vehicleTobContent {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vehicleRiderName {
+    width: 60%;
+}
+
+.vehicleRiderDetail {
+    width: 39%;
+    padding-left: 15px;
+}
+
+.vehicleHorizontal {
+    width: 1px;
+    border-radius: 50px;
+    background: @es-dark-blue;
+    opacity: 0.17;
+}
+
+.vehicleRiderName h3 {
+    color: @es-dark-blue;
+    font-weight: 600;
+}
+
+.vehicleRight {
+    text-align: right;
+}
+
+.rideFromToDetail {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-right: 15px;
+}
+
+.cureentCity {
+    color: @es-dark-blue;
+    opacity: 0.8;
+    font-size: 13px;
+}
+
+.vehicleFrom h4 {
+    color: @es-dark-blue;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.timeCount svg {
+    width: 13px;
+    height: 13px;
+    margin-left: 5px;
+}
+
+.timeCount {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: @es-dark-blue;
+    opacity: 0.6;
+    text-align: center;
+    justify-content: center;
+    padding-right: 6px;
+    font-size: 13px;
+    line-height: 1;
+}
+
+.timeStopTime {
+    font-size: 11px;
+    text-align: center;
+    line-height: 1;
+    padding-right: 9px;
+    color: @es-dark-blue;
+    opacity: 0.6;
+}
+
+.timeDurationVehicle > svg {
+    display: block;
+}
+
+.scooterID {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.scooterID .lbl {
+    margin-left: auto;
+    margin-right: 5px;
+    font-size: 16px;
+    color: @es-light-label;
+}
+
+.scooterID .ids {
+    color: @es-dark-blue;
+    font-weight: 600;
+}
+
+.powerIC svg {
+    display: block;
+}
+
+.powerIC {
+    margin-left: auto;
+}
+
+.lbl.powerLbl {
+    margin-left: 5px;
+}
+
+.scooterActionItem {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.scooterActionItem .scooterIC {
+    margin-left: 7px;
+}
+
+.shaprateVerticle {
+    border-radius: 50px;
+    background: @es-dark-blue;
+    opacity: 0.17;
+    height: 1px;
+    margin: 8px 0px;
+}
+
+.VehicleCardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.darkLabel {
+    font-weight: 600;
+    color: @es-dark-blue;
+}
+
+.ridesListingScroll {
+    height: calc(100vh - 150px);
+    overflow: auto;
+}
+
+
+.mapView {
+    width: 100%;
+    height: 100vh;
+}
+
+.mapView img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.selectOptionBottom {
+    position: fixed;
+    z-index: 999;
+    bottom: 0;
+    margin: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.selectRideOptions {
+    background: @es-dark-blue;
+    padding: 10px 30px;
+    margin: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    display: inline-block;
+    box-shadow: 0px -3px 13px 3px rgba(41, 46, 71, 0.25);
+}
+
+.selectRideOptions .selectAllOption {
+    display: flex;
+    align-items: center;
+}
+.gx-profile-banner {
+    padding: 32px;
+    padding-bottom: 88px;
+    margin: -32px;
+    margin-bottom: -58px;
+    background-color: transparent !important;
+    opacity: 1;
+    background: linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%) !important;
+    opacity: 1;
+    color:  @es-black-color;
+    position: relative;
+}
+
+span.gx-signup-form-forgot.gx-link {
+    padding-left: 10px;
+}
+
+.ActionNotification a.active-btn,
+.ActionNotification a.deactive-btn {
+    width: 120px;
+    text-align: center;
+    padding: 8px 20px;
+}
+
+.cardRightContainer.flex-align-center {
+    display: flex;
+    align-items: center;
+}
+
+.scooterIdRound h3 {
+    text-align: center;
+    margin-bottom: 0;
+    color: @es-color-active;
+    font-weight: 700;
+}
+
+.scooterIdRound .lbl {
+    font-size: 12px;
+}
+
+.rideStatusTag {
+    background: transparent !important;
+    border-radius: 53px !important;
+    font-weight: 600 !important;
+}
+
+a.btnRemark:hover {
+    color: @es-vehicle-btn-remark-hover;
+}
+
+.locationEllipse {
+    white-space: nowrap;
+    width: calc(100% - 15px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.CustomRadio .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background: -webkit-linear-gradient(
+        top,
+        rgba(var(--es--start), 0.2) 0%,
+        rgba(var(--es--middle), 0.2) 1%,
+        rgba(var(--es--end), 0.2) 100%
+    );
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgba(var(--es--start), 0.2)),
+        color-stop(1%, rgba(var(--es--middle), 0.2)),
+        to(rgba(var(--es--end), 0.2))
+    );
+    background: linear-gradient(
+        to bottom,
+        rgba(var(--es--start), 0.2) 0%,
+        rgba(var(--es--middle), 0.2) 1%,
+        rgba(var(--es--end), 0.2) 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@es-bg-gradient-start-4d', endColorstr='@es-bg-gradient-end-4d', GradientType=0);
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: @es-color-active !important;
+    text-shadow: none !important;
+    align-items: center;
+}
+.CustomRadio .ant-radio-button-wrapper:hover {
+    color: @text-color-secondary;
+}
+
+.nameWithID {
+    display: flex;
+    align-items: center;
+}
+
+.nameWithID h3 {
+    margin: 0;
+}
+
+.nameWithID span {
+    color: @es-dark-blue;
+    margin-left: 5px;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    //Payment
+    .paymentUsersDetailTop,
+    .paymentUsersDetailBottom {
+        display: block;
+    }
+    .moneySender {
+        margin: 5px 0;
+    }
+
+    //Userlist
+    .action-btnsWithSignupDate {
+        margin-left: 10px;
+    }
+    #userUpsertForm_dob {
+        width: 100%;
+    }
+    .ant-form-item-children .ant-form-item {
+        width: 50% !important;
+    }
+    .ant-form-item-children .ant-form-item:last-child,
+    .ant-form-item-children .ant-form-item.city-width {
+        padding-left: 16px !important;
+    }
+    .ant-form-item-children .ant-form-item.state-width,
+    .ant-form-item-children .ant-form-item.city-width,
+    .ant-form-item-children .ant-form-item.pincode-width {
+        width: 33.33% !important;
+    }
+    //Riders
+    .RidersList.RidersListingWithWidth .ant-list-item-meta-content {
+        width: 50%;
+    }
+    .listItems-otherDetail {
+        width: 50%;
+        display: flex;
+        justify-content: flex-end;
+    }
+    .d-block-xs {
+        display: block !important;
+    }
+    .vehicleRiderName {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .vehicleHorizontal {
+        width: 100%;
+        height: 1px;
+    }
+    .vehicleRiderDetail {
+        width: 100%;
+        padding-left: 0;
+        margin-top: 10px;
+    }
+    .vehicleRiderName h3 {
+        width: 100%;
+    }
+    .vehicleListing .rideStatusTag {
+        margin-left: 0;
+    }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+    //Payment
+    .paymentUsersDetailBottom {
+        display: block;
+    }
+    .paymentUsersDetailBottom .moneySender {
+        margin-bottom: 5px;
+    }
+    .paymentUsersDetailBottom .moneySender:last-child {
+        margin-bottom: 0;
+    }
+    //Rides
+    .vehicleRiderName h3 {
+        width: 100%;
+    }
+    .vehicleListing .rideStatusTag {
+        margin-left: 0;
+    }
+}
+.border-right-block {
+    border-right: 1px solid #d9d9d9;
+}
+.height-100 {
+    height: 100%;
+}
+.RiderInfo .gx-card-tabs .ant-tabs-nav-container {
+    text-align: start;
+}
+.slider-menu-bar {
+    padding: 0 !important;
+}
+.slider-menu-bar a {
+    padding: 10px !important;
+    width: 100%;
+    display: block;
+}
+.required-green .ant-form-item-required::before {
+    color: green;
+}
+.required-red {
+    color: red;
+}
+.required-green {
+    color: green;
+}
+
+.gx-profile-banner:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, @es-bg-gradient-end 0%, @es-bg-gradient-start 100%) !important;
+}
+
+i.anticon.anticon-file-pdf svg {
+    fill: @es-bg-gradient-start !important;
+}
+
+.customBtn {
+    background: linear-gradient(
+        to bottom,
+        rgba(var(--es--start), 0.2) 0%,
+        rgba(var(--es--middle), 0.2) 1%,
+        rgba(var(--es--end), 0.2) 100%
+    );
+    color: @es-color-active;
+    border: 0 !important;
+}
+.customBtn:hover {
+    background: #000;
+    // background-color: transparent !important;
+    text-decoration: none;
+    color: #fff;
+}
+
+.amcharts-chart-div > a {
+    display: none !important;
+}
+
+.notification-badge > .ant-badge-count {
+    background: @es-primary-border;
+}
+
+.IotCommands .ant-col {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.IotCommands {
+    padding: 0 10px;
+}
+.noGeneralData {
+    display: none;
+}
+.connectionStatus {
+    margin-left: 10px;
+}
+
+.gx-app-module{
+    // display:block;
+}
+.zone-block-wrapper{
+    display:flex;
+}
+.vehicleDropdownWidth .dropdownUis {
+    margin-right: 50px;
+}
+.es-icon-right{
+    margin-left:auto !important;
+}
+span.info-label{
+    width:100%;
+    display:flex;
+}.paymentStatusTag {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 21px;
+    margin-right: 80px;
+}
+//white Color
+
+.white_color_tab.gx-profile-banner:before{
+    background: #fff !important;
+}
+.white_color_tab.gx-profile-banner h2{
+    color: #262626;
+}
+.white_color_tab_content .ant-tabs-ink-bar{
+    background: -webkit-linear-gradient(45deg, #62c690 0%, #20a8c8 100%) !important;
+}
+.displayNone{
+    display: none;
+}
+
+  
+  .battery {
+    border: 2px solid #333;
+    width: 18px;
+    height: 28px;
+    padding: 2px;
+    border-radius: 4px;
+    position: relative;
+    top:-9px;
+    
+    &:before {
+      content: '';
+      height: 3px;
+      width: 13px;
+      background: #333;
+      display: block;
+      position: absolute;
+      top: -5px;
+      right:0px;
+      border-radius: 4px 4px 0 0;
+    }
+  
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      border: 1px solid #fff;
+      border-radius: 2px;
+    }
+  }
+  
+  .battery-level {
+    background: #52c41a;  
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    
+    &.warn {
+      background-color: #EFAF13;
+    }
+      
+    &.alert {
+      background-color: #f5222d;
+
+       &:before {
+     background-image: url('data:image/svg+xml;charset=US-ASCII,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%3E%3C%2Fg%3E%20%3Cpath%20fill%3D%22%23e81309%22%20d%3D%22M17.927%2012l2.68-10.28c0.040-0.126%200.060-0.261%200.060-0.4%200-0.726-0.587-1.32-1.314-1.32-0.413%200-0.78%200.187-1.019%200.487l-13.38%2017.353c-0.18%200.227-0.287%200.513-0.287%200.827%200%200.733%200.6%201.333%201.333%201.333h8.073l-2.68%2010.28c-0.041%200.127-0.060%200.261-0.060%200.4%200.001%200.727%200.587%201.32%201.314%201.32%200.413%200%200.78-0.186%201.020-0.487l13.379-17.353c0.181-0.227%200.287-0.513%200.287-0.827%200-0.733-0.6-1.333-1.333-1.333h-8.073z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E'); background-repeat: no-repeat;
+     background-size: 18px;
+     height: 18px;
+     width: 18px;
+     margin: -25px 0 0 2px;
+        content: '';
+         display: inline-block;
+         position: absolute;
+       }
+     }    
+   }
+
+a:hover, .gx-link:hover, a:focus, .gx-link:focus{
+    color:@text-color-secondary !important;
+}
+.gx-chat-user-item.active, .gx-chat-user-item:hover {
+    background-color:@body-background !important ;
+
+      &:before {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%3C!DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cg%3E%3C%2Fg%3E%20%3Cpath%20fill%3D%22%23e81309%22%20d%3D%22M17.927%2012l2.68-10.28c0.040-0.126%200.060-0.261%200.060-0.4%200-0.726-0.587-1.32-1.314-1.32-0.413%200-0.78%200.187-1.019%200.487l-13.38%2017.353c-0.18%200.227-0.287%200.513-0.287%200.827%200%200.733%200.6%201.333%201.333%201.333h8.073l-2.68%2010.28c-0.041%200.127-0.060%200.261-0.060%200.4%200.001%200.727%200.587%201.32%201.314%201.32%200.413%200%200.78-0.186%201.020-0.487l13.379-17.353c0.181-0.227%200.287-0.513%200.287-0.827%200-0.733-0.6-1.333-1.333-1.333h-8.073z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E'); background-repeat: no-repeat;
+    background-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin: 10px 0px 0 3px;
+        content: '';
+        display: inline-block;
+        position: absolute;
+      }
+    }
+   
+.gx-module-box-header{
+border-top-left-radius: 26px;
+}
+.ant-affix{
+    top:0px !important;
+}
+.roles .ant-table-thead > tr > th, .roles.ant-table-tbody > tr > td {
+    padding : 6px 10px !important;
+}
+
+.connected_block svg{
+    width: 28px;
+    height: 28px;
+}
+.connected_block{
+    min-width: 90px;
+}
+
+.wallet-table table{
+    table-layout:fixed;
+}
+.bankcard .ant-card-head-title{
+    margin-left:17px;
+}
+.franchisee-editable-row .ant-form-explain {
+    position: absolute;
+    font-size: 12px;
+    margin-top: -4px;
+}
+
+.franchisee-editable-row .ant-form-item-control-wrapper {
+    width: 100%;
+}
+.filterDropdownScroll {
+    max-height: 250px;
+    overflow: auto;
+}
+.payout-tab-count {
+    background: @es-table-header-bg !important;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 50%;
+    font-weight: 600;
+}
+
+.Location .ant-card-bordered {
+    border: 0;
+}
+.messageWrapper{
+    width:100%;
+}
+.messageList{
+    width: 100%;
+    max-height: 150px;
+    overflow: auto;
+}
+.messgeRight{
+    width:100%;
+    margin-top:20px
+}
+.messageListItem{
+    display: flex;
+    margin-bottom: 7px;
+    font-size: 14px;
+    justify-content: space-between;
+}
+.messageContent {
+    width: 130px;
+}
+.messageDate {
+    width: 204px;
+}
+.messgaeLeft{
+    width:calc(100% - 204px)
+}
+
+.messageRemark {
+    width:calc(100% - 120px);
+}
+.messgeRight .ant-form-item-label{
+    width:120px
+}
+.messgeRight .ant-form-item-control-wrapper{
+    width:calc(100% - 150px);
+}
+.buttonLeft{
+    margin-left:106px;
+}
+.bankcard .ant-card-extra{
+    margin-right: 10px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items: center;
+    padding: 0 !important;
+}
+.bankcard .ant-card-extra .ant-tag{
+    margin-bottom:0px;
+}
+main.gx-layout-content.eScooter-Panel .ant-tabs-content .gx-module-box-header{
+    background-color:#fff !important;
+}
+.static-page p span{
+    background-color:@grey-2 !important;
+}
+.notifycheckbox{
+    width:16px;
+    height:16px;
+    zoom:3;
+    margin-left:-3px;
+}
+.viewplanrow {
+    padding:7px;
+}
+.bookPlanList .ant-table-tbody tr:hover{
+    cursor:pointer
+}
+.nest-index{
+    align-items: start;
+}
+.taskAssignName h4{
+    color: @es-color-active;
+    font-weight: 700;
+    margin-bottom: 0;
+    text-align: center;
+}
+.static-pages p span {
+    background-color: @body-background !important;
+}

@@ -1,0 +1,1308 @@
+
+/******************** General Settings ***************/
+
+.general-setting .ant-menu-submenu-title:hover{
+  color:@es-table-header-bg !important;
+}
+.general-setting .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::before,
+.general-setting .ant-menu-submenu-title:hover .ant-menu-submenu-arrow::after{
+  background:@es-table-header-bg !important;
+} 
+.general-setting-menu a span{
+  color:#fff;
+}
+@media screen and (max-width : 1320px){
+  .gen_setting_menu.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title{
+    min-height : 42px;
+    height : 100%;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  .gen_setting_menu .ant-menu-submenu-title .anticon{
+    display : inline-block;
+    vertical-align : middle;
+  }
+  .gen_setting_menu .ant-menu-submenu-title .anticon + span{
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.5;
+    width: 80%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .gen_setting_menu .ant-menu-sub.ant-menu-inline > .ant-menu-item{
+    min-height : 42px;
+    height : 100%;
+    padding-right:10px !important;
+    line-height : 1.5;
+    padding-left : 50px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+  .gen_setting_menu .ant-menu-sub.ant-menu-inline > .ant-menu-item a{
+    word-break : break-word;
+    white-space:normal;
+  }
+}
+/******************** Tab Container ***************/
+
+.tabsContainer {
+  .ant-tabs-nav .ant-tabs-tab-active  {
+      color:@text-color-secondary!important;
+      background: -webkit-linear-gradient(
+          top,
+          rgba(var(--es--start), 0.2) 0%,
+          rgba(var(--es--middle), 0.2) 1%,
+          rgba(var(--es--end), 0.2) 100%
+      );
+      background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          from(rgba(var(--es--start), 0.2)),
+          color-stop(1%, rgba(var(--es--middle), 0.2)),
+          to(rgba(var(--es--end), 0.2))
+      );
+      background: linear-gradient(
+          to bottom,
+          rgba(var(--es--start), 0.2) 0%,
+          rgba(var(--es--middle), 0.2) 1%,
+          rgba(var(--es--end), 0.2) 100%
+      );
+  }
+  .ant-tabs-tab:hover {
+      color:@text-color-secondary!important;
+  }
+  .ant-tabs-ink-bar {
+      background: -webkit-linear-gradient(
+      top,
+      rgba(var(--es--start), 0.2) 0%,
+      rgba(var(--es--middle), 0.2) 1%,
+      rgba(var(--es--end), 0.2) 100%
+  );
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(var(--es--start), 0.2)),
+      color-stop(1%, rgba(var(--es--middle), 0.2)),
+      to(rgba(var(--es--end), 0.2))
+  );
+  background: linear-gradient(
+      to bottom,
+      rgba(var(--es--start), 0.2) 0%,
+      rgba(var(--es--middle), 0.2) 1%,
+      rgba(var(--es--end), 0.2) 100%
+  );
+  }
+}
+
+
+/******************** login ***************/
+
+.loginWrapper{
+  background: #ececec;
+}
+
+.logIn_bgSection {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1300px;
+  margin: auto;
+}
+
+.loginTwoSec{
+  width:48%;
+}
+
+.login-form {
+  padding: 58px;
+  background: #fff;
+  border-radius: 9px;
+}
+
+.logoLogin {
+  width: 116px;
+}
+
+.logoLogin svg {
+  height: auto;
+  width: 100%;
+}
+
+.logoLogin{
+  margin-bottom: 36px;
+}
+
+.contentLogin h4 {
+  font-size: 46px;
+  font-weight: 900;
+  width: 80%;
+  margin-bottom: 36px;
+}
+
+.contentLogin p {
+  margin-bottom: 0;
+  font-size: 20px;
+  width: 85%;
+  line-height: 2;
+}
+
+.login-form h3 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.login-form p {
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+.loginFormField .ant-row.ant-form-item:last-child {
+  margin: 0;
+}
+.loginFormField .ant-col.ant-form-item-control-wrapper {
+  width: 100%;
+}
+.loginFormField .ant-col.ant-form-item-control-wrapper input {
+  height: auto;
+  border-radius: 4px;
+  padding: 13px 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+.loginFormField .ant-col.ant-form-item-control-wrapper input:hover {
+  border: 1px solid #a7a7a7 !important;
+}
+
+.loginFormField .ant-col.ant-form-item-control-wrapper input:focus {
+  border-color: #262626 !important;
+}
+.loginFormField .ant-col.ant-form-item-control-wrapper label {
+  font-size: 15px;
+  line-height: 1;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.loginFormField .has-error .ant-form-explain, .loginFormField .has-error .ant-form-split {
+  color: #f5222d;
+  position: absolute;
+  top: -1px;
+  right: 0;
+}
+
+.loginFormField .ant-col.ant-form-item-control-wrapper .has-error .ant-input,
+.loginFormField .ant-col.ant-form-item-control-wrapper .has-error .ant-input:hover ,
+.loginFormField .ant-col.ant-form-item-control-wrapper .has-error .ant-input:focus {
+  border-color: #f5222d !important;
+}
+
+.buttonlinkCombain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttonlinkCombain button.ant-btn.ant-btn-primary {
+  margin: 0;
+  font-size: 16px;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  height: auto;
+  line-height: 1;
+}
+
+.buttonlinkCombain a .gx-link {
+  font-size: 16px;
+  color: #212121;
+}
+
+
+/******************** project config ***************/
+
+.project-config-tab .ant-tabs-nav .ant-tabs-tab-active,
+.project-config-tab .ant-tabs-nav .ant-tabs-tab:hover{
+    color: @es-table-header-bg !important
+}
+.project-config-tab .ant-tabs-ink-bar{
+    background-color: @es-table-header-bg !important
+}
+
+
+/******************** setup config ***************/
+
+.setup-tab .ant-tabs-nav .ant-tabs-tab-active,
+.setup-tab .ant-tabs-nav .ant-tabs-tab:hover{
+    color: @es-table-header-bg !important
+}
+.setup-tab .ant-tabs-ink-bar{
+    background-color:@es-table-header-bg !important
+}
+
+
+/******************** lock unlock ***************/
+
+.lock-user{
+  position: absolute;
+  right: 10px;
+  top: 2px;
+}
+.lock-user svg{
+  width: 14px;
+  height: 14px;
+}
+
+.lock_icon_block svg{
+  width:24px;
+  height: 24px;
+  fill: @es-color-active;
+}
+.lock_icon_block{
+  margin-right:20px;
+  text-align: center;
+  min-width: 60px;
+}
+.lock_icon_block span{
+  font-size: 14px;
+  display: block;
+  //margin-top: 5px;
+}
+.lock_icon_block.lock_block svg{
+  fill: #52c41a;
+}
+.lock_icon_block.unlock_block svg{
+  fill: #f5222d;
+}
+
+
+/******************** parked image ***************/
+
+.parkedImage .ant-upload-list-picture-card .ant-upload-list-item{
+  width:70px;
+  height:70px;
+}
+.parkedImageCard {
+  width: 60px; 
+  margin: 0px; 
+  padding: 5px; 
+  height:60px;
+}
+.ParkedImg {
+  display: flex;
+  align-items: center;
+}
+.parkedImageCard .ant-card-cover {
+  height: 100%;
+  width: 100%;
+}
+.parkedVehicleCover {
+  height:100%;
+  width:100%;
+  object-fit:cover;
+}
+.rotate90,
+.image-rotate .ant-modal-content {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+.image-rotate .ant-modal-close{
+  left:0;
+  right:auto;
+}
+.image-rotate .ant-modal-body{ 
+  width: 350px;
+  height: 400px;
+}
+.image-rotate .ant-modal-body > img{
+  max-width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/******************** zone filter ***************/
+
+.zoneFilter {
+  font-size: small;
+  margin-right: auto;
+  margin-top: 8px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.zoneFilter .dropdownUis{
+  margin-right:8px;
+}
+.zoneFilter .gx-mt-3{
+  margin-top: 0px !important;
+  margin-left: 20px;
+}
+
+/******************** zone list ***************/
+
+.zoneActionButton .scooterIC a {
+  height: 25px !important;
+  width: 25px !important;
+}
+
+.zoneList .gx-chat-info {
+  max-width: 100% !important;
+}
+
+.zoneList .zoneActionButton {
+  margin-left: auto !important;
+}
+
+.zoneList .ActionNotification a.active-btn {
+  width: 80px !important;
+}
+
+.zoneList .ActionNotification a.deactive-btn {
+  width: 80px !important;
+}
+
+.zoneList .zoneActionButton .active-btn {
+  padding: 0px 10px !important;
+}
+
+.zoneList .zoneActionButton .deactive-btn {
+  padding: 0px 10px !important;
+  align-items: center;
+}
+
+
+/******************** payment ***************/
+
+.paymentHistory {
+  padding: 10px 15px;
+}
+.paymentCommon {
+  display: flex;
+  align-items: center;
+}
+
+.paymentHistory .ant-card.ant-card-bordered .ant-card-body:after,
+.paymentHistory .ant-card.ant-card-bordered .ant-card-body:before {
+  display: none;
+}
+
+.paymentUsersDetailTop {
+  display: flex;
+  align-items: center;
+}
+
+.paymentUsersDetail {
+  margin-left: 20px;
+}
+
+.moneySender {
+  display: flex;
+  margin: 0px 20px;
+  font-size: 16px;
+  align-items: center;
+}
+
+.moneyLabel {
+  margin-right: 5px;
+  color: @es-light-label;
+}
+
+.paymentUsersDetailTop h3 {
+  margin: 0;
+  color: @es-dark-blue;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.moneySenderName {
+  color: @es-dark-blue;
+}
+
+a.btnRemark {
+  color: @es-list-dropdown;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
+.paymentUsersDetailBottom {
+  display: flex;
+  align-items: center;
+}
+
+.paymentUsersDetailBottom {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.paymentUsersDetailBottom .moneySender {
+  margin-left: 0;
+}
+
+.moneyLabel svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.paymentAmountDate {
+  text-align: right;
+}
+
+.paymentAmountDate p {
+  margin-bottom: 0;
+  font-size: 16px;
+  color: @es-light-label;
+}
+
+.paymentAmountDate h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 22px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.paymentAmountDate h3.addMoney,
+.paymentAmountDate.addMoney {
+  color: #088004;
+}
+
+.paymentAmountDate.cutMoney {
+  color: #ff0000;
+}
+
+
+/******************** RiderList ***************/
+
+.RidersList.RiderTableList table {
+  border-radius: 0px;
+  border-spacing: 0 10px;
+}
+
+.RidersList.RiderTableList table thead.ant-table-thead tr th {
+  background: @es-table-header-bg !important;
+  border: none !important;
+  color: #fff !important;
+  font-size: 15px !important;
+}
+
+.RidersList.RiderTableList table tbody.ant-table-tbody tr td {
+  border: none;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.RidersList.RiderTableList table tbody.ant-table-tbody tr,
+.RidersList.RiderTableList table thead.ant-table-thead tr {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.04);
+}
+
+.RidersList.RiderTableList table tbody.ant-table-tbody tr td:first-child,
+.RidersList.RiderTableList table thead.ant-table-thead tr th:first-child {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 6px;
+}
+
+.RidersList.RiderTableList table tbody.ant-table-tbody tr td:last-child,
+.RidersList.RiderTableList table thead.ant-table-thead tr th:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 0;
+}
+
+.RidersList.RiderTableList table tr .ant-checkbox-inner {
+  width: 22px;
+  height: 22px;
+}
+
+.RidersList.RiderTableList table tr .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+  width: 12px;
+  height: 12px;
+  display: block;
+  border-radius: 2px;
+}
+
+.RidersList.RiderTableList table tr .ant-checkbox-inner::after {
+  display: block;
+}
+
+.RidersList.RiderTableList table tr .ant-checkbox-inner::after {
+  width: 5.71428571px;
+  height: 15.142857px;
+}
+
+
+.RidersList li.ant-list-item.list-item-selected {
+  background: --es--lighta(var(--es--dark), 0.14) !important;
+}
+
+.RidersList .ant-list-items .ant-list-item.list-item-selected .ant-list-item-meta-avatar .ant-avatar-image {
+  background: -webkit-linear-gradient(
+      top,
+      @es-bg-gradient-start 0%,
+      @es-bg-gradient-middle 1%,
+      @es-bg-gradient-end 100%
+  );
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(@es-bg-gradient-start),
+      color-stop(1%, @es-bg-gradient-middle),
+      to(@es-bg-gradient-end)
+  );
+  background: linear-gradient(
+      to bottom,
+      @es-bg-gradient-start 0%,
+      @es-bg-gradient-middle 1%,
+      @es-bg-gradient-end 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.RidersList .ant-list-items .ant-list-item .ant-list-item-meta-description {
+  align-items: center;
+  display: flex;
+}
+
+.RidersList .ant-list-items .ant-list-item .ant-list-item-meta-description svg {
+  margin-right: 5px;
+}
+.RidersList .ant-list-items .ant-list-item .ant-list-item-meta-avatar .ant-avatar-image {
+  width: 70px;
+  height: 70px;
+}
+.RidersList {
+  padding: 10px 15px;
+}
+
+.RidersList .ant-list-items .ant-list-item h4.ant-list-item-meta-title {
+  font-size: 18px;
+  color: @es-dark-blue;
+  font-weight: 700;
+}
+
+.RidersList .ant-list-items .ant-list-item .ant-list-item-meta-description i {
+  color: @es-list-dropdown;
+}
+
+.RidersList .ant-list-items .ant-list-item .ant-list-item-meta-content {
+  flex: initial;
+}
+
+.listItems-otherDetail {
+  margin-left: 20px;
+}
+
+.RidersList .ant-list-items .ant-list-item .ant-rate-star-first,
+.RidersList .ant-list-items .ant-list-item .ant-rate-star-second {
+  color: rgba(0, 0, 0, 0.17);
+}
+
+.RidersList .ant-list-items .ant-list-item li.ant-rate-star.ant-rate-star-full .ant-rate-star-first,
+.RidersList .ant-list-items .ant-list-item li.ant-rate-star.ant-rate-star-full .ant-rate-star-second {
+  color: @es-list-dropdown;
+}
+
+
+.RidersList.RidersListingWithWidth .ant-list-item-meta-content {
+  width: 260px;
+}
+
+.RidersList.RidersListingWithWidth .ant-list-item-meta {
+  align-items: center;
+}
+.RidersList .ant-list-item-meta {
+  align-items: center;
+}
+
+/******************** Card Time Line ***************/
+
+.CardTimeline .ant-card-head-title {
+  color: @es-dark-blue;
+  font-weight: 600;
+}
+
+.CardTimeline .ant-card-extra a,
+.CardTimeline .ant-card-extra a:hover {
+  color: @es-list-dropdown !important;
+}
+
+.CardTimeline .ant-timeline-item-head {
+  background: #fff;
+  border: none;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+  padding: 3px 9px;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+
+.CardTimeline .ant-timeline-item-head .eventTime {
+  margin-right: 8px;
+  color: #002121;
+  opacity: 0.5;
+  font-weight: 600;
+}
+
+.CardTimeline .ant-timeline-item-head .eventIcon svg {
+  display: block;
+}
+
+.CardTimeline .ant-card.cardPaddingLess ul li {
+  align-items: flex-start;
+  border: none;
+  position: relative;
+  padding: 15px 0px;
+}
+
+.CardTimeline .ant-card.cardPaddingLess ul li:first-child {
+  padding-top: 0px;
+}
+
+.eventTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #002121;
+  margin-bottom: 9px;
+}
+
+.CardTimeline .ant-timeline-item-content {
+  margin-left: 90px;
+  top: 0;
+}
+
+.CardTimeline .ant-timeline-item-tail {
+  left: 53px;
+}
+
+
+/******************** Search Bar With Button ***************/
+
+.SearchBarwithBtn .ant-input-search {
+  margin-bottom: 0;
+}
+
+.SearchBarwithBtn .ant-input-search span.ant-input-suffix {
+  right: inherit;
+  left: 10px;
+}
+
+.SearchBarwithBtn .ant-select-search__field__wrap input {
+  outline: none;
+  box-shadow: none;
+  background: rgba(var(--es--light), 0.6) !important;
+  border: 0;
+  color: rgba(0, 33, 33, 0.8);
+  padding: 4px 11px 4px 35px !important;
+}
+.SearchBarwithBtn .ant-input-prefix svg {
+  fill: @es-color-active;
+}
+.SearchBarwithBtn .ant-select-selection__placeholder {
+  color: rgba(0, 33, 33, 0.8);
+  padding: 0 0 0 22px !important;
+}
+.ant-select-dropdown-menu-item-active:not(.ant-select-dropdown-menu-item-disabled),
+.ant-select-dropdown-menu-item:hover:not(.ant-select-dropdown-menu-item-disabled) {
+  background-color: rgba(var(--es--light), 0.6);
+}
+
+.SearchBarwithBtn .ant-input-search input::placeholder {
+  color: rgba(0, 33, 33, 0.6);
+}
+
+.SearchBarwithBtn {
+  display: flex;
+  align-items: center;
+}
+
+.SearchBarwithBtn.riderSearchBar {
+  width: 100%;
+}
+
+/******************** Pagination with Filter ***************/
+
+.pagination-with-filter .ant-btn-group button.ant-btn {
+  margin: 0;
+  border-color: rgba(var(--es--pagination), 0.25);
+  height: 32px;
+  line-height: 30px;
+}
+
+.pagination-with-filter .ant-btn-group button.ant-btn:hover {
+  border-color: rgba(var(--es--pagination), 0.6);
+}
+
+.paginationPages {
+  color: #2a2a2a;
+  margin-right: 12px;
+}
+
+.pagination-with-filter {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-with-filter .ant-btn-group button.ant-btn i svg {
+  display: block;
+  fill: @es-color-active;
+}
+
+.pagination-with-filter .ant-btn-group > .ant-btn:first-child:not(:last-child),
+.pagination-with-filter .ant-btn-group > span:first-child:not(:last-child) > .ant-btn {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.pagination-with-filter .ant-btn-group > .ant-btn:last-child:not(:first-child),
+.pagination-with-filter .ant-btn-group > span:last-child:not(:first-child) > .ant-btn {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+
+/******************** Dropdown ***************/
+
+.dropdownUis a.ant-dropdown-link.ant-dropdown-trigger {
+  margin-left: 10px;
+  color: @es-list-dropdown !important;
+  position: relative;
+}
+
+.dropdownUis a.ant-dropdown-link.ant-dropdown-trigger:after {
+  content: '';
+  position: absolute;
+  width: calc(100% - 15px);
+  left: 0;
+  height: 1px;
+  background: @es-color-active;
+  bottom: -3px;
+  border-radius: 74px;
+}
+
+ul.ant-dropdown-menu {
+  border: 1px solid rgba(var(--es--dark), 0.2);
+  box-shadow: 0 2px 8px rgba(var(--es--dark), 0.15);
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item-divider {
+  background: rgba(var(--es--dark), 0.2);
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item.ant-dropdown-menu-item-active {
+  color: @es-color-active;
+  background: transparent;
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item.ant-dropdown-menu-item-active a {
+  color: @es-color-active;
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item.active-selectDropdown a {
+  color: @es-color-active;
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item.active-selectDropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+ul.ant-dropdown-menu li.ant-dropdown-menu-item.active-selectDropdown svg {
+  fill: @es-color-active;
+}
+
+.DropdownWidth {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.DropdownWidth .dropdownUis {
+  margin-right: 30px;
+  margin-bottom:8px;
+}
+
+.DropdownWidth .dropdownUis:last-child {
+  margin-right: 0;
+}
+
+/******************** antd ***************/
+
+.ant-input:focus {
+  border-color: @es-primary-border !important;
+  border-right-width: 1px !important;
+  box-shadow: 0 0 0 2px 0 0 0 2px rgba(var(--es--start), 0.03);
+}
+
+.ant-input:hover {
+  border-color: rgba(var(--es--light), 0.6) !important;
+  border-right-width: 1px !important;
+}
+.ant-tabs-ink-bar {
+  bottom: 2px !important;
+  height: 3px !important;
+  background-color: #ffffff;
+}
+.ant-tabs-nav .ant-tabs-tab-active,
+.ant-tabs-nav .ant-tabs-tab:hover {
+  color: @es-color-dispute !important;
+}
+.ant-tabs-tab {
+  color: @es-black-color !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: @es-primary-border !important;
+  border-color: @es-primary-border !important;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: @es-primary-border !important;
+}
+.ant-btn:hover,
+.ant-btn:focus {
+  color: @es-primary-border !important;
+  background-color: #fff;
+  border-color: @es-primary-border !important;
+}
+.ant-select-selection:hover,
+.ant-radio-checked .ant-radio-inner {
+  border-color: @es-primary-border !important;
+}
+.ant-radio-inner::after {
+  background-color: @es-primary-border !important;
+}
+.ant-radio-wrapper:hover .ant-radio,
+.ant-radio:hover .ant-radio-inner,
+.ant-radio-input:focus + .ant-radio-inner {
+  border-color: @es-primary-border !important;
+}
+.ant-radio-checked::after {
+  border: 1px solid @es-primary-border !important;
+}
+.ant-calendar-selected-date .ant-calendar-date,
+.ant-calendar-selected-start-date .ant-calendar-date,
+.ant-calendar-selected-end-date .ant-calendar-date {
+  background: @es-primary-border !important;
+}
+
+.ant-calendar-range .ant-calendar-in-range-cell::before,
+.ant-calendar-date:hover {
+  background: rgba(var(--es--light), 0.6) !important;
+}
+
+.ant-calendar-today .ant-calendar-date {
+  color: @es-primary-border !important;
+  border-color: @es-primary-border !important;
+  background: @body-background !important;
+}
+
+.ant-calendar-picker:focus,
+.ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ant-card.cardPaddingLess .ant-card-body {
+  padding: 15px;
+}
+
+.ant-card.cardPaddingLess {
+  border-radius: 6px;
+  border: 1px solid rgba(var(--es--border), 0.27);
+  background: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0px 4px 4px rgba(var(--es--border), 0.07);
+}
+.ant-card.cardPaddingLess ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ant-card.cardPaddingLess ul li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: @es-light-label;
+  padding: 10px 0px;
+  border-bottom: 1px solid rgba(112, 112, 112, 0.2);
+}
+
+.ant-card.cardPaddingLess ul li:last-child {
+  border: none;
+  padding-bottom: 0;
+}
+
+.ant-card.cardPaddingLess ul li .cardListTitle {
+  color: @es-dark-blue;
+  font-weight: 600;
+}
+
+.ant-card.cardPaddingLess .filterChart ul li {
+  padding: 12px 12px;
+  border: 0;
+  text-transform: uppercase;
+  color: rgba(41, 46, 71, 0.35);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.ant-card.cardPaddingLess .filterChart ul li:hover,
+.ant-card.cardPaddingLess .filterChart ul li.active {
+  color: @es-list-dropdown !important;
+}
+
+.ant-card.cardPaddingLess.chartCard .ant-card-body {
+  padding: 0;
+}
+
+
+.ant-card.cardPaddingLess.vehicleStatusCard .ant-card-body {
+  padding-right: 0;
+  overflow: hidden;
+  padding-left: 27px;
+}
+
+.ant-card.cardPaddingLess.vehicleStatusCard .ant-card-body {
+  padding-right: 0;
+  overflow: hidden;
+}
+
+
+.ant-form-vertical .actionquest-textarea .ant-form-item-control {
+  line-height: 40px;
+}
+.ant-select-focused .ant-select-selection,
+.ant-select-selection:active,
+.ant-select-selection:focus {
+  border-color: @es-primary-border;
+  border-right-width: 1px !important;
+  outline: 0;
+  box-shadow: 0 0 0 2px hsla(1, 83%, 32%, 0.2);
+}
+
+.ant-calendar-today .ant-calendar-date {
+  // color: @es-primary-border;
+}
+
+
+.ant-card.vehicleListing.vehicleDetailInnerCard.ant-card-bordered {
+  border: 1px solid #dedede;
+  box-shadow: none;
+}
+
+.ant-card.vehicleListing.vehicleDetailInnerCard.ant-card-bordered .vehicleRiderName {
+  width: 100%;
+}
+
+.ant-card.vehicleListing.vehicleDetailInnerCard.ant-card-bordered .vehicleRiderName .rideFromToDetail {
+  padding-right: 0;
+}
+
+.ant-card.vehicleListing.ant-card-bordered:last-child {
+  margin: 0;
+}
+
+.ant-card.vehicleListing.ant-card-bordered .ant-card-body {
+  padding: 16px;
+}
+
+.ant-tag.vehicleStatusTag {
+  background: transparent;
+  padding: 3px 21px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 53px;
+  width: 105px;
+  text-align: center;
+}
+
+.ant-tag.vehicleStatusTag.runningTag {
+  border-color: rgba(var(--es--running--tag), 0.2);
+  color: @es-vehicle-status-running;
+}
+
+.ant-tag.vehicleStatusTag.standingTag {
+  border-color: rgba(var(--es--standing--tag), 0.2);
+  color: @es-vehicle-status-standing;
+}
+
+.ant-tag.vehicleStatusTag:hover {
+  opacity: 1;
+}
+
+.ant-input-number {
+  width: 100% !important;
+}
+
+/******************** Page Title Breadcrumb ***************/
+
+.pageTitleBreadcrumb .ant-breadcrumb {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.pageTitleBreadcrumb {
+  align-items: baseline;
+}
+
+.pageTitleBreadcrumb .ant-breadcrumb > span:last-child,
+.pageTitleBreadcrumb .ant-breadcrumb-separator,
+.pageTitleBreadcrumb .ant-breadcrumb {
+  color: @es-light-label;
+}
+
+
+/******************** Vehicle Tab Menu ***************/
+
+.vehicleTabMenu ul.ant-menu-horizontal li.ant-menu-item {
+  padding: 0;
+  margin-left: 40px;
+  border: none;
+  font-size: 15px;
+}
+
+.vehicleTabMenu ul.ant-menu-horizontal {
+  border: none;
+}
+
+.vehicleTabMenu ul.ant-menu-horizontal li.ant-menu-item.ant-menu-item-selected {
+  color: @es-list-dropdown !important;
+  font-weight: 500;
+}
+
+.vehicleTabMenu ul.ant-menu-horizontal li.ant-menu-item.ant-menu-item-selected:after {
+  content: '';
+  width: 60%;
+  height: 2px;
+  position: absolute;
+  left: 2px;
+  bottom: 7px;
+  border-radius: 50px;
+  background: rgb(var(--es--start));
+  background: -moz-linear-gradient(left, rgba(var(--es--start), 1) 0%, rgba(var(--es--end), 1) 100%);
+  background: -webkit-linear-gradient(left, rgba(var(--es--start), 1) 0%, rgba(var(--es--end), 1) 100%);
+  background: linear-gradient(to right, rgba(var(--es--start), 1) 0%, rgba(var(--es--end), 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@es-bg-gradient-start', endColorstr='@es-bg-gradient-end', GradientType=1);
+}
+
+.vehicleTabMenu ul.ant-menu-horizontal li.ant-menu-item:hover {
+  color: @es-list-dropdown !important;
+}
+
+/******************** Graph Filter with Calender ***************/
+
+.graphFilterWithCalander {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.graphFilterWithCalander span.ant-calendar-picker-input.ant-input {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid @es-list-card !important;
+  background: transparent;
+  padding: 0;
+  width: auto;
+  display: flex;
+}
+
+.graphFilterWithCalander span.ant-calendar-picker-input.ant-input input.ant-calendar-range-picker-input {
+  width: 95px;
+  color: @es-list-dropdown !important;
+}
+
+.graphFilterWithCalander span.ant-calendar-picker-input.ant-input i.anticon.anticon-calendar.ant-calendar-picker-icon,
+.graphFilterWithCalander
+  span.ant-calendar-picker-input.ant-input
+  i.anticon.anticon-close-circle.ant-calendar-picker-clear {
+  display: none;
+}
+
+.graphFilterWithCalander span.ant-calendar-picker-input.ant-input span.ant-calendar-range-picker-separator {
+  display: flex;
+  align-items: center;
+}
+
+.graphFilterWithCalander span.ant-calendar-picker-input.ant-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/******************** StatisticCard ***************/
+
+.StatisticCard {
+  padding: 16px 28px 14px;
+  color: #fff;
+  border-right: 1px solid rgba(0, 33, 33, 0.18);
+}
+
+.StatisticCard span.ant-statistic-content-value-int,
+.StatisticCard span.ant-statistic-content-value-decimal {
+  font-weight: 500;
+  color: #fff;
+  font-family: @font-family;
+}
+.StatisticCard .ant-statistic-content{
+  color: #FFF;
+}
+.StatisticCard .ant-statistic-title {
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.active.StatisticCard {
+  background: @es-list-dropdown !important;
+}
+
+.StatisticCard:last-child {
+  border: 0;
+}
+
+.active.StatisticCard {
+  border: 0;
+}
+
+
+/******************** Selection Ride Option ***************/
+
+.selectRideOptions .selectAllOption button.ant-btn.ant-btn-primary {
+  margin-bottom: 0;
+  margin-left: 16px;
+  background: #fff !important;
+  border: 0;
+  color:@es-dark-blue;
+}
+
+.selectRideOptions .selectAllOption a, .selectRideOptions .selectAllOption a:hover{
+  color: #ffffff !important;
+  position: relative;
+  opacity: 0.8;
+}
+
+.selectRideOptions .selectAllOption a:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  bottom: -3px;
+  height: 1px;
+  left: 0;
+  background: #fff;
+  border-radius: 50px;
+}
+.gx-profile-banner-avatar-info{
+  width:70%;
+}
+.gx-profile-banner-avatar-info h2{
+  color: @es-black-color;
+}
+.gx-profile-banner-top-left{
+  width:50%;
+}
+
+.rent-payment-table  table tbody.ant-table-tbody tr td{
+  padding:11px !important;
+}
+.has_notification a{
+  display : flex;
+  align-items : center;
+  justify-content : space-between;
+}
+.ridersButton{
+  margin: 0;
+  margin-left: 10px;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  background:#fff !important;
+  color: #000 !important;
+}
+.rider-anchor a:hover, .rider-anchor a:focus{
+  color:#fff !important;
+}
+
+.tot{
+  padding : 2px 10px;
+  background: linear-gradient(
+      to bottom,
+      @es-bg-gradient-start 0%,
+      @es-bg-gradient-middle 1%,
+      @es-bg-gradient-end 100%
+  );
+  border-radius : 50px;
+  color:@es-color-dispute;
+}
+.has-notification-count{
+  display : flex;
+  align-items : center;
+  // width : 100%;
+}
+.has-notification-count .tot{
+  font-size : 16px;
+  margin-left : 15px;
+}
+.has_new{
+  position : relative;
+}
+.has_new_dot{
+  position: absolute;
+    top: 0;
+    right: 40%;
+    z-index: 1;
+    width: 8px;
+    height: 8px;
+    background: #f00;
+    transform: translateX(100%);
+    border-radius: 20px;
+}
+.iot-card {
+  padding-right:20px;
+  cursor:pointer;
+  border:1px solid rgba(var(--es--border), 0.27);
+}
+.iot-card:hover{
+  background:linear-gradient(
+    to bottom, 
+    rgba(var(--es--start), 0.2) 0%, 
+    rgba(var(--es--middle), 0.2) 1%, 
+    rgba(var(--es--end), 0.2) 100%);
+}
+.iot-card p{
+  margin:0px;
+}
+.add-amount-button {
+  margin-left: 25px;
+  text-decoration: underline;
+  color:@es-color-dispute;
+}
+.add-amount-button:hover{
+  color:@es-color-dispute !important;
+}
+
+.fleet-type-no-search .ant-select-selection__placeholder {
+  padding: 0 !important;
+}
+.fleet-type-no-search .ant-select-search__field__wrap input {
+  padding: 0 !important;
+  max-width: 0 !important;
+}

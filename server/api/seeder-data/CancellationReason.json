@@ -1,0 +1,22 @@
+[
+    {
+        "reason": "Due to unavailability of Scooter",
+        "multiLanguageData": {
+            "en-US": {
+                "reason": "Due to unavailability of Scooter"
+            }
+        },
+        "sequence": 1,
+        "addedBy": null
+    },
+    {
+        "reason": "found scooter damaged",
+        "multiLanguageData": {
+            "en-US": {
+                "reason": "found scooter damaged"
+            }
+        },
+        "sequence": 2,
+        "addedBy": null
+    }
+]

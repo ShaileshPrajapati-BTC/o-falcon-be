@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title><%= sails.config.PROJECT_NAME %></title>
+        <link
+            href="https://fonts.googleapis.com/css?family=Roboto:400,500"
+            rel="stylesheet"
+        />
+    </head>
+
+    <body style="font-family: 'Roboto', sans-serif;" marginheight="0">
+        <!--Header-->
+        <%- include ../header/header.ejs %>
+        <!-- /Header-->
+
+        <!--Body content-->
+        <center
+            style="border-spacing: 0; border-collapse: collapse; margin: 0 auto; background-color: #f0f0f0"
+        >
+            <div class="email-wrapper" style="max-width: 800px; margin: auto">
+                <table
+                    class="email-body"
+                    cellspacing="0"
+                    cellpadding="0"
+                    border="0"
+                    align="center"
+                    width="100%"
+                    style="border-spacing: 0; border-collapse: collapse; max-width: 800px; margin: 0 auto"
+                    bgcolor="#ffffff"
+                >
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table
+                                    border="0"
+                                    cellpadding="30"
+                                    cellspacing="0"
+                                    width="100%"
+                                    style="border-spacing: 0; border-collapse: collapse; margin: 0 auto"
+                                >
+                                    <tbody>
+                                        <tr>
+                                            <td
+                                                valign="top"
+                                                class="email-body-content"
+                                                style="color: #444; font-size: 14px; line-height: 150%"
+                                            >
+                                                <p
+                                                    style="margin-top: 15px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;"
+                                                >
+                                                    <%= name %> has requested
+                                                    for support.
+                                                </p>
+                                                <p
+                                                    style="margin-top: 15px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;"
+                                                >
+                                                    Query: <%= message %>
+                                                </p>
+
+                                                <!--Common-->
+                                                <%- include
+                                                ../commonContent/index.ejs %>
+                                                <!-- /common-->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </center>
+        <!-- /Body content-->
+
+        <!--Footer-->
+        <%- include ../footer/footer.ejs %>
+        <!-- /Footer-->
+    </body>
+</html>

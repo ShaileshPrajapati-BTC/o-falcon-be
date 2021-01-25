@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+
+</html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title><%= Translation.translateMessage(sails.config.PROJECT_NAME, language) %></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" />
+</head>
+<style>
+    /* :root{
+    --es--dark: 47, 175, 188;
+    --es--border: 2, 94, 106;
+    --es--link: #62c690;
+} */
+    a {
+        text-decoration: none;
+    }
+
+    .email-header td,
+    .email-footer td {
+        background: linear-gradient(45deg, rgba(47, 175, 188, 0.8), rgba(2, 94, 106, 1));
+        color: #ffffff;
+    }
+
+    .email-header td h1,
+    .email-footer td h1 {
+        color: #ffffff;
+        margin: 20px 0 20px 20px;
+    }
+
+    .email-header td h1 {
+        font-size: 24px;
+    }
+
+    .email-footer td a {
+        color: antiquewhite;
+        text-decoration: underline;
+    }
+
+    .email-body-content {
+        /* background: linear-gradient(45deg,rgba(101,0,1,0.1),rgba(189,26,27,0.1)); */
+        border: 1px solid #ddd;
+    }
+
+    .email-body-content a {
+        color: #62c690;
+        text-decoration: underline;
+    }
+
+    .row {
+        display: flex;
+        font-size: 12px;
+        color: #000;
+    }
+
+    .title {
+        font-weight: 700;
+        width: 150px;
+    }
+</style>
+
+<body style="font-family: 'Roboto', sans-serif;margin: 0 !important;direction:<%= textDirection %>" marginheight="0">
+    <!--Header-->
+    <%- include ../header/header.ejs %>
+    <!-- /Header-->
+
+    <!--Body content-->
+    <center style="border-spacing: 0; border-collapse: collapse; margin: 0 auto; background-color: #f0f0f0">
+        <div class="email-wrapper" style="max-width: 800px; margin: auto">
+            <table class="email-body" cellspacing="0" cellpadding="0" border="0" align="center" width="100%"
+                style="border-spacing: 0; border-collapse: collapse; max-width: 800px; margin: 0 auto"
+                bgcolor="#ffffff">
+                <tbody>
+                    <tr>
+                        <td>
+                            <table border="0" cellpadding="30" cellspacing="0" width="100%"
+                                style="border-spacing: 0; border-collapse: collapse; margin: 0 auto">
+                                <tbody>
+                                    <tr>
+                                        <td valign="top" class="email-body-content"
+                                            style="color: #444; font-size: 14px; line-height: 150%">
+                                            <div id="greeting"
+                                                style="margin-bottom: 20px; padding-bottom: 25px; border-bottom-width: 1px; border-bottom-color: #eee; border-bottom-style: solid">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                                    style="border-spacing: 0; border-collapse: collapse; margin: 0 auto">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <h1 class="greeting"
+                                                                    style=" color: #444; display: block; font-size: 18px; font-weight: 500; line-height: 1.3; margin: 0">
+                                                                    Dear <%=
+                                                                        name %>,
+                                                                </h1>
+                                                            </td>
+                                                            <td width="58" align="right" class="user-avatar"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p
+                                                style="margin-top: 15px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;">
+                                                <%= Translation.translateMessage(mailData.mailContent, language) %>
+                                            </p>
+                                            <h3 style="font-size: 14px;color: #000;margin-top: 15px;">
+                                                Transaction Details:
+                                            </h3>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Transaction Id:
+                                                </div>
+                                                <div style="color: #000;">
+                                                    <%= mailData.id %>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Amount:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.amount %>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Transaction Date:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.createdAt %>
+                                                </div>
+                                            </div>
+                                            <% if(mailData.card && mailData.card.expMonth) { %>
+                                            <h3 style="font-size: 14px;color: #000;margin-top: 15px;">
+                                                Card Detail:
+                                            </h3>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Last 4 Digit:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.card.last4 || '-' %>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Expiry Month:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.card.expMonth || '-' %>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Expiry Year:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.card.expYear || '-' %>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="title">
+                                                    Brand:
+                                                </div>
+                                                <div>
+                                                    <%= mailData.card.brand || '-' %>
+                                                </div>
+                                            </div>
+                                            <% } %>
+
+                                            <% if(mailData.mailFooterContent) { %>
+                                            <p>
+                                                <%= mailData.mailFooterContent %>
+                                            </p>
+                                            <% } %>
+
+
+                                            <!--Common-->
+                                            <%- include ../commonContent/index.ejs %>
+                                            <!-- /common-->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </center>
+    <!-- /Body content-->
+
+    <!--Footer-->
+    <%- include ../footer/footer.ejs %>
+    <!-- /Footer-->
+</body>
+
+</html>

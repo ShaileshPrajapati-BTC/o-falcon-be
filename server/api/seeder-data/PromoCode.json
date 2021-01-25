@@ -1,0 +1,26 @@
+[
+    {
+        "vehicleType": [
+            1,
+            2
+        ],
+        "name": "50% Rock",
+        "description": "Flat 50% discount",
+        "tnc": "- Discount",
+        "type": 2,
+        "code": "ROCK50",
+        "startDateTime": "2020-01-01T10:02:00.000Z",
+        "endDateTime": "2020-12-31T10:02:00.000Z",
+        "isActive": true,
+        "isApplicableToAllUsers": true,
+        "maxUseLimitPerUser": 1,
+        "discountType": 2,
+        "percentage": 50,
+        "maximumDiscountLimit": 15,
+        "notes": "",
+        "link": "",
+        "flatDiscountAmount": 15,
+        "applicableUsers": null,
+        "addedBy": null
+    }
+]

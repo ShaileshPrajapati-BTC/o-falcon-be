@@ -1,0 +1,42 @@
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-arrow{
+display: none;
+}
+
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content  .ant-popover-inner {
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: 0 3px 10px 0 rgba(0,0,0,.2);
+}
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover {
+    padding: 15px 0px;
+    min-width: 200px;
+}
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li {
+    width: 100%;
+    padding: 10px;
+    border-radius: 2px;
+    font-size: 15px;
+}
+.tooltipPadding {
+    padding: 0px 12px;
+}
+
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li:hover,
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li.active {
+    color: var(--es--menu--hover);
+    background: rgba(var(--es--light), 0.4);
+}
+
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li:hover a,
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li.active a {
+    color: var(--es--menu--hover);
+}
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li a{
+    color: #292e47;
+}
+
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li.dividerSetup {color: #7c7c7c;text-transform: uppercase;font-size: 14px;padding-bottom: 5px;}
+
+.ant-popover.ant-popover-placement-rightTop .ant-popover-content .ant-popover-inner .gx-user-popover li.dividerSetup:hover {
+    background: transparent;
+}

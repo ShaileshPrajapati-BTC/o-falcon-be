@@ -1,0 +1,84 @@
+[
+    {
+        "type": 1,
+        "basicRadius": 8,
+        "minBatteryLevel": 40,
+        "rideReserveTimeLimit": 10,
+        "pauseTimeLimit": 15,
+        "rideReserveTimeFreeLimit": 20,
+        "scooterUsedLimit": {
+            "high": 100,
+            "average": 50,
+            "low": 20,
+            "unused": 0
+        },
+        "bookingHabitsRideLimit": {
+            "high": 50,
+            "average": 30,
+            "low": 20
+        }
+    },
+    {
+        "type": 2,
+        "notificationActions": [
+            {
+                "action": 1,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": true
+            },
+            {
+                "action": 2,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            },
+            {
+                "action": 3,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            },
+            {
+                "action": 4,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            },
+            {
+                "action": 5,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            },
+            {
+                "action": 21,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            },
+            {
+                "action": 18,
+                "sms": true,
+                "device": true,
+                "email": true,
+                "allowAdmin": false
+            }
+        ]
+    },
+    {
+        "type": 3,
+        "commissionType": 1,
+        "commissionAmount": 0.00,
+        "commissionPercentage": 0.00,
+        "commissionTrack": [],
+        "franchiseeVehicleRentAmount": 0,
+        "dealerVehicleRentAmount": 0
+    }
+]

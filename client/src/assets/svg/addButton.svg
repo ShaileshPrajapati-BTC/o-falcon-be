@@ -1,0 +1,6 @@
+ <svg id="addButton" xmlns="http://www.w3.org/2000/svg" width="13.893" height="13.893"
+                 viewBox="0 0 13.893 13.893">
+       <path id="Path_70" data-name="Path 70"
+        d="M46.668,39.144h-5.1V34.025a.925.925,0,0,0-1.849,0v5.1h-5.1a.925.925,0,1,0,0,1.849h5.1v5.1a.925.925,0,1,0,1.849,0v-5.1h5.1a.915.915,0,0,0,.925-.925A.9.9,0,0,0,46.668,39.144Z"
+         transform="translate(-33.7 -33.1)" fill="var(--es--svg--fill--primary)"/>
+</svg>

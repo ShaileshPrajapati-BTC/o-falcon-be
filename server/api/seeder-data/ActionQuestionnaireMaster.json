@@ -1,0 +1,30 @@
+[
+    {
+        "feedbackControlType": 1,
+        "question": "How to unlock Scooter?",
+        "type": 1,
+        "multiLanguageData": {
+            "en-US": {
+                "question": "Please go to vehicle detail and press unlock button."
+            }
+        },
+        "isActive": true,
+        "isDeleted": false,
+        "isAttachmentRequired": true,
+        "addedBy": null
+    },
+    {
+        "feedbackControlType": 1,
+        "question": "Scooter is damaged",
+        "type": 2,
+        "multiLanguageData": {
+            "en-US": {
+                "question": "Scooter is damaged"
+            }
+        },
+        "isActive": true,
+        "isDeleted": false,
+        "isAttachmentRequired": true,
+        "addedBy": null
+    }
+]

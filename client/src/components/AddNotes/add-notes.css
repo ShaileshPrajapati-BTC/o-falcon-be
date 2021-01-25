@@ -1,0 +1,147 @@
+.notes-list-top-block{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 0px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+}
+.note-title{
+    font-size: 15px;
+    color: #535353;
+    margin-right: 10px;
+}
+.note-name{
+    color: #262626;
+    font-weight: bold;
+    line-height: 1.2;
+    font-size: 18px;
+}
+.notes-comment textarea{
+    box-sizing: border-box;
+    margin: 0;
+    font-variant: tabular-nums;
+    list-style: none;
+    -webkit-font-feature-settings: 'tnum', "tnum";
+    font-feature-settings: 'tnum', "tnum";
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    padding: 10px 11px;
+    color: #545454;
+    font-size: 14px;
+    line-height: 1.3;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    height: 100px;
+}
+.notes-comment textarea:focus{
+    outline: none;
+}
+.mb-0{
+    margin-bottom: 0 !important;
+}
+.mb-20{
+    margin-bottom: 20px;
+}
+.notes-add-footer-btn{
+    display: flex;
+    justify-content: flex-end;
+}
+.notes-list{
+    border: 1px solid #e8e8e8;
+    padding: 10px;
+    border-radius: 10px;
+    background: #fff;
+    margin: 10px 0;
+}
+.note-list-popup .ant-modal-body{
+    background: #fafafa;
+    padding: 0 0 24px 0;
+    border-radius: 10px;
+}
+.note-list_wrap{
+    justify-content: space-between;
+    display: flex;
+}
+.note-list-date,
+.note-list-add {
+    display: flex;
+    align-items: center;
+}
+/*.note-list-date img,
+.note-list-add img{
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+}
+.note-list-add .user-icon img{
+    width:16px;
+    height: 16px;
+}*/
+.note-list-date span,
+.note-list-add span{
+    color: #545454;
+    font-size: 15px;
+    line-height: 22px;
+    margin-left: 5px;
+}
+.notes-list p{
+   /* -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    max-height: 60px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;*/
+    color: #595959;
+    line-height: 20px;
+}
+.note_list_block{
+    padding: 15px 24px 0 15px;
+    max-height: 400px;
+    overflow: auto;
+}
+.note-add_block{
+    padding: 15px 24px;
+}
+.note-list-popup .ant-modal-close{
+    right: -14px;
+    top: -14px;
+    background: #fff;
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+}
+.note-list-popup .ant-modal-close-x{
+    width: 100%;
+    height: 100%;
+    line-height: 35px;
+}
+.note-list-popup .anticon svg{
+    fill: #1b8994;
+    width: 14px;
+    height: 14px;
+}
+.note-label{
+    margin-left: 25px;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.note-label svg{
+    width: 16px;
+    height: 16px;
+}
+.user-title-note{
+    display: flex;
+}
+.note-list-popup.ant-modal{
+    width: 620px !important;
+}

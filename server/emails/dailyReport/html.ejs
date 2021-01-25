@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+
+</html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title><%= Translation.translateMessage(sails.config.PROJECT_NAME, language) %></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500" rel="stylesheet" />
+</head>
+
+
+<body>
+
+    <div>
+        <p style="margin-top: 15px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;"> Dear,</p>
+        <% if (message) { %>
+        <p style="margin-top: 15px;margin-bottom: 15px;font-size: 14px;line-height: 1.8;color: #000;">
+            <%= Translation.translateMessage(message, language) %>
+        </p>
+        <% }  %>
+        <p style="font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.5;">
+            Best Regards
+            <br />
+            Falcon Control Centre
+            <br />
+            Tel. +974 44889045
+            <br />
+            Mo. +974 50004371
+            <br />
+            control@falconride.io
+        </p>
+    </div>
+</body>
+
+</html>

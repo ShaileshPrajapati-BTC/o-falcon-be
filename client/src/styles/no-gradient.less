@@ -1,0 +1,116 @@
+//Rohak's new theme which contains solid sidebar(white).
+
+.gx-app-logo-content-bg:before {
+    background: @black-color;
+}
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark > .ant-layout-sider-children {
+    background: @white-color;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@es-bg-gradient-end', endColorstr='@es-bg-gradient-start', GradientType=1);
+    border-bottom-right-radius: 25px;
+}
+aside.gx-app-sidebar.CustomSidebar.gx-layout-sider-dark .gx-sidebar-notifications span.gx-avatar-name {
+    display: block;
+    text-align: center;
+    margin-top: 7px;
+    color: @black-color;
+}
+body {
+    background: @white-color !important;
+}
+.SearchBarwithBtn .ant-input-search input {
+    background: rgba(194, 196, 210, 0.52);
+    border: 0;
+    color: #4a5163;
+    padding: 4px 11px 4px 35px !important;
+}
+.SearchBarwithBtn .ant-input-search span.ant-input-suffix svg {
+    fill: #4a5163;
+}
+.SearchBarwithBtn .ant-input-search input:focus {
+    outline: none;
+    box-shadow: none;
+    background: rgba(194, 196, 210, 0.8);
+}
+.topbarCommonBtn .ant-btn:hover,
+.topbarCommonBtn .ant-btn:focus,
+.topbarCommonBtn .ant-btn:active,
+.topbarCommonBtn .ant-btn-primary:not([disabled]):not(.disabled):active {
+    background-color: @es-button-hover !important;
+}
+
+.topbarCommonBtn .ant-btn:hover span,
+.topbarCommonBtn .ant-btn:focus span {
+    color: @white-color !important;
+}
+.filterIC a {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 13px;
+    background: lighten(@es-color-active, 40%);
+    color: @es-color-active;
+}
+.RidersList .ant-list-items .ant-list-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background: @white-color !important;
+    border: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.02);
+}
+.totalRideCounter {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: lighten(@es-color-active, 40%);
+}
+.ant-card.vehicleListing.ant-card-bordered {
+    border-radius: 6px;
+    background: @white-color !important;
+    border: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.02);
+    margin-bottom: 16px;
+}
+.scooterIC a {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    background: lighten(@es-color-active, 40%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.scooterIC a i, .scooterIC a i svg {
+    width: 16px;
+    height: 16px;
+}.scooterIC a i svg {
+   fill: @es-color-active;
+}
+button.ant-btn.ant-btn-primary {
+    margin: 0;
+    margin-left: 5px;
+    background-color: @es-color-active !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: @white-color !important;
+    text-shadow: none !important;
+}
+.paymentHistory .ant-card.ant-card-bordered {
+    background: @white-color !important;
+    border: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.02);
+    margin-bottom: 15px;
+    border-radius: 10px;
+}
+.paymentHistory .ant-card.ant-card-bordered .ant-card-body {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.paymentAmountDate h3.cutMoney {
+    color: @black-color;
+}

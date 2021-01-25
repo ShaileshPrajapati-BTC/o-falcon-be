@@ -1,0 +1,11 @@
+<svg id="email" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="11.976" height="9.122" viewBox="0 0 11.976 9.122">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="var(--es--svg--end)"/>
+      <stop offset="1" stop-color="var(--es--svg--start)"/>
+    </linearGradient>
+  </defs>
+  <g id="Group_20" data-name="Group 20">
+    <path id="Path_16" data-name="Path 16" d="M10.923,61H1.053A1.054,1.054,0,0,0,0,62.053V69.07a1.054,1.054,0,0,0,1.053,1.053h9.871a1.054,1.054,0,0,0,1.053-1.053V62.053A1.054,1.054,0,0,0,10.923,61Zm-.145.7L6.01,66.469,1.2,61.7ZM.7,68.924v-6.73l3.379,3.35Zm.5.5,3.381-3.381,1.185,1.175a.351.351,0,0,0,.5,0l1.155-1.155,3.363,3.363Zm10.076-.5L7.911,65.561,11.274,62.2Z" transform="translate(0 -61)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>

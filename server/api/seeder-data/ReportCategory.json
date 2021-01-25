@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Damage Vehicle",
+    "code": "DAMAGE_VEHICLE",
+    "parentId": null,
+    "children": []
+  },
+  {
+    "name": "Illegal Parking",
+    "code": "ILLEGAL_PARKING",
+    "parentId": null,
+    "children": []
+  },
+  {
+    "name": "Lock Issue",
+    "code": "LOCK_ISSUE",
+    "parentId": null,
+    "children": []
+  },
+  {
+    "name": "Other Issue",
+    "code": "OTHER_ISSUE",
+    "parentId": null,
+    "children": []
+  }
+]

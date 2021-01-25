@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24.541" height="24.545" viewBox="0 0 24.541 24.545">
+  <g id="Analytics" transform="translate(-65.5 -726)">
+    <path id="Path_43" data-name="Path 43" d="M3.117,394.244H.487a.439.439,0,0,0-.438.438v5.259H3.555v-5.259A.439.439,0,0,0,3.117,394.244Z" transform="translate(65.451 350.604)" fill="var(--es--svg--fill--secondary)"/>
+    <path id="Path_44" data-name="Path 44" d="M149.4,266.244h-2.629a.439.439,0,0,0-.438.438v11.394h3.506V266.682A.439.439,0,0,0,149.4,266.244Z" transform="translate(-73.823 472.469)" fill="var(--es--svg--fill--secondary)"/>
+    <path id="Path_45" data-name="Path 45" d="M295.689,321.1h-2.629a.439.439,0,0,0-.438.438V330.3h3.506V321.54A.439.439,0,0,0,295.689,321.1Z" transform="translate(-213.098 420.241)" fill="var(--es--svg--fill--secondary)"/>
+    <path id="Path_46" data-name="Path 46" d="M441.974,247.959h-2.629a.439.439,0,0,0-.438.438v12.27h3.506V248.4A.439.439,0,0,0,441.974,247.959Z" transform="translate(-352.371 489.878)" fill="var(--es--svg--fill--secondary)"/>
+    <path id="Path_47" data-name="Path 47" d="M21.689,4.9a1.751,1.751,0,1,0,1.2-3.022,1.73,1.73,0,0,0-1.664,2.276l-4.143,2.59a1.734,1.734,0,0,0-2.242-.136L10.463,3.48a1.752,1.752,0,1,0-3.019.289L2.613,9.506a1.751,1.751,0,1,0,.672.563L8.116,4.332a1.715,1.715,0,0,0,1.793-.171L14.289,7.29a1.757,1.757,0,1,0,3.257.2Z" transform="translate(65.395 725.002)" fill="var(--es--svg--fill--secondary)"/>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+[
+    {
+        "level": 1,
+        "taskType": 1,
+        "title": "Move",
+        "timeLimitValue": 10,
+        "timeLimitType": 1,
+        "incentiveRange": [
+            20,
+            50
+        ],
+        "isSnoozer": false,
+        "nest": false,
+        "taskCompletionReq": false
+    },
+    {
+        "level": 1,
+        "taskType": 2,
+        "title": "Damage Move",
+        "timeLimitValue": 10,
+        "timeLimitType": 1,
+        "incentiveRange": [
+            20,
+            60
+        ],
+        "isSnoozer": false,
+        "nest": false,
+        "taskCompletionReq": false
+    },
+    {
+        "level": 2,
+        "taskType": 3,
+        "title": "Charge",
+        "timeLimitValue": 10,
+        "timeLimitType": 1,
+        "incentiveRange": [
+            20,
+            30
+        ],
+        "isSnoozer": false,
+        "nest": false,
+        "taskCompletionReq": false
+    },
+    {
+        "level": 2,
+        "taskType": 4,
+        "title": "Damage Charge",
+        "timeLimitValue": 10,
+        "timeLimitType": 1,
+        "incentiveRange": [
+            20,
+            30
+        ],
+        "isSnoozer": false,
+        "nest": false,
+        "taskCompletionReq": false
+    }
+]

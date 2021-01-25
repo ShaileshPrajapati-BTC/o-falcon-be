@@ -1,0 +1,92 @@
+[
+  {
+    "type": 1,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "CS",
+    "postfix": "ES",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 2,
+    "startFrom": 1,
+    "digitLength": 4,
+    "prefix": "",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 3,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "RCD",
+    "postfix": "RCD",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 4,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "RQ",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 11,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "FRN",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 5,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "REQ",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 12,
+    "startFrom": 1,
+    "digitLength": 6,
+    "prefix": "DLR",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 6,
+    "startFrom": 1,
+    "digitLength": 4,
+    "prefix": "",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 7,
+    "startFrom": 1,
+    "digitLength": 4,
+    "prefix": "",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  },
+  {
+    "type": 8,
+    "startFrom": 1,
+    "digitLength": 4,
+    "prefix": "",
+    "postfix": "",
+    "isActive": true,
+    "totalEntry": 0
+  }
+]

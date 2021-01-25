@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24.545" height="24.545" viewBox="0 0 24.545 24.545">
+  <g id="Contact" transform="translate(-65.5 -898)">
+    <path id="Path_60" data-name="Path 60" d="M22.461,12.4l-1.083-1.083L19,13.692v-1.61L17.023,10.5V0H1.979V10.5L0,12.083V24.545H19v-.181A7.11,7.11,0,0,0,22.461,12.4Zm-1.083.036.523.523c.035.035.065.074.1.109l-2.206,2.207-.628-.628ZM19,15.6l1.536,1.536a.4.4,0,0,1,0,.56L19,19.235Zm-.792-.792v5.215l-.512.512a.4.4,0,0,1-.56,0l-2.491-2.491-.4.405-1.809-1.337,5.777-4.078v1.447l-.164.164Zm-2.935,4.983L13.07,22c-.036-.034-.074-.064-.11-.1l-.523-.523,2.211-2.211Zm1.747-8.282.925.74-.925.653ZM2.771,13.46V.792h13.46V13.46h.006l-4.475,3.159L9.5,14.948,7.24,16.619,2.765,13.46Zm-.792-1.947v1.393l-.925-.653ZM.792,13.037l5.777,4.078L.792,21.385Zm0,10.716V22.37L9.5,15.932l4.176,3.086-2.36,2.36L12.4,22.461a7.132,7.132,0,0,0,1.77,1.292Zm17.96-.141-.208.037-.013,0c-.187.033-.366.057-.541.074s-.37.028-.558.028a6.268,6.268,0,0,1-3.752-1.242l2.157-2.157.744.744a1.189,1.189,0,0,0,1.679,0L21.1,18.259a1.189,1.189,0,0,0,0-1.679l-.744-.744,2.157-2.157a6.269,6.269,0,0,1,1.242,3.752A6.332,6.332,0,0,1,18.752,23.613Z" transform="translate(65.5 898)" fill="var(--es--svg--fill--secondary)"/>
+    <path id="Path_61" data-name="Path 61" d="M83.877,32H72v7.126H83.877Zm-.792,6.334H72.792V32.792H83.085Z" transform="translate(-2.937 867.584)" fill="var(--es--svg--fill--secondary)"/>
+    <rect id="Rectangle_9" data-name="Rectangle 9" width="11.877" height="0.792" transform="translate(69.063 907.501)" fill="var(--es--svg--fill--secondary)"/>
+    <rect id="Rectangle_10" data-name="Rectangle 10" width="11.877" height="0.792" transform="translate(69.063 909.085)" fill="var(--es--svg--fill--secondary)"/>
+    <rect id="Rectangle_11" data-name="Rectangle 11" width="0.792" height="0.792" transform="translate(80.148 910.669)" fill="var(--es--svg--fill--secondary)"/>
+    <rect id="Rectangle_12" data-name="Rectangle 12" width="0.792" height="0.792" transform="translate(78.565 910.669)" fill="var(--es--svg--fill--secondary)"/>
+    <rect id="Rectangle_13" data-name="Rectangle 13" width="8.71" height="0.792" transform="translate(69.063 910.669)" fill="var(--es--svg--fill--secondary)"/>
+  </g>
+</svg>
