@@ -6,8 +6,12 @@ module.exports = {
         try {
             console.log('-------------------Callback url params-------------');
             console.log(params);
-            await NoQoodyLog.create(params);
             let noqoodyReferenceId = params.reference;
+            if (sails.config.NOQOODY_TRANSACTION_VERIFYING.indexOf(noqoodyReferenceId) > -1) {
+                return res.ok({}, sails.config.message.TRANSACTION_VERIFYING);
+            }
+            sails.config.NOQOODY_TRANSACTION_VERIFYING.push(noqoodyReferenceId);
+            await NoQoodyLog.create(params);
             let isAddedToWallet = false;
             let error;
             try {
@@ -16,6 +20,7 @@ module.exports = {
                 console.log(err);
                 error = err;
             }
+            sails.config.NOQOODY_TRANSACTION_VERIFYING = sails.config.NOQOODY_TRANSACTION_VERIFYING.filter(function (e) { return e !== noqoodyReferenceId });
             console.log('isAddedToWallet------------------', isAddedToWallet);
             if (isAddedToWallet) {
                 return res.ok(isAddedToWallet, sails.config.message.WALLET_CREDIT_REQUEST_CHARGE_SUCCESS);

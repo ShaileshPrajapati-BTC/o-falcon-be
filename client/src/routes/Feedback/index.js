@@ -1,11 +1,11 @@
 import { Input, Row, Table, Affix } from 'antd';
 import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 import ESPagination from '../../components/ESPagination';
 import UtilService from '../../services/util';
 import axios from 'util/Api';
 import { connect } from 'react-redux';
-import { FRANCHISEE_LABEL, DEALER_LABEL, GUEST_USER } from '../../constants/Setup';
-import FilterDropdown from '../../components/FilterDropdown';
+import { GUEST_USER, RIDER_ROUTE } from '../../constants/Setup';
 import { USER_TYPES } from '../../constants/Common';
 import IntlMessages from '../../util/IntlMessages';
 const _ = require('lodash');
@@ -35,7 +35,6 @@ class Feedback extends Component {
             {
                 title: <IntlMessages id="app.srNo" />,
                 key: 'index',
-                width: '7%',
                 render: (text, record, index) => {
                     return index + 1;
                 }
@@ -44,11 +43,24 @@ class Feedback extends Component {
                 title: <IntlMessages id="app.name" />,
                 dataIndex: 'addedBy.name',
                 render: (text, record, index) =>
-                    record.addedBy
-                        ? record.addedBy.name.trim()
-                            ? record.addedBy.name
-                            : GUEST_USER
-                        : GUEST_USER
+                    record.addedBy && record.addedBy.name.trim() ? 
+                    <Link to={{pathname: `/e-scooter/${RIDER_ROUTE}/view/${record.addedBy.id}`}}> 
+                       {record.addedBy.name.trim()}
+                    </Link> : GUEST_USER               
+            },
+            {
+                title: <IntlMessages id="app.mobile" />,
+                dataIndex: 'addedBy.mobiles',
+                render: (text) =>
+                { return text &&  _.size(text) > 0 &&
+                    UtilService.getPrimaryValue(text,'mobile')}
+            },
+            {
+                title: <IntlMessages id="app.email" />,
+                dataIndex: 'addedBy.emails',
+                render: (text) =>
+                {return text &&  _.size(text) > 0 &&
+                    UtilService.getPrimaryValue(text,'email')}
             },
             {
                 title: <IntlMessages id="app.feedback.feeback" />,
@@ -103,7 +115,7 @@ class Feedback extends Component {
                 this.state.filter
             );
             this.setState({
-                total: response.data.list.length,
+                total: response.data.count,
                 loading: false,
                 data: response.data.list,
                 paginate: true

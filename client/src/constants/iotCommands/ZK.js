@@ -4,8 +4,18 @@ export const ZK_SCOOTER = [
     { label: 'Alarm On', command: 'alarmOn', icon: 'AlarmOn', isPopUp: false, types: [1, 2] },
     { label: 'Alarm Off', command: 'alarmOff', icon: 'AlarmOff', isPopUp: false, types: [1, 2] },
     { label: 'Reconnect', command: 'track', icon: 'Track', isPopUp: false, types: [1] },
+    { label: 'Battery Lock Enable', command: 'batteryLockEnable', icon: 'BatLock', isPopUp: false, types: [1] },
+    { label: 'Battery Lock Disable', command: 'batteryLockDisable', icon: 'BatUnlock', isPopUp: false, types: [1] },
+    { label: 'Battery Lock', command: 'batteryLock', icon: 'BatLock', isPopUp: false, types: [1] },
+    { label: 'Battery Unlock', command: 'batteryUnlock', icon: 'BatUnlock', isPopUp: false, types: [1] },
+    { label: 'Battery Lock 2', command: 'batteryLock2', icon: 'BatLock', isPopUp: false, types: [1] },
+    { label: 'Battery Unlock 2', command: 'batteryUnlock2', icon: 'BatUnlock', isPopUp: false, types: [1] },
+    { label: 'Pile Lock', command: 'pileLock', icon: 'BatLock', isPopUp: false, types: [1] },
+    { label: 'Pile Unlock', command: 'pileUnlock', icon: 'BatUnlock', isPopUp: false, types: [1] },
     { label: 'Get Location', command: 'location', icon: 'Locations', isPopUp: false, types: [1, 2] },
     { label: 'Max Speed', command: 'setMaxSpeed', icon: 'SetMaxSpeed', isPopUp: true, types: [1], key: 'maxSpeedLimit' },
     { label: 'Ping Interval', command: 'setPingInterval', icon: 'SetPingInterval', isPopUp: true, types: [1], key: 'pingInterval' },
-    { label: 'Ride Ping Interval', command: 'setRidePingInterval', icon: 'SetRidePingInterval', isPopUp: true, types: [1], key: 'ridePingInterval' }
+    { label: 'Ride Ping Interval', command: 'setRidePingInterval', icon: 'SetRidePingInterval', isPopUp: true, types: [1], key: 'ridePingInterval' },
+    { label: 'Throttle On', command: 'throttleOn', icon: 'Idleledon', isPopUp: false, types: [1] },
+    { label: 'Throttle Off', command: 'throttleOff', icon: 'Idleledoff', isPopUp: false, types: [1] }
 ];

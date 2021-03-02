@@ -1,6 +1,6 @@
 module.exports = {
 
     tableName: 'RatingSummary',
-    schema: true,
+    schema: false,
     attributes: {}
 };

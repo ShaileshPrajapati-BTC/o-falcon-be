@@ -35,7 +35,7 @@ export const MENU_LIST_MODULES = [
         module: PAGE_PERMISSION.RIDERS,
         name: RIDER_LABEL_STRING,
         keys: ['name', 'emails'], //email
-        permissions: { list: true, view: true, insert: true, update: true, delete: false }
+        permissions: { list: true, view: true, insert: true, update: true, delete: true }
     },
     {
         module: PAGE_PERMISSION.FRANCHISEE,

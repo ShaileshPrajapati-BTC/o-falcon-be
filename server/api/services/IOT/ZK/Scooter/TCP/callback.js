@@ -39,7 +39,7 @@ module.exports = {
         data.protocolVersion = reqData[1];
         data.imei = imei;
         data.countNumber = countNumber;
-        data.deviceName = reqData[3];
+        // data.deviceName = reqData[3];
         data.vin = reqData[4];
         data.qrCode = reqData[5];
         // 6,7 Reserved
@@ -163,7 +163,7 @@ module.exports = {
         });
         const data = {};
         data.imei = imei;
-        data.deviceName = reqData[3];
+        // data.deviceName = reqData[3];
         data.vin = reqData[4];
         data.powerSupply = reqData[9];
         data.mainPowerVoltage = reqData[10];

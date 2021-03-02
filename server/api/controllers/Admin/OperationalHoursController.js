@@ -62,7 +62,7 @@ module.exports = {
                     if(params.isOn && params.day == day ){
                       // start operation
                       // check if time is not closed then active scooter
-                      let endDateTime = UtilService.addTimeForCurrentDate(params.endTime, moment().toISOString(), timezone);
+                      let endDateTime = UtilService.addTimeForCurrentDate(params.endTime, moment().tz(timezone).toISOString(), timezone);
                       endDateTime = moment_tz.tz(endDateTime, timezone).utc().toISOString();
                       console.log('endDateTime',endDateTime);
                       if(moment().isBefore(endDateTime)){

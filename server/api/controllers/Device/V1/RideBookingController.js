@@ -97,8 +97,8 @@ module.exports = {
             const bookingPassFeature = sails.config.IS_BOOKING_PASS_FEATURE_ACTIVE;
 
             let currentBookPlanInvoice;
+            let vehicle = await Vehicle.findOne({ id: params.vehicleId });
             if (bookingPassFeature) {
-                let vehicle = await Vehicle.findOne({ id: params.vehicleId })
                 currentBookPlanInvoice = await BookingPassService.getUserCurrentPass(loggedInUser.id, vehicle)
             } else {
                 currentBookPlanInvoice = await BookPlanService.getUserPlanInvoice(
@@ -125,7 +125,7 @@ module.exports = {
             console.log("85 isBookingPassRideFlow", isBookingPassRideFlow)
             // lease will also come in condition
             if (!isSubscriptionRideFlow) {
-                await RideBookingService.checkWalletMinAmountForRide(loggedInUser.walletAmount);
+                await RideBookingService.checkWalletMinAmountForRide(loggedInUser.walletAmount, vehicle);
             }
 
             await RideBookingService.validateReserveRide(loggedInUser.id);
@@ -136,9 +136,7 @@ module.exports = {
                 );
             }
             // check vehicle is available.
-            let vehicle = await RideBookingService.checkVehicleAvailabilityFromVehicleId(
-                params.vehicleId
-            );
+            await RideBookingService.checkVehicleAvailability(vehicle);
             // check vehical is in zone
 
             let currentTime = UtilService.getTimeFromNow();
@@ -678,7 +676,7 @@ module.exports = {
             }
 
             const loggedInUser = req.user;
-            let rideData = await RideBookingService.cancelRide(ride, loggedInUser.id, params.isAutoDeduct);
+            let rideData = await RideBookingService.cancelRide(ride, loggedInUser.id, sails.config.IS_AUTO_DEDUCT);
 
             const response = await RideBookingService.getRideResponse(rideData.id);
 

@@ -550,14 +550,12 @@ module.exports = {
     },
 
     addTimeForCurrentDate(endTime, date,timezone) {
-        let currentDate = moment().format('YYYY-MM-DD');
+        if(!timezone){
+            timezone = sails.config.DEFAULT_TIME_ZONE;
+        }
+        let currentDate = moment().tz(timezone).format('YYYY-MM-DD');
         if (date) {
-            if(timezone){
-                currentDate = moment(date).tz(timezone).format('YYYY-MM-DD');
-            }else{
-                currentDate = moment(date).format('YYYY-MM-DD');
-            }
-           
+            currentDate = moment(date).tz(timezone).format('YYYY-MM-DD');
         }
         currentDate = currentDate + ' ' + endTime;
         return currentDate;

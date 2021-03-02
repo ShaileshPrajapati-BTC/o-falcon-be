@@ -160,7 +160,7 @@ module.exports = {
     },
 
     async sendCommand(imei, command, userId, commandName = '', currentTry = 1) {
-        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == data.imei)) {
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
             console.log('----------------- Publish To scooter Log Start-----------------');
             console.log(`in sendCommand ${imei}, command: ${command},userId  ${userId} currentTry = ${currentTry}`);
             console.log("Commmand", command);

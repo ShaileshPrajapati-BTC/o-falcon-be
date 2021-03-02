@@ -39,6 +39,24 @@ class PaymentView extends Component {
                     <Col span={12}>
                         {UtilService.displayPrice(fareSummary.reserved)}
                     </Col>
+                    <Col span={12}>
+                        <b><IntlMessages id="app.unlockFree" /> :</b>
+                    </Col>
+                    <Col span={12}>
+                        {UtilService.displayPrice(fareSummary.unlockFees)}
+                    </Col>
+                    <Col span={12}>
+                        <b><IntlMessages id="app.payment.cancelled" /> :</b>
+                    </Col>
+                    <Col span={12}>
+                        {UtilService.displayPrice(fareSummary.cancelled)}
+                    </Col>
+                    <Col span={12}>
+                        <b><IntlMessages id="app.faremanagement.parkingFine" /> :</b>
+                    </Col>
+                    <Col span={12}>
+                        {UtilService.displayPrice(fareSummary.parkingFine)}
+                    </Col>
                     <Divider type="horizontal" />
                     <Col span={12}>
                         <h5><b> <IntlMessages id="app.payment.subTotal" /> :</b></h5>

@@ -9,60 +9,90 @@ module.exports = {
     async setOperationalHours() {
         try {
             if (!sails.config.IS_OPERATIONAL_HOUR_ENABLE) {
-                return;
+                return true;
             }
-            let filter = { isActive: true }
+
+            let filter = { isActive: true };
             filter.dealerId = null;
             filter.franchiseeId = null;
 
-            let operationalHours = await OperationalHours.find(filter);
+            let operationalHours = await OperationalHours.find(filter).sort('day');
 
             sails.config.OPERATIONAL_HOURS_CLOSE_TIME = null;
             sails.config.OPERATIONAL_HOURS_START_TIME = null;
 
-            if (operationalHours && operationalHours.length) {
-                operationalHours = _.sortBy(operationalHours, 'day');
-                let timezone = sails.config.DEFAULT_TIME_ZONE;
+            if (!operationalHours || operationalHours.length <= 0) {
+                return true;
+            }
 
-                let day = moment_tz.tz(timezone).utc().day();
-                let currentDayEndTime = _.find(operationalHours, { day: parseInt(day), isOn: true });
+            let timezone = sails.config.DEFAULT_TIME_ZONE;
 
-                if (currentDayEndTime && currentDayEndTime.endTime) {
+            let day = moment_tz.tz(timezone).utc().day();
+            let currentDay = _.find(operationalHours, { day: parseInt(day), isOn: true });
+            let currentTime = moment().toISOString();
+            console.log('currentTime', currentTime);
+            console.log('currentDay.startTime', currentDay.startTime);
+            console.log('currentDay.endTime', currentDay.endTime);
 
-                    let currentDate = UtilService.addTimeForCurrentDate(currentDayEndTime.endTime);
-                    let formattedEndTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
+            if (currentDay && currentDay.startTime) {
+                let currentDate = UtilService.addTimeForCurrentDate(currentDay.startTime);
+                let formattedStartTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
 
-                    // console.log('formattedEndTime--',formattedEndTime);
-
-                    sails.config.OPERATIONAL_HOURS_CLOSE_TIME = formattedEndTime;
-                }
-
-                let nextDay = {};
-                let dayToAdd = 0;
-                let startDay = parseInt(day);
-                let count = 0;
-
-                while (count <= 7) {
-                    if (startDay == 6) {
-                        startDay = -1;
-                    }
-
-                    dayToAdd = dayToAdd + 1;
-                    startDay = startDay + 1;
-                    //console.log('daysToCheck--',startDay);
-                    let dayObj = _.find(operationalHours, { day: startDay, isOn: true });
-                    if (dayObj && !_.isEmpty(dayObj)) {
-                        nextDay = _.clone(dayObj);
-                        break;
-                    }
-                    count++;
-                }
-                if (nextDay && nextDay.startTime) {
-                    let currentDate = UtilService.addTimeForCurrentDate(nextDay.startTime, moment().add(dayToAdd, 'days').startOf('days').toISOString(),timezone);
-                    let formattedStartTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
-                    // console.log('formattedStartTime--',formattedStartTime);
+                let isDayRemainToStart = moment(formattedStartTime).isAfter(currentTime);
+                if (isDayRemainToStart) {
                     sails.config.OPERATIONAL_HOURS_START_TIME = formattedStartTime;
                 }
+            }
+            console.log('start time, after current day -> sails.config.OPERATIONAL_HOURS_START_TIME', sails.config.OPERATIONAL_HOURS_START_TIME);
+
+            if (currentDay && currentDay.endTime) {
+                let currentDate = UtilService.addTimeForCurrentDate(currentDay.endTime);
+                let formattedEndTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
+                let isDayRemainToEnd = moment(formattedEndTime).isAfter(currentTime);
+                if (isDayRemainToEnd) {
+                    sails.config.OPERATIONAL_HOURS_CLOSE_TIME = formattedEndTime;
+                }
+                // console.log('formattedEndTime--',formattedEndTime);
+            }
+
+            console.log('end time, after current day -> sails.config.OPERATIONAL_HOURS_CLOSE_TIME', sails.config.OPERATIONAL_HOURS_CLOSE_TIME);
+
+            // start day already set to current date
+            if (sails.config.OPERATIONAL_HOURS_START_TIME && sails.config.OPERATIONAL_HOURS_CLOSE_TIME) {
+                return true;
+            }
+            let nextDay = {};
+            let dayToAdd = 0;
+            let startDay = parseInt(day);
+            let count = 0;
+
+            while (count <= 7) {
+                if (startDay == 6) {
+                    startDay = -1;
+                }
+
+                dayToAdd = dayToAdd + 1;
+                startDay = startDay + 1;
+                let dayObj = _.find(operationalHours, { day: startDay, isOn: true });
+                if (dayObj && !_.isEmpty(dayObj)) {
+                    nextDay = _.clone(dayObj);
+                    break;
+                }
+                count++;
+            }
+            console.log('nextDay -> ', count, startDay, dayToAdd, nextDay);
+            if (!sails.config.OPERATIONAL_HOURS_START_TIME && nextDay && nextDay.startTime) {
+                let currentDate = UtilService.addTimeForCurrentDate(nextDay.startTime, moment().tz(timezone).add(dayToAdd, 'days').startOf('days').toISOString(), timezone);
+                let formattedStartTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
+                console.log('formattedStartTime--', formattedStartTime);
+                sails.config.OPERATIONAL_HOURS_START_TIME = formattedStartTime;
+            }
+
+            if (!sails.config.OPERATIONAL_HOURS_CLOSE_TIME && nextDay && nextDay.endTime) {
+                let currentDate = UtilService.addTimeForCurrentDate(nextDay.endTime, moment().tz(timezone).add(dayToAdd, 'days').startOf('days').toISOString(), timezone);
+                let formattedEndTime = moment_tz.tz(currentDate, timezone).utc().toISOString();
+                console.log('formattedEndTime--', formattedEndTime);
+                sails.config.OPERATIONAL_HOURS_CLOSE_TIME = formattedEndTime;
             }
 
 
@@ -107,7 +137,7 @@ module.exports = {
                 let getOffType = await this.getOffTypeFn(operationalHours);
 
                 let nextDay = moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).day();
-               
+
                 let nextDayEndTime = _.find(operationalHours, { day: parseInt(nextDay), isOn: true });
                 // make end date Time
                 let endDateTime;
@@ -115,17 +145,17 @@ module.exports = {
                     endDateTime = UtilService.addTimeForCurrentDate(nextDayEndTime.endTime, sails.config.OPERATIONAL_HOURS_START_TIME, timezone);
                     endDateTime = moment_tz.tz(endDateTime, timezone).utc().toISOString();
                 }
-                
+
                 if (getOffType === sails.config.OPERATIONAL_HOURS_OFF_TYPE.WEEK_OFFS) {
                     resData.message = `We have closed operations.Please come back on ${moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).format('dddd,MMMM D,YYYY')} between ${moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).format("hh:mm a")} and ${moment(endDateTime).tz(timezone).format("hh:mm a")}`;
                 } else if (getOffType === sails.config.OPERATIONAL_HOURS_OFF_TYPE.ROUTINE_OFF) {
-                    console.log('isOperationalHourClose',isOperationalHourClose);
+                    console.log('isOperationalHourClose', isOperationalHourClose);
                     if (isOperationalHourClose) {
                         resData.message = `We have closed operations.Please come back on ${moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).format('dddd,MMMM D,YYYY')} between ${moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).format("hh:mm a")} and ${moment(endDateTime).tz(timezone).format("hh:mm a")}`;
-                    }else{
+                    } else {
                         resData.message = `Operational hours are from ${moment(startDate).tz(timezone).format("hh:mm a")} to ${moment(endDate).tz(timezone).format("hh:mm a")}. Your ride will end automatically after ${moment(endDate).tz(timezone).format("hh:mm a")}.`;
                     }
-                    
+
                 } else {
                     resData.message = `We have closed operations. We will be back soon.`;
                 }
@@ -185,7 +215,6 @@ module.exports = {
             let operationalHours = await OperationalHours.find({ franchiseeId: null, dealerId: null, isActive: true });
             let timezone = sails.config.DEFAULT_TIME_ZONE;
 
-
             let getOffType = await this.getOffTypeFn(operationalHours);
             if (getOffType === sails.config.OPERATIONAL_HOURS_OFF_TYPE.NOT_AVAILABLE) {
                 return { isTimeClose: true };
@@ -211,15 +240,21 @@ module.exports = {
             let nextDay = moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).day();
             //console.log('OPERATIONAL_HOURS_START_TIME---',sails.config.OPERATIONAL_HOURS_START_TIME, nextDay, moment(sails.config.OPERATIONAL_HOURS_START_TIME).tz(timezone).day());
             let nextDayEndTime = _.find(operationalHours, { day: parseInt(nextDay), isOn: true });
-            //console.log('nextDayEndTime', nextDayEndTime);
+            // console.log('nextDayEndTime', nextDayEndTime);
 
-            let endDateTime = UtilService.addTimeForCurrentDate(nextDayEndTime.endTime, sails.config.OPERATIONAL_HOURS_START_TIME,timezone);
+            let endDateTime = UtilService.addTimeForCurrentDate(nextDayEndTime.endTime, sails.config.OPERATIONAL_HOURS_START_TIME, timezone);
             endDateTime = moment_tz.tz(endDateTime, timezone).utc().toISOString();
 
-            let previousDay = currentDay === 6 ? 0 : currentDay - 1;
-            let previousDayData = _.find(operationalHours, { day: parseInt(previousDay) });
+            let previousDay = currentDay - 1;
+            if (currentDay === 0) {
+                previousDay = 6;
+            }
+            // console.log('previousDay', previousDay, currentDay);
 
-            let previousDayEndDateTime = UtilService.addTimeForCurrentDate(previousDayData.endTime, moment().subtract(1, 'days').startOf('days').toISOString(),timezone);
+            let previousDayData = _.find(operationalHours, { day: parseInt(previousDay) });
+            // console.log('previousDayData', previousDayData);
+
+            let previousDayEndDateTime = UtilService.addTimeForCurrentDate(previousDayData.endTime, moment().tz(timezone).subtract(1, 'days').startOf('days').toISOString(), timezone);
             previousDayEndDateTime = moment_tz.tz(previousDayEndDateTime, timezone).utc().toISOString();
 
             if (sails.config.IS_OPERATIONAL_HOUR_ENABLE) {

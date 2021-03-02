@@ -2142,21 +2142,37 @@ module.exports = {
             status: 200
         },
 
-        OPERATIONAL_HOURS_CLOSED :{
+        OPERATIONAL_HOURS_CLOSED: {
             code: 'UNPROCESSABLE_ENTITY',
             message: 'We have closed operations.',
-            status: 200 
+            status: 200
         },
 
-        BOOKING_PASS_OPERATIONAL_HOURS_CLOSE :{
+        BOOKING_PASS_OPERATIONAL_HOURS_CLOSE: {
             code: 'UNPROCESSABLE_ENTITY',
             message: 'Please buy booking pass in operational hours.',
-            status: 200   
+            status: 200
         },
         REFERENCE_ID_NOT_FOUND: {
             code: 'E_BAD_REQUEST',
             message: `Reference Id required`,
             status: 401
+        },
+
+        FOUND_DUPLICATE: {
+            code: 'FOUND_DUPLICATE',
+            message: 'Found duplicate data.',
+            status: 200
+        },
+        NOT_FOUND_DUPLICATE: {
+            code: 'NOT_FOUND_DUPLICATE',
+            message: 'Not Found duplicate data.',
+            status: 200
+        },
+        TRANSACTION_VERIFYING: {
+            code: 'OK',
+            message: 'Verifying transaction.',
+            status: 200
         },
     }
 };

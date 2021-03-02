@@ -37,6 +37,7 @@ module.exports = {
             delete params.updateFilter;
             delete params.deleteFilter;
             delete params.viewFilter;
+            delete params.addedBy;
 
             let record = await TaskFormSetting.findOne(params);
             if (!record) {

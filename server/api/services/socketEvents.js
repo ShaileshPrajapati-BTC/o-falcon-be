@@ -313,7 +313,7 @@ module.exports = {
         }
     },
 
-    async getAdminSockets() {
+    async getAdminSockets(from) {
         // let adminUsers = await UserService.getAllAdmin();
         // let socketData = [];
         // _.each(adminUsers, (user) => {
@@ -328,6 +328,7 @@ module.exports = {
         //         }
         //     })
         // });
+        // console.log(`getAdminSockets called from ${from}, ${sails.config.GET_ADMIN_SOCKETS_INVOKED++}, ADMIN_USER_SOCKET_ARRAY length = `, sails.config.ADMIN_USER_SOCKET_ARRAY.length);
 
         return sails.config.ADMIN_USER_SOCKET_ARRAY;
     },
@@ -398,7 +399,7 @@ module.exports = {
     },
 
     async notifyAdmin(data) {
-        let socketData = await this.getAdminSockets();
+        let socketData = await this.getAdminSockets('notifyAdmin');
         if (!socketData || !socketData.length) {
             return true;
         }
@@ -448,7 +449,7 @@ module.exports = {
     },
 
     async sendNotificationCountUpdate(data) {
-        let socketData = await this.getAdminSockets();
+        let socketData = await this.getAdminSockets('sendNotificationCountUpdate');
         if (!socketData || !socketData.length) {
             return true;
         }

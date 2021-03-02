@@ -20,7 +20,7 @@ import {
     FILTER_BY_DISPUTE_TYPES,
     FRANCHISEE_VISIBLE,
     CLIENT_VISIBLE,
-    FILTER_BY_QUESTION_TYPES
+    FILTER_BY_QUESTION_TYPES, GUEST_USER_STRING
 } from '../../constants/Common';
 import ESPagination from '../../components/ESPagination';
 // import { getFranchisee } from '../../appRedux/actions/franchisee';
@@ -627,7 +627,7 @@ class RideDispute extends Component {
                                                                     ? item.userId.name
                                                                         .charAt(0)
                                                                         .toUpperCase()
-                                                                    : GUEST_USER
+                                                                    : GUEST_USER_STRING
                                                                         .charAt(0)
                                                                         .toUpperCase()
                                                             }
