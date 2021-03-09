@@ -18,7 +18,7 @@ module.exports = {
             PENDING: 'Your referral benefit is pending.',
             AVAILABLE: 'Your referral benefit is available for use.',
             USED: 'You used your referral benefit.',
-            CREDIT_WALLET_DONE: 'SuccessFully Added to the wallet.',
+            CREDIT_WALLET_DONE: 'Successfully added to the wallet.',
             ADD_REFERRAL_BONUS_WALLET: "Add referral bonus to wallet",
             ADD_REFERRAL_BONUS: 'Add user bonus to you'
         }
