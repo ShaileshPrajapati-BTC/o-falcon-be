@@ -257,9 +257,34 @@ module.exports = {
                 return true;
             }
         }
-        if (isByAdmin && (!response.TransactionStatus || response.TransactionStatus == null)) {
+        // For Payment Timeout 
+        // if (response.TransactionStatus && response.TransactionStatus == "Failed" && response.Reference) {
+        //     let updatedTransaction = await TransactionLog.update({
+        //         id: transaction.id
+        //         })
+        //         .set({
+        //             status: sails.config.STRIPE.STATUS.failed,
+        //             remark: sails.config.message.PAYTM_TRANSACTION_TIMEOUT.message,
+        //             statusTrack: transaction.statusTrack
+        //         })
+        //         .fetch()
+        //     throw sails.config.message.PAYTM_TRANSACTION_TIMEOUT;
+        // }
+        // For cancel or app close use case
+        if (!response.TransactionStatus || response.TransactionStatus == null) {
+            
+            let updatedTransaction = await TransactionLog.update({
+                id: transaction.id
+                })
+                .set({
+                    status: sails.config.STRIPE.STATUS.failed,
+                    remark: sails.config.message.PAYTM_TRANSACTION_PENDING.message,
+                    statusTrack: transaction.statusTrack
+                })
+                .fetch()
             throw sails.config.message.PAYTM_TRANSACTION_PENDING;
         }
+
         transaction.statusTrack.push({
             status: sails.config.STRIPE.STATUS.failed,
             remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_FAILED,

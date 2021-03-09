@@ -340,7 +340,7 @@ module.exports = {
     },
     async expirePaymentTransaction() {
         let currentTime = moment().toISOString();
-        if (sails.config.DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.NOQOODY) {
+        if (sails.config.DEFAULT_PAYMENT_METHOD.includes(sails.config.PAYMENT_GATEWAYS.NOQOODY)) {
             let transactionsToExpire = await TransactionLog.find({
                 status: sails.config.STRIPE.STATUS.pending,
                 // expiryDate: { '!=': '', '<=': currentTime }

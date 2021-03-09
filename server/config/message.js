@@ -1537,7 +1537,12 @@ module.exports = {
         },
         PAYTM_TRANSACTION_PENDING: {
             code: 'OK',
-            message: 'Transaction pending.',
+            message: 'Transaction not found, due to insufficient information.',
+            status: 200
+        },
+        PAYTM_TRANSACTION_TIMEOUT: {
+            code: 'OK',
+            message: 'Transaction timeout.',
             status: 200
         },
         USER_LOGIN_FAILED: {
