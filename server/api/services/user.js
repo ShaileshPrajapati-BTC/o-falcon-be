@@ -1062,7 +1062,7 @@ module.exports = {
             let userId = options.userId;
             if (!userId) {
                 console.log('options', options);
-                return;
+                return true;
             }
 
             let isAdminUser = options.isAdminUser;

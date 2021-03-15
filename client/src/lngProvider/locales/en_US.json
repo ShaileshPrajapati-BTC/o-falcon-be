@@ -184,7 +184,7 @@
   "app.user.approved": "Approved",
   "app.user.rejected": "Rejected",
   "app.user.drivingLicence": "Driving Licence",
-  "app.user.drivingLicenceNumber": "Driving Licence Number",
+  "app.user.drivingLicenceNumber": "Id Number",
   "app.user.ageValidationMsg": "Your age must be between 18-99.!",
   "app.user.countryCodePrefixMsg": "Please enter country code with + prefix",
   "app.user.updateStaff": "Update Staff",
@@ -379,6 +379,7 @@
   "app.rides.rideCancellationTime": "Ride Cancellation Time",
   "app.rides.rideReservedTime": "Ride Reserved Time",
   "app.rides.rideReservedEndTime": "Ride Reserved End Time",
+  "app.rides.unlockTime": "Ride Unlock Time",
   "app.rides.fetchPayment": "Fetch Payment",
   "app.rides.paid": "Paid",
   "app.rides.totalCharges": "Total Charges",
@@ -853,5 +854,8 @@
   "app.referralCode.activateonUpdate": "Activate on Update",
   "app.referralCodeSetting": "Referral Code Setting",
   "app.referralCode.invitedUsers": "Invited Users",
-  "app.operationalHours": "Operational Hours"
+  "app.operationalHours": "Operational Hours",
+  "app.deleteAccount":"Delete Account",
+  "app.user.changePictureLabel":"Upload Document",
+  "app.user.updateDocumentLabel":"Update Document"
 }

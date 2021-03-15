@@ -1,4 +1,3 @@
-
 module.exports = {
     tableName: 'ProjectConfig',
     schema: true,
@@ -121,7 +120,7 @@ module.exports = {
         minFareForNewZone: { type: 'number' },
         isDabeebStaging: { type: 'boolean' },
         currentMigrationVersion: { type: 'number' },
-        outsideZoneCommandInterval: { type: 'number' },//in seconds
+        outsideZoneCommandInterval: { type: 'number' }, //in seconds
         outSideZoneAlarmDuration: { type: 'number' }, // in seconds
         outSideZoneSpeedLimit: { type: 'number' }, // in km
         perXMinuteFareModelActive: { type: 'boolean' },
@@ -187,7 +186,14 @@ module.exports = {
         },
         isUseFareDataApi: { type: 'boolean' },
         isRideEndAfterInsufficientWalletBalance: { type: 'boolean' },
-        noqoodyDefaultEmail : {type: 'string'},
-        noqoodyDefaultMobile :{type: 'string'},
+        noqoodyDefaultEmail: { type: 'string' },
+        noqoodyDefaultMobile: { type: 'string' },
+        isThrottleOffForNoRideZone: { type: 'boolean' },
+        isCheckMinWalletBalanceAccordingZone: { type: 'boolean' },
+        smsUsernameKey: { type: 'string' },
+        smsPasswordKey: { type: 'string' },
+        smsNoKey: { type: 'string' },
+        smsMsgKey: { type: 'string' },
+        smsMsgHeaderKey: { type: 'string' }
     }
 };

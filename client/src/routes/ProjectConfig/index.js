@@ -182,7 +182,7 @@ class ProjectSetting extends Component {
                 return parseInt(x)
             });
             obj.operationHoursSocketEventInterval = operationHoursSocketEventInterval;
-            
+
             try {
                 let data = await axios[method](url, obj);
                 if (data.code === "OK") {
@@ -803,8 +803,8 @@ class ProjectSetting extends Component {
                                                         "operationHoursNotificationInterval"
                                                     )(
                                                         <Select mode="tags" style={{ width: '100%' }} tokenSeparators={[',']}>
-                                                        {[]}
-                                                       </Select>
+                                                            {[]}
+                                                        </Select>
                                                     )}
                                                 </Form.Item>
                                             </Col>
@@ -814,8 +814,8 @@ class ProjectSetting extends Component {
                                                         "operationHoursSocketEventInterval"
                                                     )(
                                                         <Select mode="tags" style={{ width: '100%' }} tokenSeparators={[',']}>
-                                                        {[]}
-                                                       </Select>
+                                                            {[]}
+                                                        </Select>
                                                     )}
                                                 </Form.Item>
                                             </Col>
@@ -1231,7 +1231,7 @@ class ProjectSetting extends Component {
                                                         )}
                                                     </Form.Item>
                                                 </Col>
-                                            
+
                                             </Row>
                                         </Card>
 
@@ -1657,6 +1657,18 @@ class ProjectSetting extends Component {
                                                 </Form.Item>
                                             </Col>
                                             <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="Is Throttle Off For No Ride Zone?">
+                                                    {getFieldDecorator(
+                                                        "isThrottleOffForNoRideZone"
+                                                    )(
+                                                        <Radio.Group onChange={this.onChange} value={this.state.value}>
+                                                            <Radio value={true}>Yes</Radio>
+                                                            <Radio value={false}>No</Radio>
+                                                        </Radio.Group>
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
                                                 <Form.Item label="is DeActive Vehicle For No Ride Zone">
                                                     {getFieldDecorator(
                                                         "isDeActiveVehicleForNoRideZone"
@@ -1716,6 +1728,92 @@ class ProjectSetting extends Component {
                                                             <Radio value={true}>Yes</Radio>
                                                             <Radio value={false}>No</Radio>
                                                         </Radio.Group>
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="Is Check Min Wallet Balance According Zone?">
+                                                    {getFieldDecorator(
+                                                        "isCheckMinWalletBalanceAccordingZone"
+                                                    )(
+                                                        <Radio.Group onChange={this.onChange} value={this.state.value}>
+                                                            <Radio value={true}>Yes</Radio>
+                                                            <Radio value={false}>No</Radio>
+                                                        </Radio.Group>
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col
+                                                span={24}
+                                                className="gx-text-right"
+                                            >
+                                                <span className="topbarCommonBtn">
+                                                    <Button
+                                                        style={{
+                                                            display:
+                                                                "inline-flex"
+                                                        }}
+                                                        type="primary"
+                                                        htmlType="submit"
+                                                        onClick={this.handleSubmit.bind(
+                                                            this
+                                                        )}
+                                                    >
+                                                        {isEdit
+                                                            ? "Update"
+                                                            : "Save"}
+                                                    </Button>
+                                                </span>
+                                            </Col>
+                                        </Row>
+                                    </TabPane>
+                                
+                                    <TabPane tab="SMS Setting" key="6">
+                                       <Row type="flex" justify="start">
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="SMS User Key">
+                                                    {getFieldDecorator(
+                                                        "smsUsernameKey"
+                                                    )(
+                                                        <Input placeholder="SMS User Key" />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="SMS Password Key">
+                                                    {getFieldDecorator(
+                                                        "smsPasswordKey"
+                                                    )(
+                                                        <Input placeholder="SMS Password Key" />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="SMS Mobile No key">
+                                                    {getFieldDecorator(
+                                                        "smsNoKey"
+                                                    )(
+                                                        <Input placeholder="SMS Mobile No key" />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="SMS Message Key">
+                                                    {getFieldDecorator(
+                                                        "smsMsgKey"
+                                                    )(
+                                                        <Input placeholder="SMS Message Key" />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                            <Col lg={8} md={12} sm={12} xs={24}>
+                                                <Form.Item label="Sms Massage Header Key">
+                                                    {getFieldDecorator(
+                                                        "smsMsgHeaderKey"
+                                                    )(
+                                                        <Input placeholder="Sms Massage Header Key" />
                                                     )}
                                                 </Form.Item>
                                             </Col>

@@ -35,7 +35,7 @@ module.exports = {
             await model.update({ id: params.id }, paramsToUpdate).fetch();
             //await model.update({id:{"!=":params.id}},  {isDefault:false})
             if(params.model === 'vehicle' && !params.status){
-                await RideBookingService.stopeRideOnDeActiveVehicle({vehicleIds : [params.id]});   
+                await RideBookingService.stopeRideOnDeActiveVehicle({vehicleIds : [params.id]});
             }
             return res.ok({}, sails.config.message.RECORDS_STATUS_UPDATE)
         } catch (e) {
@@ -43,7 +43,7 @@ module.exports = {
             return res.serverError(null, { message: sails.config.message.ERROR, data: err });
         }
     },
-    async  isDefalutBooleanStatusUpdate(req, res) {
+    async isDefalutBooleanStatusUpdate(req, res) {
         let params = req.allParams();
         if (!params || !params.id || !_.has(params, "status") || !params.fieldName || !params.model) {
             return res.badRequest(null, sails.config.message.BAD_REQUEST);
@@ -90,4 +90,22 @@ module.exports = {
             return res.serverError(null, error);
         }
     },
+
+    async checkDuplicationDynamically(req, res) {
+        const params = req.allParams();
+        if (!params || !params.groupId || !params.modelName) {
+            return res.badRequest(null, sails.config.message.BAD_REQUEST);
+        }
+        try {
+            let data = await CommonService.checkDuplicationDynamically(params);
+            if (data && data.length > 0) {
+                return res.ok(data, sails.config.message.FOUND_DUPLICATE)
+            } else {
+                return res.ok(data, sails.config.message.NOT_FOUND_DUPLICATE)
+            }
+        } catch (error) {
+            console.log(error);
+            return res.serverError(null, error);
+        }
+    }
 };

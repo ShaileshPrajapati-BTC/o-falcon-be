@@ -714,29 +714,32 @@ module.exports = {
         }
         let minusCount = 0;
         let newRecordList = [];
+        delete params.filter.lastLocated;
         if (params.filter.lastLocated) {
-            let lastLocated = {
-                '<=': UtilService.minutesToSubtractDate(params.filter.lastLocated.from),
-                '>=': UtilService.minutesToSubtractDate(params.filter.lastLocated.to)
-            };
-            let vehicleIds = [];
-            for (let vehicleData of recordsList) {
-                vehicleIds.push(vehicleData.id);
+            if (params.filter.lastLocated.to > 0) {
+                let lastLocated = {
+                    '<=': UtilService.minutesToSubtractDate(params.filter.lastLocated.from),
+                    '>=': UtilService.minutesToSubtractDate(params.filter.lastLocated.to)
+                };
+                let vehicleIds = [];
+                for (let vehicleData of recordsList) {
+                    vehicleIds.push(vehicleData.id);
+                }
+                let vehicle = await Vehicle.findOne({
+                    where: {
+                        id: vehicleIds,
+                        locationUpdatedAt: lastLocated,
+                        isDeleted: false,
+                    }
+                });
+                await Promise.all(_.map(recordsList, async (record, index) => {
+                    if (vehicle && vehicle.id === recordsList[index].referenceId) {
+                        newRecordList.push(record);
+                    } else if (!vehicle) {
+                        minusCount++;
+                    }
+                }));
             }
-            let vehicle = await Vehicle.findOne({
-                where: {
-                    id: vehicleIds,
-                    locationUpdatedAt: lastLocated,
-                    isDeleted: false,
-                }
-            });
-            await Promise.all(_.map(recordsList, async (record, index) => {
-                if (vehicle && vehicle.id === recordsList[index].referenceId) {
-                    newRecordList.push(record);
-                } else if (!vehicle) {
-                    minusCount++;
-                }
-            }));
         }
 
         let response = { list: recordsList };

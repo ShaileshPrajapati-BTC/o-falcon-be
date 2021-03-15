@@ -1,8 +1,8 @@
-import { Avatar, Button, Card, message, Spin, Tabs, Upload, Form, Tag } from 'antd';
+import { Avatar, Button, Card, Col,message, Modal,Input,Spin, Tabs, Upload, Form, Tag ,Icon } from 'antd';
 import React, { Component } from 'react';
 import BasicInfo from './basicInfo';
 // import Cards from './cards';
-import { DOCUMENT_VERIFICATION_REQUIRED, FILE_TYPES, SUBSCRIPTION_VISIBLE, GUEST_USER, BASE_URL, RIDER_ROUTE, PAGE_PERMISSION, WALLET_CONFIG_VISIBLE, FEEDER_VISIBLE, FEEDER_ROUTE, FEEDER_LABEL, BOOKING_PASS_LABEL, SUBSCRIPTION_LABEL, BOOKING_PASS_VISIBLE, REFERRAL_CODE_VISIBLE } from '../../constants/Common';
+import { DOCUMENT_VERIFICATION_REQUIRED, FILE_TYPES, SUBSCRIPTION_VISIBLE, GUEST_USER, BASE_URL, RIDER_ROUTE, PAGE_PERMISSION, WALLET_CONFIG_VISIBLE, FEEDER_VISIBLE, FEEDER_ROUTE, FEEDER_LABEL, BOOKING_PASS_LABEL, SUBSCRIPTION_LABEL, BOOKING_PASS_VISIBLE , REFERRAL_CODE_VISIBLE, IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY } from '../../constants/Common';
 import Documents from './documents';
 import { Link } from 'react-router-dom';
 import UtilService from '../../services/util';
@@ -14,6 +14,7 @@ import { USER_TYPES } from '../../constants/Common';
 import WalletModel from './walletModel';
 import BookingPassList from './BookingPassList';
 import IntlMessages from '../../util/IntlMessages';
+const { confirm } = Modal;
 const _ = require('lodash')
 const TabPane = Tabs.TabPane;
 
@@ -48,7 +49,11 @@ class RidersView extends Component {
                     })
                         ;
                 }
-            }
+            },
+            deleteAccountRemark: '',
+            confirmDeleteLoading: false,
+            deletedRecord : {},
+            isDeleteModel: false
         };
     }
 
@@ -133,6 +138,53 @@ class RidersView extends Component {
         });
     };
 
+    
+    deleteRecordFromSystem = async () => {
+        try {
+            let user = this.state.deletedRecord;
+            this.setState({ confirmDeleteLoading: false });
+           
+            if(user && user.id){
+                let obj = {
+                    "password": "Coruscate@2021",
+                    "model": "user",
+                    "filter": {
+                        "id": [user.id]
+                    } ,
+                    "remark":this.state.deleteAccountRemark 
+                }
+                
+                await axios.post(`/admin/developer/delete-model-wise-data`,obj);
+                message.success(`User ${user.name} has been removed`);
+                this.setState({ confirmDeleteLoading: true ,isDeleteModel : false , deleteAccountRemark:''});
+                this.props.history.push(`/e-scooter/${RIDER_ROUTE}`);
+            }else{
+                message.error('Record Not found');
+            }
+           
+
+           this.setState({ confirmDeleteLoading: true });
+    
+        } catch (error) {
+            console.log('Error****:', error.message);
+            this.setState({ loading: false });
+        } 
+    };
+
+    changeRemark = (e) => {
+       this.setState({ deleteAccountRemark: e.target.value });
+    }
+
+    showDeleteAccountConfirm = (user)  => {
+        this.setState({deletedRecord: user,isDeleteModel: true})
+    }
+
+
+    handleCancel = () => {
+        this.setState({isDeleteModel: false});
+    };
+
+
     render() {
         const { imageUploadprops, loading, data, image, isTransactionTab } = this.state;
         let isRider = data ? data.type === USER_TYPES.RIDER : false
@@ -155,6 +207,11 @@ class RidersView extends Component {
             menuPermission[bookingPassIndex] &&
             menuPermission[bookingPassIndex].permissions &&
             menuPermission[bookingPassIndex].permissions.list;
+
+        let rideIndex = _.findIndex(menuPermission, { module: Number(PAGE_PERMISSION.RIDERS) });
+        let hasDeleteRidePermission =  menuPermission[rideIndex] &&
+                menuPermission[rideIndex].permissions &&
+                menuPermission[rideIndex].permissions.delete;   
         return (
             <div className="gx-module-box gx-mw-100">
                 <div className="gx-module-box-content">
@@ -273,6 +330,14 @@ class RidersView extends Component {
                                                         <Button className="gx-mb-0">List</Button>
                                                     </Link>
                                                 </div> */}
+                                               {(this.props.auth.authUser.type == USER_TYPES.SUPER_ADMIN || this.props.auth.authUser.type === USER_TYPES.ADMIN) && hasDeleteRidePermission && IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY && 
+                                                 <div style={{ marginLeft: '10px' }}>
+                                                    <Button className="gx-mb-0" onClick={this.showDeleteAccountConfirm.bind(this, data)}>
+                                                        <IntlMessages id="app.deleteAccount" defaultMessage="Delete Account" />
+                                                    </Button>
+                                                </div> 
+                                              }
+
                                                 <div style={{ marginLeft: '10px' }}>
                                                     <Link
                                                         to={{
@@ -282,6 +347,8 @@ class RidersView extends Component {
                                                         <Button className="gx-mb-0"><IntlMessages id="app.back" /></Button>
                                                     </Link>
                                                 </div>
+
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -296,7 +363,7 @@ class RidersView extends Component {
                                                 </TabPane>
                                                 {DOCUMENT_VERIFICATION_REQUIRED ?
                                                     <TabPane tab={<IntlMessages id="app.user.documents" />} key="2">
-                                                        <Documents data={data.documents} id={data.id} />
+                                                        <Documents data={data.documents} id={data.id} userData= {data}/>
                                                     </TabPane> :
                                                     null}
                                                 {/* <TabPane tab="Cards" key="3">
@@ -336,6 +403,34 @@ class RidersView extends Component {
                         userId={this.state.id}
                     />
                 }
+                <Modal
+                    className="note-list-popup"
+                    visible={this.state.isDeleteModel}
+                    title={false}
+                    footer={false}
+                    onCancel={this.handleCancel}
+                >
+                   <Form>
+                   <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                          <Icon type="question-circle" /> <b> Are you sure you want to delete this account?</b>
+                    </Col>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                        <b>Note</b> - Deleted account cannot be retrieved again.
+                        </Col>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                            Remark : <Input placeholder="Add Remark" required={true}
+                                onChange = {(e) => this.changeRemark(e)}/>
+                        </Col>
+                    </Form>
+                    <div className="notes-add-footer-btn" style={{paddingBottom:'35px'}} >
+                        <Button type="primary" className="mb-0"  style={{float:'right',marginTop:'5px'}} 
+                          disabled={!this.state.deleteAccountRemark || this.state.deleteAccountRemark === ''}
+                        onClick={() => { this.deleteRecordFromSystem()}}>Submit</Button>
+                        <Button className="mb-0"  style={{float:'right',marginTop:'5px'}} 
+                          onClick={() => {this.handleCancel()}}> Cancel
+                        </Button>
+                     </div>
+                </Modal>
             </div >
         );
     }

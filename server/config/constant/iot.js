@@ -55,7 +55,7 @@ module.exports = {
             78: 'iButton',
             207: 'rfid',
             15: 'ecoScore',
-            113: 'batteryLevel',
+            113: 'batteryCapacityLevel',
             116: 'chargeStatus',
             238: 'mac', // UserId
             25: 'bleTemp1',
@@ -158,7 +158,7 @@ module.exports = {
             349: 'currentOperationMode',
             350: 'internalBatteryStatus',
             351: 'externalBatteryVoltage',
-            352: 'batteryPer',
+            352: 'batteryLevel',
             353: 'actualRemainingMileage',
             354: 'predictedRemainingMileage',
             355: 'speed',  // ScooterSpeed
@@ -267,6 +267,21 @@ module.exports = {
                 bootOpen: '',
                 bootClose: ''
             },
+            TELTONIKA_TST100_FIT_RIDER: {
+                lock: 'sclockctrl 1',
+                unlock: 'sclockctrl 0',
+                lightOn: 'scledctrl 1',
+                lightOff: 'scledctrl 0',
+                alarmOn: 'scbuzzerctrl 1 10',
+                alarmOff: 'scbuzzerctrl 0 10',
+                track: '',
+                getLocation: '',
+                setMaxSpeed: 'scsetspdlim',
+                setPingInterval: '',
+                setRidePingInterval: '',
+                bootOpen: '',
+                bootClose: ''
+            },
             TELTONIKA_TST100_1: {
                 lock: 'scenginectrl 0',
                 unlock: 'scenginectrl 1',
@@ -365,5 +380,7 @@ module.exports = {
         GET_FIRMWARE_INFO: 'GetFirmwareInfo',
         GET_MAC_ADDRESS: 'GetMacAddress',
         GET_SIM_DETAIL: 'GetSimDetail',
+        THROTTLE_ON: 'ThrottleOn',
+        THROTTLE_OFF: 'ThrottleOff',
     }
 };

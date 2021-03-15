@@ -48,20 +48,26 @@ module.exports = {
             console.log('***********************Teltonika Callback Start*************************');
             console.log(data);
         }
-        if (_.has(data, 'ignition')) {
-            data.lockStatus = !data.ignition;
-        }
-        if (_.has(data, 'digitalOutput1')) {
-            data.lockStatus = !data.digitalOutput1;
-        }
-        if (_.has(data, 'dout1')) {
-            if (data.dout1.toString() == '1') {
-                data.lockStatus = false;
-            } else {
-                data.lockStatus = true;
+        if (!_.has(data, 'lockStatus')) {
+            if (_.has(data, 'ignition')) {
+                data.lockStatus = !data.ignition;
+            }
+            if (_.has(data, 'digitalOutput1')) {
+                data.lockStatus = !data.digitalOutput1;
+            }
+            if (_.has(data, 'dout1')) {
+                if (data.dout1.toString() == '1') {
+                    data.lockStatus = false;
+                } else {
+                    data.lockStatus = true;
+                }
             }
         }
+        if (!_.has(data, 'batteryLevel') && _.has(data, 'batteryCapacityLevel')) {
+            data.batteryLevel = data.batteryCapacityLevel;
+        }
         if (_.has(data, 'lockStatus')) {
+            data.lockStatus = Boolean(data.lockStatus);
             await IotCallbackHandler.findAndUpdateRideAndVehicle(data);
         } else {
             await IotCallbackHandler.findAndUpdateVehicle(data);

@@ -19,6 +19,7 @@
         "less-vars-to-js": "^1.2.1",
         "lodash": "^4.17.14",
         "moment": "^2.22.2",
+        "moment-timezone": "^0.5.32",
         "nprogress": "^0.2.0",
         "prop-types": "^15.6.2",
         "qrcode.react": "^0.9.3",

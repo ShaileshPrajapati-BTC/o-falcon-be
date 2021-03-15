@@ -160,7 +160,7 @@ module.exports = {
         });
 
         res.isRequested = await new Promise((resolve, reject) => {
-            if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == data.imei)) {
+            if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
                 console.log("Command ==>  ", command)
                 console.log("imei ==>  ", imei)
             }

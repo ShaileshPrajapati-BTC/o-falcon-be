@@ -154,5 +154,10 @@ module.exports = {
     IS_USE_FARE_DATA_API: true,
     IS_RIDE_END_AFTER_INSUFFICIENT_WALLET_BALANCE: false,
     NOQOODY_DEFAULT_EMAIL: 'payment@falconride.io',
-    NOQOODY_DEFAULT_MOBILE: '+97455555555'
+    NOQOODY_DEFAULT_MOBILE: '+97455555555',
+    SMS_USERNAME_KEY: 'usercode',
+    SMS_PASSWORD_KEY: 'password',
+    SMS_NO_KEY: 'no',
+    SMS_MSG_KEY: 'msg',
+    SMS_MSGHEADER_KEY: 'msgheader'
 };

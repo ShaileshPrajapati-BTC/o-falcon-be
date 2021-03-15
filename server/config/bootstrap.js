@@ -11,6 +11,8 @@ module.exports.bootstrap = async function (done) {
     await CommonService.initializeApp();
     sails.config.RIDES_ARRAY = [];
     sails.config.ADMIN_USER_SOCKET_ARRAY = [];
+    sails.config.GET_ADMIN_SOCKETS_INVOKED = 0;
+    sails.config.NOQOODY_TRANSACTION_VERIFYING = [];
     // await ZimoServer.startServer();
     await commonTCPServer.startServer();
     // await commonMQTTServer.startServer();

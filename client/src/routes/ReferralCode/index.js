@@ -200,7 +200,7 @@ class ReferralCode extends Component {
                                                         }
                                                     ]
                                                 })(
-                                                    <InputNumber min={1} placeholder="Invited User Amount" disabled={!updatePermission} />
+                                                    <InputNumber min={0} placeholder="Invited User Amount" disabled={!updatePermission} />
                                                 )}
                                             </Form.Item>
                                         </Col>

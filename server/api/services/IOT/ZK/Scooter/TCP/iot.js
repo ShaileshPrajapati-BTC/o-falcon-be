@@ -1,6 +1,6 @@
 const UtilService = require('../../../../util');
 
-const scooterModel = 'ZK102';
+const scooterModel = 'Falcon2020';
 module.exports = {
 
     async lockUnlock(reqCommand, scooter, bookingNumber = 0) {
@@ -136,7 +136,7 @@ module.exports = {
 
     async setMaxSpeed(scooter, data) {
         const imei = scooter.imei;
-        const commandToSend = `AT+GTECC=${scooterModel},,${data.value},,,,,,,,123456$`;
+        const commandToSend = `AT+GTECC=${scooterModel},,${data.value},0,1,,,,,,0ABF$`;
         let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.SET_MAX_SPEED);
         if (!res.isRequested && !res.message) {
             res.message = `Can't set Max speed of scooter`;
@@ -144,10 +144,198 @@ module.exports = {
 
         return res;
     },
+    async batteryLock(scooter) {
+        let subCommand = '14';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 0;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLock');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryLock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async batteryUnlock(scooter) {
+        let subCommand = '13';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 0;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryUnlock');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryUnlock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async batteryLockDisable(scooter) {
+        const imei = scooter.imei;
+        const commandToSend = `AT+GTVAD=${scooterModel},0,1,0,0,0,0,10,0215$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLockDisable');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't Lock Battery`;
+        }
+
+        return res;
+    },
+    async batteryLockEnable(scooter) {
+        const imei = scooter.imei;
+        const commandToSend = `AT+GTVAD=${scooterModel},1,1,0,0,0,0,10,0215$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLockEnable');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't Unlock Battery`;
+        }
+
+        return res;
+    },
+
+    async batteryUnlock2(scooter) {
+        let subCommand = '1E';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 0;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryUnlock2');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryUnlock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async batteryLock2(scooter) {
+        let subCommand = '1F';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 0;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLock2');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryUnlock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async pileUnlock(scooter) {
+        let subCommand = '1E';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 1;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},0,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'pileUnlock');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryUnlock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async pileLock(scooter) {
+        let subCommand = '1F';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 1;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},0,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'pileLock');
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't batteryUnlock Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async throttleOn(scooter) {
+        let subCommand = '18';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 1;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.THROTTLE_ON);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't throttleOn Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
+
+    async throttleOff(scooter) {
+        let subCommand = '19';
+        const imei = scooter.imei;
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let isRideMode = 1;
+        let serialNumber = '0A0F';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,${isRideMode},0,,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.THROTTLE_OFF);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't throttleOn Scooter`;
+        }
+        if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+            console.log('res', res);
+        }
+
+        return res;
+    },
 
     async setPingInterval(scooter, data) {
         const imei = scooter.imei;
-        const commandToSend = `AT+GTQSS=${scooterModel},,,,,,,,,,,,${data.value},,,,123456$`
+        const commandToSend = `AT+GTQSS=${scooterModel},,,,,,,,,,,,${data.value},,,,0ABF$`
         let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.SET_PING_INTERVAL);
         if (!res.isRequested && !res.message) {
             res.message = `Can't set Ping Interval of scooter`;
@@ -158,10 +346,42 @@ module.exports = {
 
     async setRidePingInterval(scooter, data) {
         const imei = scooter.imei;
-        const commandToSend = `AT+GTFRI=${scooterModel},,,,${data.value},,,,,,123456$`;
+        const commandToSend = `AT+GTFRI=${scooterModel},,,,${data.value},,,,,,0ACF$`;
         let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.SET_RIDE_PING_INTERVAL);
         if (!res.isRequested && !res.message) {
             res.message = `Can't set Ride Ping Interval scooter`;
+        }
+
+        return res;
+    },
+
+    async setPositionPingInterval(scooter, data) {
+        const imei = scooter.imei;
+        let intervalTime = data.value;
+        if (intervalTime < 5) {
+            intervalTime = 5;
+        }
+        const commandToSend = `AT+GTFRI=${scooterModel},,,,${intervalTime},,,,,,0ADF$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.POSITION_PING_INTERVAL);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't set Ride Ping Interval scooter`;
+        }
+
+        return res;
+    },
+
+    async track(scooter) {
+        const imei = scooter.imei;
+        let subCommand = '1';
+        let currTimeInYear = UtilService.currTimeInFullYearForIot();
+        let expireTime = sails.config.IOT_REQUEST_TIME_OUT_LIMIT;
+        // let expireTimeInYear = UtilService.currTimeInFullYearForIot(expireTime);
+        let serialNumber = '0AAF';
+        let commandToSend = `AT+GTRTO=${scooterModel},${subCommand},,0,0,0,`;
+        commandToSend += `${currTimeInYear},${expireTime},,${serialNumber}$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.LOCATION);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't get current location of scooter`;
         }
 
         return res;

@@ -323,6 +323,10 @@ module.exports = {
         lockVoltage: { type: 'number' },
         odometer: { type: 'number' },
         remainingRange: { type: 'number' },
-        omniCode: { type: 'string' }
+        omniCode: { type: 'string' },
+        isVehicleInsideNoRideZone: {
+            type: "boolean",
+            defaultsTo: false
+        }
     }
 };

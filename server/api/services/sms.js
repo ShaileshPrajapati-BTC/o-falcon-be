@@ -70,41 +70,56 @@ module.exports = {
     async defaultSMSService(mobiles, obj) {
         if (!sails.config.SMS_LOGIN_ID || !sails.config.SMS_PASSWORD) {
             console.log('----------SMS Login ID/Pass Empty----------');
-
             return;
         }
-        console.log(mobiles, obj.message);
+        //console.log(mobiles, obj.message);
+        let smsData = {};
+
+        if (sails.config.SMS_LOGIN_ID) {
+            smsData = {
+                [sails.config.SMS_USERNAME_KEY]: sails.config.SMS_LOGIN_ID
+            }
+        }
+
+        if (sails.config.SMS_PASSWORD) {
+            Object.assign(smsData, {
+                [sails.config.SMS_PASSWORD_KEY]: sails.config.SMS_PASSWORD
+            });
+        }
+
+        if (mobiles) {
+            //console.log(mobiles);
+            mobiles = mobiles[0].replace("+", "00");
+            Object.assign(smsData, {
+                [sails.config.SMS_NO_KEY]: mobiles
+            });
+        }
+
+        if (obj.message) {
+            Object.assign(smsData, {
+                [sails.config.SMS_MSG_KEY]: obj.message
+            });
+        }
+
+        if (sails.config.SMS_UNICODE) {
+            Object.assign(smsData, {
+                [sails.config.SMS_MSGHEADER_KEY]: sails.config.SMS_UNICODE
+            });
+        }
+
         new Promise((resolve, reject) => {
             request.get({
-                url: sails.config.SMS_URL,
-                qs: {
-                    username: sails.config.SMS_LOGIN_ID,
-                    password: sails.config.SMS_PASSWORD,
-                    mobile: mobiles,
-                    unicode: sails.config.SMS_UNICODE,
-                    message: obj.message,
-                    sender: sails.config.SMS_SENDER_NAME
-                }
-            },
-                function (error, response, body) {
-                    // var trackObj = {
-                    //     type: sails.config.MAIL_ESN_SERVICE_SMS,
-                    //     mobile: mobiles,
-                    //     response: error ? {error: error} : {success: body},
-                    //     request: obj,
-                    //     payload: {'message': obj.smsText},
-                    // };
-                    // _.extend(trackObj, obj);
-                    //
-                    // MailService
-                    //     .emailSmsTrack(trackObj, function () {
-                    //
-                    //     });
-                    if (error) {
+                    url: sails.config.SMS_URL,
+                    qs: smsData
+                },
+                function(error, response, body) {
+                    if (response) {
+                        console.log(response);
+                        resolve(response);
+                    } else if (error) {
                         console.log('SMS err:', error);
                         reject(error);
-                    }
-                    else {
+                    } else {
                         console.log('SMS body:', body);
                         resolve(body);
                     }
@@ -153,14 +168,14 @@ module.exports = {
                     }
                 }
             };
-            pinpoint.sendMessages(params, function (err, data) {
+            pinpoint.sendMessages(params, function(err, data) {
                 // If something goes wrong, print an error message.
                 if (err) {
                     console.log('SMS err message: ', err.message);
                     // Otherwise, show the unique ID for the message.
                 } else {
-                    console.log("Message sent! "
-                        + data['MessageResponse']['Result'][mobile]['StatusMessage']);
+                    console.log("Message sent! " +
+                        data['MessageResponse']['Result'][mobile]['StatusMessage']);
                 }
             });
         }
@@ -179,22 +194,22 @@ module.exports = {
 
         new Promise((resolve, reject) => {
             request.get({
-                url: `${sails.config.OOREDOO_URL}/bms/soap/Messenger.asmx/HTTP_SendSms`,
-                qs: {
-                    customerID: sails.config.OOREDOO_CUSTOMER_ID,
-                    userName: sails.config.OOREDOO_USERNAME,
-                    userPassword: sails.config.OOREDOO_USERPASSWORD,
-                    originator: sails.config.OOREDOO_ORIGINATOR,
-                    smsText: obj.message,
-                    recipientPhone: mobile,
-                    messageType: sails.config.OOREDOO_MESSAGE_TYPE,
-                    defDate: '',
-                    blink: 'false',
-                    flash: 'false',
-                    Private: 'false'
-                }
-            },
-                function (error, response, body) {
+                    url: `${sails.config.OOREDOO_URL}/bms/soap/Messenger.asmx/HTTP_SendSms`,
+                    qs: {
+                        customerID: sails.config.OOREDOO_CUSTOMER_ID,
+                        userName: sails.config.OOREDOO_USERNAME,
+                        userPassword: sails.config.OOREDOO_USERPASSWORD,
+                        originator: sails.config.OOREDOO_ORIGINATOR,
+                        smsText: obj.message,
+                        recipientPhone: mobile,
+                        messageType: sails.config.OOREDOO_MESSAGE_TYPE,
+                        defDate: '',
+                        blink: 'false',
+                        flash: 'false',
+                        Private: 'false'
+                    }
+                },
+                function(error, response, body) {
                     // var trackObj = {
                     //     type: sails.config.MAIL_ESN_SERVICE_SMS,
                     //     mobile: mobiles,
@@ -211,8 +226,7 @@ module.exports = {
                     if (error) {
                         console.log('SMS err:', error);
                         reject(error);
-                    }
-                    else {
+                    } else {
                         console.log('SMS body:', body);
                         resolve(body);
                     }

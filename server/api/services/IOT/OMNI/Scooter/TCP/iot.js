@@ -244,6 +244,32 @@ module.exports = {
         return res;
     },
 
+    async throttleOn(scooter) {
+        const imei = scooter.imei;
+        const VC = scooter.omniCode || sails.config.IOT_OMNI_SCOOTER_CODE;
+        let commandToSend = `*SCOS,${VC},${imei},S7,0,0,2,0#`;
+
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.THROTTLE_ON);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't throttleOn scooter`;
+        }
+
+        return res;
+    },
+
+    async throttleOff(scooter) {
+        const imei = scooter.imei;
+        const VC = scooter.omniCode || sails.config.IOT_OMNI_SCOOTER_CODE;
+        let commandToSend = `*SCOS,${VC},${imei},S7,0,0,1,0#`;
+
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, sails.config.IOT_COMMAND_NAME.THROTTLE_OFF);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't throttleOff scooter`;
+        }
+
+        return res;
+    },
+
     async sendCommand(imei, command, userId, commandName = '', currentTry = 1) {
         if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
             console.log('----------------- Publish To scooter Log Start-----------------');

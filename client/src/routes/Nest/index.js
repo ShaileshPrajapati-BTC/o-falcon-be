@@ -114,10 +114,10 @@ class Nest extends Component {
                     let center = response.data.center ? response.data.center : zoneCenter;
                     mapcenter = center;
                     let restrictedBounds = {
-                        east: response.data.bounds.east + 0.005,
-                        north: response.data.bounds.north + 0.005,
-                        south: response.data.bounds.south - 0.005,
-                        west: response.data.bounds.west - 0.005
+                        east: response.data.bounds.east + 0.050,
+                        north: response.data.bounds.north + 0.050,
+                        south: response.data.bounds.south - 0.050,
+                        west: response.data.bounds.west - 0.050
                     }
                     this.setState({ center: center, restrictedBounds: restrictedBounds })
                 }

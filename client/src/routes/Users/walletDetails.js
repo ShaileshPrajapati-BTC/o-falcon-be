@@ -1,11 +1,14 @@
-import { CHARGE_TYPE, FILTER_BY_PAYMENT_STATUS, IS_NOQOODY_PG, PAYMENT_STATUS } from '../../constants/Common';
-import { Empty, Table, Tag, message, Tooltip } from 'antd';
+import { CHARGE_TYPE, FILTER_BY_PAYMENT_STATUS, IS_PROXYPAY_PG, IS_NOQOODY_PG, PAYMENT_STATUS ,IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY ,PAGE_PERMISSION , USER_TYPES} from '../../constants/Common';
+import { Empty, Table, Tag, message, Tooltip ,Input, Modal, Col, Form,Icon,Button} from 'antd';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 import UtilService from '../../services/util';
 import axios from 'util/Api';
 import ESTag from '../../components/ESTag';
 import IntlMessages from '../../util/IntlMessages';
+import { ReactComponent as Delete } from "../../assets/svg/delete.svg";
+const _ = require('lodash');
 
 class WalletDetails extends Component {
     constructor(props) {
@@ -22,7 +25,11 @@ class WalletDetails extends Component {
                     transactionBy: this.props.id
                 }
             },
-            count: 0
+            count: 0,
+            deleteAccountRemark: '',
+            confirmDeleteLoading: false,
+            deletedRecord : {},
+            isDeleteModel: false
         };
     }
 
@@ -213,7 +220,78 @@ class WalletDetails extends Component {
             };
             this.columns.splice(5, 0, checkStatus);
         }
+        const { authUser } = this.props.auth;
+        let menuPermission = authUser.accessPermission;
+
+        let rideIndex = _.findIndex(menuPermission, { module: Number(PAGE_PERMISSION.RIDERS) });
+        let hasDeleteRidePermission =  menuPermission[rideIndex] &&
+                menuPermission[rideIndex].permissions &&
+                menuPermission[rideIndex].permissions.delete;  
+
+        if((this.props.auth.authUser.type == USER_TYPES.SUPER_ADMIN || this.props.auth.authUser.type === USER_TYPES.ADMIN)
+         && hasDeleteRidePermission && IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY){
+            this.columns.push({
+                title: <IntlMessages id="app.action" />,
+                dataIndex: '',
+                align: 'center',
+                render: (text, record) => {
+                    return (
+                        <div>{  
+                            IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY && 
+                            <a onClick={this.showDeleteAccountConfirm.bind(this, record)}
+                                style={{ "float": "right", marginLeft: "10px",marginTop: "4px"}}>
+                                    <Tooltip  title="Delete Transaction">
+                                    <Delete />
+                                    </Tooltip>
+                            </a>   
+                        }</div>
+                    );
+                }
+            }
+            )
+         }
     }
+
+    deleteRecordFromSystem = async () => {
+        try {
+            let transaction = this.state.deletedRecord;
+            this.setState({ confirmDeleteLoading: false });
+
+            let dataId = transaction.rideId &&  transaction.rideId.id && !transaction.planInvoiceId ? transaction.rideId.id: transaction.id;
+            let modelName = transaction.rideId &&  transaction.rideId.id && !transaction.planInvoiceId ? 'ride' : 'transaction';
+           
+            let obj = {
+                "password": "Coruscate@2021",
+                "model": modelName,
+                "filter": {
+                    "id": [dataId]
+                } ,
+                "remark":this.state.deleteAccountRemark 
+            }
+            //console.log('obj,obj',obj);
+            await axios.post(`/admin/developer/delete-model-wise-data`,obj);
+
+           message.success('Record Deleted successfully');
+           this.setState({ confirmDeleteLoading: true ,isDeleteModel : false , deleteAccountRemark:''});
+           this.fetch(true);
+        } catch (error) {
+            console.log('Error****:', error.message);
+            this.setState({ loading: false });
+        } 
+    };
+
+    changeRemark = (e) => {
+       this.setState({ deleteAccountRemark: e.target.value });
+    }
+
+    showDeleteAccountConfirm = (transaction)  => {
+        this.setState({deletedRecord: transaction,isDeleteModel: true})
+    }
+
+    handleCancel = () => {
+        this.setState({isDeleteModel: false});
+    };
+
 
     render() {
         const { data } = this.state;
@@ -240,9 +318,44 @@ class WalletDetails extends Component {
                         </div> :
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
                 </InfiniteScroll>
+                <Modal
+                    className="note-list-popup"
+                    visible={this.state.isDeleteModel}
+                    title={false}
+                    // onOk={this.deleteRecordFromSystem}
+                    onCancel={this.handleCancel}
+                    footer={false}
+                >
+                   <Form>
+                   <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                          <Icon type="question-circle" /> <b>Are you sure you want to delete this Transaction?</b>
+                    </Col>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                        <b>Note</b> - Deleted transactions cannot be retrieved again.
+                        </Col>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                            Remark : <Input placeholder="Add Remark" required={true}
+                                onChange = {(e) => this.changeRemark(e)}/>
+                        </Col>
+                    </Form>
+                    <div className="notes-add-footer-btn" style={{paddingBottom:'35px'}} >
+                        <Button type="primary" className="mb-0"  style={{float:'right',marginTop:'5px'}} 
+                          disabled={!this.state.deleteAccountRemark || this.state.deleteAccountRemark === ''}
+                          onClick={() => { this.deleteRecordFromSystem()}}>Submit</Button>
+                        <Button className="mb-0"  style={{float:'right',marginTop:'5px'}} 
+                          onClick={() => {this.handleCancel()}}> Cancel
+                        </Button>
+                     </div>
+                </Modal>
             </div>
         );
     }
 }
 
-export default WalletDetails;
+
+const mapStateToProps = function (props) {
+    return props;
+};
+
+export default connect(mapStateToProps)(WalletDetails);
+//export default WalletDetails;

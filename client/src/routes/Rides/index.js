@@ -634,6 +634,7 @@ class Rides extends Component {
                                             currentPage={window.location.pathname}
                                             filter={this.state.filter}
                                             status={this.status}
+                                            fetch={this.fetch.bind(this)}
                                             completedRideId={this.handleCompletedRideId}
                                         />
                                     </div> :

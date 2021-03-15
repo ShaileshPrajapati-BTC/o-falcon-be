@@ -27,7 +27,9 @@ export const OMNI_TCP_SCOOTER = [
     { label: 'Check BatteryLock Status', command: 'L5', commandValue: '33', icon: 'BatteryStatus', isPopUp: false, types: [1], isNewMethod: true },
     { label: 'Check WheelLock Status', command: 'L5', commandValue: '34', icon: 'WheelStatus', isPopUp: false, types: [1], isNewMethod: true },
     { label: 'Check CabelLock Status', command: 'L5', commandValue: '35', icon: 'CableStatus', isPopUp: false, types: [1], isNewMethod: true },
-    { label: 'Obtain Scooter Information', command: 'S6', icon: 'CableStatus', isPopUp: false, types: [1], isNewMethod: true }
+    { label: 'Obtain Scooter Information', command: 'S6', icon: 'CableStatus', isPopUp: false, types: [1], isNewMethod: true },
+    { label: 'Throttle On', command: 'throttleOn', icon: 'Idleledon', isPopUp: false, types: [1] },
+    { label: 'Throttle Off', command: 'throttleOff', icon: 'Idleledoff', isPopUp: false, types: [1] },
 ];
 
 export const OMNI_TCP_BICYCLE = [

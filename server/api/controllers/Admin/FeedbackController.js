@@ -9,7 +9,7 @@ module.exports = {
             let filter = await common.getFilter(params);
             // filter.sort = 'sequence desc';
             let recordsList = await Feedback.find(filter)
-                .populate('addedBy', { select: ['firstName', 'lastName', 'name', 'franchiseeId', 'dealerId'] });
+                .populate('addedBy', { select: ['firstName', 'lastName', 'name', 'franchiseeId', 'dealerId','mobiles','emails'] });
             if (!recordsList.length) {
                 return res.ok({}, sails.config.message.LIST_NOT_FOUND);
             }

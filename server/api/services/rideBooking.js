@@ -171,20 +171,41 @@ module.exports = {
                 requestEndDateTime: '',
                 updatedBy: ride.userId
             };
+            let rideLimitData = {};
             if (sails.config.IS_RIDE_END_AFTER_INSUFFICIENT_WALLET_BALANCE) {
-                let rideLimitData = {};
                 try {
                     rideLimitData = await this.getRideLimitData(ride);
                 } catch (e) {
                     console.log('e', e);
                 }
-                if (rideLimitData.maxKm) {
+                if (rideLimitData.maxKm !== false) {
                     updateObj.maxKm = rideLimitData.maxKm;
                 }
-                if (rideLimitData.maxRideTime) {
+                if (rideLimitData.maxRideTime !== false) {
+                    if (rideLimitData.maxRideTime === 0) {
+                        rideLimitData.maxRideTime = 1;
+                    }
                     updateObj.maxRideTime = UtilService.addTime(rideLimitData.maxRideTime, currentTime);
+                    if (rideLimitData.maxRideTime <= 1) {
+                        let rideData = await RideBooking.findOne({ id: ride.id });
+                        let maxRideTimeInSeconds = rideLimitData.maxRideTime * 60;
+                        this.setEndRideIntervalForLowBalance(rideData, maxRideTimeInSeconds, currentTime, updateObj.maxRideTime);
+                    }
                 }
             }
+            console.log('updateObj.maxRideTime 112321 ', updateObj.maxRideTime);
+            if (sails.config.IS_BOOKING_PASS_FEATURE_ACTIVE) {
+                try {
+                    let maxRideTimeLimit = await this.setBookingPassRideEndTime(ride, updateObj.maxRideTime);
+                    if (maxRideTimeLimit !== false) {
+                        updateObj.maxRideTime = UtilService.addTime(maxRideTimeLimit, currentTime, 'seconds');
+                    }
+                    console.log('maxRideTimeLimit 11122 ', maxRideTimeLimit);
+                } catch (e) {
+                    console.log('setBookingPassRideEndTime e', e);
+                }
+            }
+            console.log('updateObj.maxRideTime last = ', updateObj.maxRideTime);
             let nest = await this.addRemoveVehicleInNest(ride.vehicleId, 'start');
             await this.addNestTrack(ride, nest);
 
@@ -320,13 +341,47 @@ module.exports = {
                 updatedBy: ride.userId
             };
             let currentTime = UtilService.getTimeFromNow();
+            let rideLimitData = {};
+            let maxRideTimeInSeconds = 0;
             if (sails.config.IS_RIDE_END_AFTER_INSUFFICIENT_WALLET_BALANCE) {
-                let rideLimitData = await this.getRideLimitData(ride);
-                if (rideLimitData.maxKm) {
+                rideLimitData = await this.getRideLimitData(ride);
+                if (rideLimitData.maxKm !== false) {
                     updateObj.maxKm = rideLimitData.maxKm;
                 }
-                if (rideLimitData.maxRideTime) {
-                    updateObj.maxRideTime = UtilService.addTime(rideLimitData.maxRideTime, currentTime);
+                if (rideLimitData.maxRideTime !== false) {
+                    const fareData = ride.fareData;
+                    let pausedTime = 0;
+                    if (ride.stopOverTrack && ride.stopOverTrack.length > 0) {
+                        for (let pauseTrack of ride.stopOverTrack) {
+                            pausedTime += pauseTrack.duration;
+                        }
+                        // convert into minutes
+                        let pausedTimeInMinute = UtilService.getFloat(pausedTime / 60);
+                        if (pausedTimeInMinute > fareData.pauseTimeLimit) {
+                            // if seconds are more than limit, need to reset to it's limit.
+                            // for eg. limit is 5min and cron runs at 5 min 30 sec, need to reset limit to 5 min
+                            pausedTime = fareData.pauseTimeLimit * 60;
+                        }
+                    }
+                    let travelTime = UtilService.getTimeDifference(
+                        ride.startDateTime,
+                        currentTime,
+                        'seconds'
+                    );
+                    console.log('travelTime before pauseTime', travelTime, pausedTime);
+                    travelTime -= pausedTime;
+                    console.log('travelTime after pauseTime', travelTime);
+
+                    // add remaining seconds for ride (R: -> due to pause there is some seconds left for ride)
+                    let travelTimeDiffInSeconds = 60 - (travelTime % 60);
+                    console.log('travelTimeDiffInSeconds', travelTimeDiffInSeconds);
+                    maxRideTimeInSeconds = rideLimitData.maxRideTime * 60;
+                    console.log('maxRideTimeInSeconds', maxRideTimeInSeconds);
+                    maxRideTimeInSeconds = maxRideTimeInSeconds + travelTimeDiffInSeconds;
+                    console.log('maxRideTimeInSeconds 2', maxRideTimeInSeconds);
+
+                    updateObj.maxRideTime = UtilService.addTime(maxRideTimeInSeconds, currentTime, 'seconds');
+                    console.log('maxRideTime 3', updateObj.maxRideTime);
                 }
             }
 
@@ -345,6 +400,10 @@ module.exports = {
                 lastConnectionCheckDateTime: currentTime
             };
             await Vehicle.update({ id: vehicleId }, updateVehicleData);
+            if (rideLimitData.maxRideTime <= 0) {
+                let rideData = await RideBooking.findOne({ id: ride.id });
+                this.setEndRideIntervalForLowBalance(rideData, maxRideTimeInSeconds, currentTime, updateObj.maxRideTime);
+            }
         } else {
             error = sails.config.message.CANT_UNLOCK_VEHICLE;
         }
@@ -590,7 +649,7 @@ module.exports = {
 
     //     return setting[key];
     // },
-
+   
     async findMatchedScooters(options, user) {
         try {
             const setting = await this.getSetting();
@@ -614,7 +673,8 @@ module.exports = {
                 isActive: true,
                 connectionStatus: true,
                 isDeleted: false,
-                isTaskCreated: false
+                isTaskCreated: false,
+                isVehicleInsideNoRideZone: false
             };
             if (isClusteringEnable) {
                 matchFilter.currentLocation = { $ne: null };
@@ -1183,6 +1243,13 @@ module.exports = {
         // check here
         // we are update the ride from findAndUpdateRide function for lockstatus.
         if (!ride || !ride.id || (typeof data.lockStatus == "boolean" && vehicle.lockStatus !== data.lockStatus)) {
+            if (vehicle.isVehicleInsideNoRideZone) {
+                let currentNest = await this.findNest(data.currentLocation.coordinates);
+                if (currentNest && currentNest.length) {
+                    currentNest = currentNest[0];
+                    await this.performNestExitOperation(currentNest.type, vehicle);
+                }
+            }
             return true;
         }
 
@@ -1238,13 +1305,13 @@ module.exports = {
         if (currentNest && currentNest.length) {
             currentNest = currentNest[0];
             if (ride.currentNestId != currentNest._id.toString()) {
-                await this.performNestExitOperation(ride, vehicle);
+                await this.performNestExitOperation(ride.currentNestType, vehicle);
                 await RideBooking.update({ id: ride.id }).set({ currentNestId: currentNest._id.toString(), currentNestType: currentNest.type });
                 isRideEndForceFully = await this.performNestInsertOperation(ride, vehicle, currentNest);
             }
         } else {
             if (ride.currentNestType != 0) {
-                await this.performNestExitOperation(ride, vehicle);
+                await this.performNestExitOperation(ride.currentNestType, vehicle);
                 await RideBooking.update({ id: ride.id }).set({ currentNestId: null, currentNestType: 0 });
             }
         }
@@ -1273,16 +1340,28 @@ module.exports = {
     async performNestInsertOperation(ride, vehicle, currentNest) {
         let vehicleData = await this.getVehicleForIOT(vehicle.id);
         let isStopRideForceFully = false;
+        let throttleOffAllowed = [
+            'OMNI_TCP_SCOOTER',
+            'ZK_SCOOTER'
+        ];
         switch (currentNest.type) {
             case sails.config.NEST_TYPE.NON_RIDE:
-                if (sails.config.IS_STOP_RIDE_FOR_NO_RIDE_ZONE) {
+                if (sails.config.IS_THROTTLE_OFF_FOR_NO_RIDE_ZONE && throttleOffAllowed.indexOf(vehicleData.manufacturer.code) > -1) {
+                    console.log("-------------------\nthrottleOff\n--------------------");
+                    await IotService.commandToPerform('throttleOff', vehicleData);
+                    await Vehicle.update({ id: vehicle.id }, { isVehicleInsideNoRideZone: true });
+                } else if (sails.config.IS_STOP_RIDE_FOR_NO_RIDE_ZONE) {
                     console.log("-------------------\nEnd Ride\n--------------------");
                     let rideData = await RideBooking.findOne({ id: ride.id });
                     isStopRideForceFully = true;
                     await this.stopRideForceFully(rideData, null, sails.config.IS_AUTO_DEDUCT, true);
-                    if (sails.config.IS_DE_ACTIVE_VEHICLE_FOR_NO_RIDE_ZONE) {
-                        await Vehicle.update({ id: vehicle.id }, { isActive: false });
+                    let vehicleDataToUpdate = {
+                        isVehicleInsideNoRideZone: true
                     }
+                    if (sails.config.IS_DE_ACTIVE_VEHICLE_FOR_NO_RIDE_ZONE) {
+                        vehicleDataToUpdate.isActive = false;
+                    }
+                    await Vehicle.update({ id: vehicle.id }, vehicleDataToUpdate);
                 } else {
                     console.log("-------------------\nAlarm on\n--------------------");
                     await IotService.commandToPerform('alarmOn', vehicleData, { value: sails.config.OUT_SIDE_ZONE_ALARM_DURATION });
@@ -1324,18 +1403,25 @@ module.exports = {
         return isStopRideForceFully;
     },
 
-    async performNestExitOperation(ride, vehicle) {
+    async performNestExitOperation(currentNestType, vehicle) {
         let vehicleData = await this.getVehicleForIOT(vehicle.id);
-        switch (ride.currentNestType) {
+        switch (currentNestType) {
             case sails.config.NEST_TYPE.NON_RIDE:
-                // console.log("-------------------\nUnLock\n--------------------");
-                // if (vehicle.manufacturer.code == sails.config.VEHICLE_MANUFACTURER.ZIMO) {
-                //     await IotService.lockUnlock('unlock', vehicleData);
-                // }
-                console.log("-------------------\nAlarm on\n--------------------");
-                await IotService.commandToPerform('alarmOn', vehicleData, { value: sails.config.OUT_SIDE_ZONE_ALARM_DURATION });
-                console.log("-------------------\nSet Speed Limit\n--------------------");
-                await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: vehicleData.lastSpeedLimit });
+                if (sails.config.IS_THROTTLE_OFF_FOR_NO_RIDE_ZONE) {
+                    console.log("-------------------\nthrottleOff\n--------------------");
+                    await IotService.commandToPerform('throttleOn', vehicleData);
+                } else {
+                    // console.log("-------------------\nUnLock\n--------------------");
+                    // if (vehicle.manufacturer.code == sails.config.VEHICLE_MANUFACTURER.ZIMO) {
+                    //     await IotService.lockUnlock('unlock', vehicleData);
+                    // }
+                    console.log("-------------------\nAlarm off\n--------------------");
+                    await IotService.commandToPerform('alarmOff', vehicleData, { value: 0 });
+                    console.log("-------------------\nSet Speed Limit\n--------------------");
+                    await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: vehicleData.lastSpeedLimit });
+                }
+                await Vehicle.update({ id: vehicle.id }, { isVehicleInsideNoRideZone: false });
+
                 break;
 
             case sails.config.NEST_TYPE.NO_PARKING:
@@ -1678,6 +1764,9 @@ module.exports = {
     },
 
     async addNestTrack(ride, nest) {
+        if (!sails.config.IS_NEST_ENABLED) {
+            return;
+        }
         try {
             let nestTrackObj = {
                 vehicleId: ride.vehicleId.id,
@@ -2223,7 +2312,7 @@ module.exports = {
         return fareData;
     },
 
-    async calculateFareForRide(ride, data = {}) {
+    async calculateFareForRide(ride, data = {}, isUpdateBookingPassData = true) {
         const fareData = ride.fareData;
         let fareSummary = {
             timeFareFreeLimit: fareData.timeFareFreeLimit,
@@ -2261,7 +2350,10 @@ module.exports = {
                 'seconds'
             );
             // convert into minutes
-            let reservedTimeInMinute = UtilService.getFloat(fareSummary.reservedTime / 60);
+            let reservedTimeInMinute = this.calculateReservationTime(
+                fareSummary.reservedTime,
+                fareData
+            );
             fareSummary.reserved = this.calculateReservationCharge(
                 reservedTimeInMinute,
                 fareData
@@ -2274,6 +2366,7 @@ module.exports = {
             }
             // convert into minutes
             let pausedTimeInMinute = UtilService.getFloat(pausedTime / 60);
+            pausedTimeInMinute = Math.ceil(pausedTimeInMinute);
             if (pausedTimeInMinute > fareData.pauseTimeLimit) {
                 // if seconds are more than limit, need to reset to it's limit.
                 // for eg. limit is 5min and cron runs at 5 min 30 sec, need to reset limit to 5 min
@@ -2326,7 +2419,7 @@ module.exports = {
 
         //////////////////////////////
         if (ride.rideType === sails.config.RIDE_TYPE.BOOKING_PASS) {
-            fareSummary = await this.calculateFareForBookingPassRide(ride, fareData, fareSummary)
+            fareSummary = await this.calculateFareForBookingPassRide(ride, fareData, fareSummary, isUpdateBookingPassData)
         }
 
         subTotal = fareSummary.subTotal + fareSummary.reserved + fareSummary.paused + fareSummary.unlockFees;
@@ -2372,6 +2465,145 @@ module.exports = {
 
         return fareSummary;
     },
+
+    async recalculateFareForRide(ride, data = {}, isUpdateBookingPassData = true) {
+        const fareData = ride.fareData;
+        let fareSummary = {
+            timeFareFreeLimit: fareData.timeFareFreeLimit,
+            distanceFareFreeLimit: fareData.distanceFareFreeLimit,
+            reserved: 0,
+            paused: 0,
+            late: 0,
+            cancelled: 0,
+            distance: 0,
+            time: 0,
+            subTotal: 0,
+            reservedTime: 0,
+            pausedTime: 0,
+            lateTime: 0,
+            travelDistance: 0,
+            travelTime: 0,
+            tax: 0,
+            parkingFine: 0,
+            unlockFees: 0,
+            rideDeposit: 0,
+            total: 0,
+            bookPlanExtraTakenTime: 0,
+            bookingPassExtraTimeUsed: 0,
+            rideDiscountPercentage: 0,
+            rideDiscountAmount: 0,
+            unlockDiscountPercentage: 0,
+            unlockDiscountAmount: 0,
+            bookingPassUsedTime: 0
+        };
+        if (ride.reservedDateTime) {
+            fareSummary.reservedTime = UtilService.getTimeDifference(
+                ride.reservedDateTime,
+                ride.startDateTime,
+                'seconds'
+            );
+            // convert into minutes
+
+            let reservedTimeInMinute = this.calculateReservationTime(
+                fareSummary.reservedTime,
+                fareData
+            );
+            fareSummary.reserved = this.calculateReservationCharge(
+                reservedTimeInMinute,
+                fareData
+            );
+        }
+        let currentTime = ride.endDateTime;
+        if (ride.stopOverTrack && ride.stopOverTrack.length > 0) {
+            let pausedTime = 0;
+            for (let pauseTrack of ride.stopOverTrack) {
+                pausedTime += pauseTrack.duration;
+            }
+            // convert into minutes
+            let pausedTimeInMinute = UtilService.getFloat(pausedTime / 60);
+            pausedTimeInMinute = Math.ceil(pausedTimeInMinute);
+            if (pausedTimeInMinute > fareData.pauseTimeLimit) {
+                // if seconds are more than limit, need to reset to it's limit.
+                // for eg. limit is 5min and cron runs at 5 min 30 sec, need to reset limit to 5 min
+                pausedTime = fareData.pauseTimeLimit * 60;
+                pausedTimeInMinute = fareData.pauseTimeLimit;
+            }
+            fareSummary.pausedTime = pausedTime;
+            fareSummary.paused = UtilService.getFloat(pausedTimeInMinute * fareData.ridePauseFare);
+        }
+        fareSummary.travelTime = UtilService.getTimeDifference(
+            ride.startDateTime,
+            currentTime,
+            'seconds'
+        );
+        fareSummary.travelTime -= fareSummary.pausedTime;
+        let travelTimeInMinute = UtilService.getFloat(fareSummary.travelTime / 60);
+        // for now distance = time;
+        if (data && data.tripDistance) {
+            fareSummary.travelDistance = data.tripDistance;
+        } else {
+            let locationTrackData = await RideLocationTrack.findOne({ rideId: ride.id });
+            if (!locationTrackData) {
+                locationTrackData = {
+                    locationTrack: []
+                };
+            }
+            fareSummary.travelDistance = this.calculateDistanceForRide(ride.startLocation, locationTrackData.locationTrack);
+        }
+        if (sails.config.DEFAULT_DISTANCE_UNIT === sails.config.DISTANCE_UNIT.MILES) {
+            fareSummary.travelDistance = UtilService.convertKmToMiles(fareSummary.travelDistance);
+        }
+        // fareSummary.travelDistance = parseInt(fareSummary.travelTime * Math.random());
+
+        fareSummary.distance = this.calculateDistanceFare(fareData, fareSummary.travelDistance);
+        fareSummary.time = this.calculateTimeFare(fareData, travelTimeInMinute, ride.rideType);
+        fareSummary.late += fareSummary.late;
+        if (fareData.unlockFees && sails.config.CALCULATE_UNLOCK_FEES) {
+            fareSummary.unlockFees = fareData.unlockFees;
+        }
+        if (fareData.rideDeposit) {
+            fareSummary.rideDeposit = fareData.rideDeposit;
+        }
+        console.log('ride.isEndedByServer - ', ride.isEndedByServer);
+        if (!ride.scooterImage && !ride.isEndedByServer && sails.config.CALCULATE_PARKING_FINE) {
+            fareSummary.parkingFine += this.calculateParkingFineFare(fareData);
+        }
+
+        subTotal = fareSummary.distance + fareSummary.time;
+        fareSummary.subTotal = subTotal;
+
+        //////////////////////////////
+        if (ride.rideType === sails.config.RIDE_TYPE.BOOKING_PASS) {
+            fareSummary = await this.calculateFareForBookingPassRide(ride, fareData, fareSummary, isUpdateBookingPassData)
+        }
+
+        subTotal = fareSummary.subTotal + fareSummary.reserved + fareSummary.paused + fareSummary.unlockFees;
+        subTotal = UtilService.getFloat(subTotal);
+        fareSummary.subTotal = subTotal;
+        fareSummary.isBaseFareApplied = false;
+        if (fareSummary.subTotal < fareData.baseFare && ride.rideType !== sails.config.RIDE_TYPE.BOOKING_PASS) {
+            fareSummary.subTotal = fareData.baseFare;
+            fareSummary.isBaseFareApplied = true;
+        }
+        let tax = this.calculateTax(subTotal);
+        fareSummary.tax = tax; // calculate tax
+        fareSummary.total = fareSummary.subTotal + fareSummary.tax;
+        fareSummary.total = UtilService.getFloat(fareSummary.total);
+        if (isUseMinutesForRideSummary) {
+            fareSummary.reservedTime = UtilService.getFloat(fareSummary.reservedTime / 60);
+            fareSummary.pausedTime = UtilService.getFloat(fareSummary.pausedTime / 60);
+            fareSummary.travelTime = UtilService.getFloat(fareSummary.travelTime / 60);
+        }
+
+        if (ride.rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
+            fareSummary = await this.calculateFareForSubscriptionRide(ride, fareData, fareSummary)
+        }
+        if (sails.config.ROUND_OFF_RIDE_AMOUNT) {
+            fareSummary.total = Math.round(fareSummary.total);
+        }
+
+        return fareSummary;
+    },
     async getPriceFromTime(fareData, time, rideType) {
         //time in second
         const timeInMinute = UtilService.getFloat(time / 60);
@@ -2392,7 +2624,7 @@ module.exports = {
         }
         return discountFareOfUsedPassTime;
     },
-    async calculateFareForBookingPassRide(ride, fareData, fareSummary) {
+    async calculateFareForBookingPassRide(ride, fareData, fareSummary, isUpdateBookingPassData) {
         let rideDiscount = false;
         let unlockDiscount = false;
         let finalFareWithDiscount = 0;
@@ -2422,16 +2654,15 @@ module.exports = {
             let finalChargeSummary;
 
             if (!isRideEndBeforeWorkingHour) {
-                finalChargeSummary = await this.calculateChargeForRideEndBeforeWorkingHour(ride, currentPlanInvoice, todayEndTime, fareData, passDiscountDetail, fareSummary);
-            }
-            else {
+                finalChargeSummary = await this.calculateChargeForRideEndBeforeWorkingHour(ride, currentPlanInvoice, todayEndTime, fareData, passDiscountDetail, fareSummary, isUpdateBookingPassData);
+            } else {
                 if (currentPlanInvoice.remainingTimeLimit >= fareSummary.travelTime) {
                     finalChargeSummary = await this.calculateChargewithDiscount(
-                        ride, currentPlanInvoice, fareSummary, passDiscountDetail);
+                        ride, currentPlanInvoice, fareSummary, passDiscountDetail, isUpdateBookingPassData);
 
                 } else {
                     finalChargeSummary = await this.calculateChargewithExtraTime(
-                        ride, currentPlanInvoice, fareSummary, fareData, passDiscountDetail);
+                        ride, currentPlanInvoice, fareSummary, fareData, passDiscountDetail, isUpdateBookingPassData);
                 }
             }
             finalFareWithDiscount = finalChargeSummary.finalFareWithDiscount;
@@ -2446,7 +2677,7 @@ module.exports = {
         fareSummary.subTotal = finalFareWithDiscount;
         return fareSummary;
     },
-    async calculateChargeForRideEndBeforeWorkingHour(ride, currentPlanInvoice, todayEndTime, fareData, passDiscountDetail, fareSummary) {
+    async calculateChargeForRideEndBeforeWorkingHour(ride, currentPlanInvoice, todayEndTime, fareData, passDiscountDetail, fareSummary, isUpdateBookingPassData) {
         const endDateTime = ride.endDateTime || UtilService.getTimeFromNow();
 
         const bookPassUsingTime = UtilService.getTimeDifference(ride.startDateTime, todayEndTime, 'seconds');
@@ -2458,7 +2689,9 @@ module.exports = {
             if (currentPlanInvoice.remainingTimeLimit >= bookPassUsingTime) {
                 const remainingTimeLimit = currentPlanInvoice.remainingTimeLimit - bookPassUsingTime;
                 const remainingTimeRoundFig = Math.floor(remainingTimeLimit / 60) * 60;
-                await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, remainingTimeRoundFig);
+                if (isUpdateBookingPassData) {
+                    await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, remainingTimeRoundFig);
+                }
 
                 const discountFarePassTime = await this.getDiscountPriceFromTime(
                     fareData,
@@ -2480,9 +2713,9 @@ module.exports = {
                 }
             } else {
                 let extraTime = bookPassUsingTime - currentPlanInvoice.remainingTimeLimit;
-
-                await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, 0);
-
+                if (isUpdateBookingPassData) {
+                    await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, 0);
+                }
                 planInvoiceTrack = {
                     userId: ride.userId,
                     dateTime: UtilService.getTimeFromNow(),
@@ -2503,22 +2736,24 @@ module.exports = {
 
                 const finalFareWithDiscount = totalFareOfExtraTime + discountFareOfPassTime.finalDiscountFare;
                 bookingPassExtraTimeUsed = extraTime;
-
-                const user = await User.findOne({ id: ride.userId });
-                let currentBookingPass = user.currentBookingPassIds;
-                const currentBookingPassIds = currentBookingPass.filter(item => item !== currentPlanInvoice.id)
-                await User.update({ id: ride.userId }, { currentBookingPassIds: currentBookingPassIds });
-
+                if (isUpdateBookingPassData) {
+                    const user = await User.findOne({ id: ride.userId });
+                    let currentBookingPass = user.currentBookingPassIds;
+                    const currentBookingPassIds = currentBookingPass.filter(item => item !== currentPlanInvoice.id)
+                    await User.update({ id: ride.userId }, { currentBookingPassIds: currentBookingPassIds });
+                }
                 discountFareOfUsedPassTime = {
                     discountAmount: discountFareOfPassTime.discountAmount,
                     finalDiscountFare: finalFareWithDiscount
                 }
             }
             ride.planInvoiceTrack.push(planInvoiceTrack);
-            await RideBooking.update({ id: ride.id }, {
-                planInvoiceId: currentPlanInvoice.id,
-                planInvoiceTrack: ride.planInvoiceTrack
-            });
+            if (isUpdateBookingPassData) {
+                await RideBooking.update({ id: ride.id }, {
+                    planInvoiceId: currentPlanInvoice.id,
+                    planInvoiceTrack: ride.planInvoiceTrack
+                });
+            }
         }
         //calculate fare for extra time
         let extraTimeOverWorkingHour = UtilService.getTimeDifference(todayEndTime, endDateTime, 'seconds');
@@ -2537,10 +2772,12 @@ module.exports = {
         return finalSummary;
     },
 
-    async calculateChargewithDiscount(ride, currentPlanInvoice, fareSummary, passDiscountDetail) {
+    async calculateChargewithDiscount(ride, currentPlanInvoice, fareSummary, passDiscountDetail, isUpdateBookingPassData) {
         const remainingTimeLimit = currentPlanInvoice.remainingTimeLimit - fareSummary.travelTime;
         const remainingTimeRoundFig = Math.floor(remainingTimeLimit / 60) * 60;
-        await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, remainingTimeRoundFig);
+        if (isUpdateBookingPassData) {
+            await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, remainingTimeRoundFig);
+        }
 
         const discountPrice = passDiscountDetail.rideDiscount / 100;
         const finalFareWithDiscount = UtilService.getFloat(fareSummary.subTotal - (fareSummary.subTotal * discountPrice));
@@ -2554,21 +2791,23 @@ module.exports = {
             remainingTimeLimit: remainingTimeRoundFig
         };
         ride.planInvoiceTrack.push(planInvoiceTrack);
-        await RideBooking.update({ id: ride.id }, {
-            planInvoiceId: currentPlanInvoice.id,
-            planInvoiceTrack: ride.planInvoiceTrack
-        });
+        if (isUpdateBookingPassData) {
+            await RideBooking.update({ id: ride.id }, {
+                planInvoiceId: currentPlanInvoice.id,
+                planInvoiceTrack: ride.planInvoiceTrack
+            });
+        }
         const finalSummary = {
             fareSummary: fareSummary,
             finalFareWithDiscount: finalFareWithDiscount
         }
         return finalSummary;
     },
-    async calculateChargewithExtraTime(ride, currentPlanInvoice, fareSummary, fareData, passDiscountDetail) {
+    async calculateChargewithExtraTime(ride, currentPlanInvoice, fareSummary, fareData, passDiscountDetail, isUpdateBookingPassData) {
         let extraTime = fareSummary.travelTime - currentPlanInvoice.remainingTimeLimit;
-
-        await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, 0);
-
+        if (isUpdateBookingPassData) {
+            await BookingPassService.updateTimeLimitInInvoice(currentPlanInvoice.id, 0);
+        }
         let planInvoiceTrack = {
             userId: ride.userId,
             dateTime: UtilService.getTimeFromNow(),
@@ -2577,10 +2816,12 @@ module.exports = {
             remainingTimeLimit: 0
         };
         ride.planInvoiceTrack.push(planInvoiceTrack);
-        await RideBooking.update({ id: ride.id }, {
-            planInvoiceId: currentPlanInvoice.id,
-            planInvoiceTrack: ride.planInvoiceTrack
-        });
+        if (isUpdateBookingPassData) {
+            await RideBooking.update({ id: ride.id }, {
+                planInvoiceId: currentPlanInvoice.id,
+                planInvoiceTrack: ride.planInvoiceTrack
+            });
+        }
 
         //calculate fare for extra time
         const totalFareOfExtraTime = await this.getPriceFromTime(
@@ -2597,11 +2838,12 @@ module.exports = {
         const finalFareWithDiscount = totalFareOfExtraTime + discountFareOfUsedPassTime.finalDiscountFare;
         fareSummary.bookingPassExtraTimeUsed = extraTime;
         fareSummary.rideDiscountAmount = discountFareOfUsedPassTime.discountAmount;
-
-        const user = await User.findOne({ id: ride.userId });
-        let currentBookingPass = user.currentBookingPassIds;
-        const currentBookingPassIds = currentBookingPass.filter(item => item !== currentPlanInvoice.id)
-        await User.update({ id: ride.userId }, { currentBookingPassIds: currentBookingPassIds });
+        if (isUpdateBookingPassData) {
+            const user = await User.findOne({ id: ride.userId });
+            let currentBookingPass = user.currentBookingPassIds;
+            const currentBookingPassIds = currentBookingPass.filter(item => item !== currentPlanInvoice.id)
+            await User.update({ id: ride.userId }, { currentBookingPassIds: currentBookingPassIds });
+        }
         const finalSummary = {
             fareSummary: fareSummary,
             finalFareWithDiscount: finalFareWithDiscount
@@ -2746,10 +2988,17 @@ module.exports = {
             UtilService.getTimeFromNow(),
             'seconds'
         );
+        let maxReserveTimeInSeconds = fareData.rideReserveTimeLimit * 60;
+        if (fareSummary.reservedTime > maxReserveTimeInSeconds) {
+            fareSummary.reservedTime = maxReserveTimeInSeconds;
+        }
         if (ride.status === sails.config.RIDE_STATUS.UNLOCK_REQUESTED) {
             return fareSummary;
         }
-        let reservedTimeInMinute = UtilService.getFloat(fareSummary.reservedTime / 60);
+        let reservedTimeInMinute = this.calculateReservationTime(
+            fareSummary.reservedTime,
+            fareData
+        );
         fareSummary.reserved = this.calculateReservationCharge(
             reservedTimeInMinute,
             fareData
@@ -2775,17 +3024,30 @@ module.exports = {
         return fareSummary;
     },
 
-    calculateReservationCharge(time, fareData) {
-        let cost = 0;
+    calculateReservationTime(reservedTimeInSeconds, fareData) {
         let rideReserveTimeFreeLimit = 0;
+        let maxRideTimeToCharge = fareData.rideReserveTimeLimit;
         if (fareData.rideReserveTimeFreeLimit && fareData.rideReserveTimeFreeLimit > 0) {
             rideReserveTimeFreeLimit = fareData.rideReserveTimeLimit * fareData.rideReserveTimeFreeLimit;
             rideReserveTimeFreeLimit = UtilService.getFloat(rideReserveTimeFreeLimit / 100);
+            rideReserveTimeFreeLimit = Math.round(rideReserveTimeFreeLimit);
+            maxRideTimeToCharge -= rideReserveTimeFreeLimit;
         }
-        if (time > rideReserveTimeFreeLimit) {
-            time -= rideReserveTimeFreeLimit;
-            cost = time * fareData.rideReserveFare;
+        let reservedTimeInMinute = UtilService.getFloat(reservedTimeInSeconds / 60);
+        reservedTimeInMinute -= rideReserveTimeFreeLimit;
+        if (reservedTimeInMinute <= 0) {
+            reservedTimeInMinute = 0;
         }
+        reservedTimeInMinute = Math.ceil(reservedTimeInMinute);
+        if (reservedTimeInMinute > maxRideTimeToCharge) {
+            reservedTimeInMinute = maxRideTimeToCharge;
+        }
+
+        return reservedTimeInMinute;
+    },
+
+    calculateReservationCharge(time, fareData) {
+        let cost = time * fareData.rideReserveFare;
         cost = UtilService.getFloat(cost);
 
         return cost;
@@ -2824,7 +3086,7 @@ module.exports = {
             return time;
         }
         let baseMinuteMultiple;
-        if (Number.isInteger(time)) {
+        if (Number.isInteger(time) && perXBaseMinute === 1) {
             baseMinuteMultiple = Math.floor(time / perXBaseMinute);
         } else {
             baseMinuteMultiple = Math.floor(time / perXBaseMinute) + 1;
@@ -3399,8 +3661,46 @@ module.exports = {
     //     return ride[0];
     // },
 
-    async checkWalletMinAmountForRide(userWalletAmount = 0) {
+    async checkWalletMinAmountForRide(userWalletAmount = 0, vehicle = {}) {
         let walletConfig = await WalletService.getWalletConfig();
+        if (sails.config.IS_CHECK_MIN_WALLET_BALANCE_ACCORDING_ZONE) {
+            let query = {
+                franchiseeId: vehicle.franchiseeId
+            }
+            let zoneData = await this.findZoneDataForLocation(
+                vehicle.currentLocation.coordinates,
+                null,
+                vehicle.type,
+                vehicle.franchiseeId,
+                query
+            );
+            if (!zoneData || !zoneData[0]) {
+                console.log('SM NOT_IN_SPECIFIED_ZONE 8782');
+                throw sails.config.message.NOT_IN_SPECIFIED_ZONE;
+            }
+            let zone = zoneData[0];
+            const zoneId = zone._id.toString();
+            let fareData = await FareManagement.findOne({ zoneId: zoneId, vehicleType: vehicle.type, isDeleted: false });
+            if (!fareData || !fareData.id) {
+                console.log('SM NOT_IN_SPECIFIED_ZONE 8783');
+                throw sails.config.message.NOT_IN_SPECIFIED_ZONE;
+            }
+            // console.log('fareData', fareData);
+            let minWalletAmountForRide = fareData.rideReserveFare + fareData.unlockFees;
+            minWalletAmountForRide += fareData.timeFare;
+            minWalletAmountForRide += fareData.distanceFare;
+            // console.log('minWalletAmountForRide', minWalletAmountForRide, userWalletAmount);
+            if (userWalletAmount < minWalletAmountForRide) {
+                let customError = {
+                    code: 'PRIVATE_RIDE_ERROR',
+                    message: `It seems that your wallet balance is low. It is required to have at least ${minWalletAmountForRide + sails.config.CURRENCY_SYM} in your wallet.`,
+                    status: 401
+                };
+                throw customError;
+            }
+
+            return true;
+        }
         if (walletConfig.isWalletEnable && walletConfig.minWalletAmountForRide > 0 &&
             userWalletAmount < walletConfig.minWalletAmountForRide
         ) {
@@ -3547,7 +3847,7 @@ module.exports = {
             }
             let freeRide = await this.checkFreeReferralCodeBenefit(user.id);
             if (!freeRide || freeRide.benefit !== sails.config.REFERRAL.BENEFIT.FREE_AMOUNT) {
-                await this.checkWalletMinAmountForRide(user.walletAmount);
+                await this.checkWalletMinAmountForRide(user.walletAmount, mVehicle);
             }
         }
 
@@ -3990,30 +4290,54 @@ module.exports = {
         let availableMinutes = fareData.timeFareFreeLimit;
 
         if (!fareData.timeFare || fareData.timeFare <= 0) {
-            return 0;
+            return false;
         }
         console.log('fareData.perXBaseMinute', fareData.perXBaseMinute);
         let perXBaseMinute = fareData.perXBaseMinute ? fareData.perXBaseMinute : 1;
         console.log('perXBaseMinute', perXBaseMinute);
         console.log('fareData.timeFare', fareData.timeFare);
         let perMinuteTimeFare = fareData.timeFare / perXBaseMinute;
+        console.log('perMinuteTimeFare', perMinuteTimeFare);
+        availableMinutes += (walletAmount / perMinuteTimeFare);
+        availableMinutes = Math.floor(availableMinutes);
+        console.log('availableMinutes', availableMinutes);
+
         let isBookingPass = ride.rideType === sails.config.RIDE_TYPE.BOOKING_PASS;
         if (isBookingPass) {
             let currentBookPlanInvoice = await PlanInvoice.findOne({ id: ride.planInvoiceId });
             let vehicleTypePass = await BookingPassService.getPlanPriceDetails(currentBookPlanInvoice.planData, ride.vehicleType);
             if (vehicleTypePass && vehicleTypePass.rideDiscount === 100) {
-                return 0;
+                return false;
             }
             if (vehicleTypePass.rideDiscount > 0) {
-                perMinuteTimeFare = UtilService.getDiscountedValue(perMinuteTimeFare, getDiscountedValue);
+                let perMinuteTimeFareWithBookingPass = UtilService.getDiscountedValue(perMinuteTimeFare, vehicleTypePass.rideDiscount);
+                console.log('perMinuteTimeFare bookingPass', perMinuteTimeFareWithBookingPass);
+                availableMinutes = fareData.timeFareFreeLimit + (walletAmount / perMinuteTimeFareWithBookingPass);
+                availableMinutes = Math.floor(availableMinutes);
+                console.log('availableMinutes bookingPass 1', availableMinutes);
+                let remainingTimeLimitInMinute = currentBookPlanInvoice.remainingTimeLimit / 60;
+                console.log('remainingTimeLimitInMinute', remainingTimeLimitInMinute);
+                if (availableMinutes > remainingTimeLimitInMinute) {
+                    let maxTimeWithBookingPassLimit = remainingTimeLimitInMinute;
+                    console.log('maxTimeWithBookingPassLimit 11111 ', maxTimeWithBookingPassLimit);
+                    let chargeForBookingPassMinute = maxTimeWithBookingPassLimit * perMinuteTimeFareWithBookingPass;
+                    console.log('chargeForBookingPassMinute', walletAmount, chargeForBookingPassMinute);
+                    let walletBalanceAfterBookingPassLimit = walletAmount - chargeForBookingPassMinute;
+                    console.log('walletBalanceAfterBookingPassLimit', walletBalanceAfterBookingPassLimit, perMinuteTimeFare);
+                    availableMinutes = fareData.timeFareFreeLimit + maxTimeWithBookingPassLimit + (walletBalanceAfterBookingPassLimit / perMinuteTimeFare);
+                    availableMinutes = Math.floor(availableMinutes);
+
+                    console.log('availableMinutes 2222', availableMinutes);
+                }
             }
         }
-        console.log('perMinuteTimeFare', perMinuteTimeFare);
-        availableMinutes += (walletAmount / perMinuteTimeFare);
+
         // when counting fare, initial 1 minute is counted, so we add 1 minute static to solve that issue.
-        availableMinutes += 1;
-        availableMinutes = Math.round(availableMinutes);
-        console.log('availableMinutes', availableMinutes);
+        // availableMinutes -= 1;
+        if (availableMinutes < 0) {
+            availableMinutes = 0;
+        }
+        console.log('availableMinutes final', availableMinutes);
 
         return availableMinutes;
     },
@@ -4022,7 +4346,7 @@ module.exports = {
         let availableKM = fareData.distanceFareFreeLimit;
 
         if (!fareData.distanceFare || fareData.distanceFare <= 0) {
-            return 0;
+            return false;
         }
         availableKM += (walletAmount / fareData.distanceFare);
 
@@ -4045,8 +4369,9 @@ module.exports = {
         // check ride is resumed or paused
         // pause hoy to update end pause time (Admin or wallet limit whatever is less)
         // resume ride, update ride end time and km
-        let fareSummary = await this.calculateFareForRide(ride);
+        let fareSummary = await this.calculateFareForRide(ride, {}, false);
         console.log('fareSummary.total', fareSummary.total);
+        console.log('fareSummary', JSON.stringify(fareSummary));
         if (fareSummary.total > 0) {
             availableWalletAmount -= fareSummary.total;
         }
@@ -4094,6 +4419,93 @@ module.exports = {
         await RedisDBService.setData(`ride-${rideId}`, totalKM);
     },
 
+    async setEndRideIntervalForLowBalance(ride, timeDiff, currentTime, nextOneMinuteTime) {
+        let endRideMinSecondDifference = 3;
+        const self = this;
+        console.log('ride stopped endRideAfterMaxRideTime', ride.id, timeDiff, currentTime, nextOneMinuteTime);
+        if (timeDiff <= endRideMinSecondDifference) {
+            await this.stopRideForceFully(ride, null, sails.config.IS_AUTO_DEDUCT, true);
+        } else {
+            timeDiff -= endRideMinSecondDifference;
+            self[`rideEnd${ride.id}`] = setInterval(async () => {
+                let newFilter = {
+                    maxRideTime: {
+                        '>=': currentTime,
+                        '<=': nextOneMinuteTime
+                    },
+                    isPaused: false,
+                    isRequested: false,
+                    status: sails.config.RIDE_STATUS.ON_GOING,
+                    id: ride.id
+                };
+                console.log('on interval run', JSON.stringify(newFilter));
+                let currentRide = await RideBooking.findOne(newFilter);
+                console.log('before typeof interval', typeof self[`rideEnd${ride.id}`], self[`rideEnd${ride.id}`]);
+                if (currentRide && currentRide.id) {
+                    await this.stopRideForceFully(ride, null, sails.config.IS_AUTO_DEDUCT, true);
+                }
+                await clearInterval(self[`rideEnd${ride.id}`]);
+                console.log('after typeof interval', typeof self[`rideEnd${ride.id}`], self[`rideEnd${ride.id}`]);
+                self[`rideEnd${ride.id}`] = null;
+                console.log('after typeof interval', typeof self[`rideEnd${ride.id}`], self[`rideEnd${ride.id}`]);
+            }, 1000 * timeDiff);
+        }
+
+    },
+
+    // maxRideTimeLimitWithWalletBalance = in minutes
+    // 10
+    async setBookingPassRideEndTime(ride, maxRideTimeLimitWithWalletBalance) {
+        let currentBookPlanInvoice = await PlanInvoice.findOne({ id: ride.planInvoiceId });
+        if (!currentBookPlanInvoice || !currentBookPlanInvoice.id) {
+            return false;
+        }
+        console.log('currentBookPlanInvoice', JSON.stringify(currentBookPlanInvoice));
+        // let vehicleTypePass = await BookingPassService.getPlanPriceDetails(currentBookPlanInvoice.planData, ride.vehicleType);
+        console.log('maxRideTimeLimitWithWalletBalance', maxRideTimeLimitWithWalletBalance);
+        let minimumAvailableTimeInSeconds = maxRideTimeLimitWithWalletBalance * 60;
+        console.log('minimumAvailableTimeInSeconds', minimumAvailableTimeInSeconds);
+
+        let remainingTimeLimitInSeconds = currentBookPlanInvoice.remainingTimeLimit;
+        console.log('remainingTimeLimitInSeconds', remainingTimeLimitInSeconds);
+
+        if (!minimumAvailableTimeInSeconds) {
+            minimumAvailableTimeInSeconds = remainingTimeLimitInSeconds;
+        }
+        console.log('minimumAvailableTimeInSeconds 2', minimumAvailableTimeInSeconds, minimumAvailableTimeInSeconds < remainingTimeLimitInSeconds);
+        // ride will be end due to low wallet balance
+        if (minimumAvailableTimeInSeconds < remainingTimeLimitInSeconds) {
+            return false;
+        }
+        console.log('minimumAvailableTimeInSeconds, remainingTimeLimitInMinute', minimumAvailableTimeInSeconds, remainingTimeLimitInSeconds);
+        if (minimumAvailableTimeInSeconds > remainingTimeLimitInSeconds) {
+            minimumAvailableTimeInSeconds = remainingTimeLimitInSeconds;
+        }
+        let currentTime = UtilService.getTimeFromNow();
+        console.log('currentTime', currentTime, currentBookPlanInvoice.expirationEndDateTime);
+
+        // compare with expiry time
+        let timeDiff = UtilService.getTimeDifference(currentTime, currentBookPlanInvoice.expirationEndDateTime, 'seconds');
+        console.log('timeDiff', timeDiff, minimumAvailableTimeInSeconds);
+
+        if (minimumAvailableTimeInSeconds > timeDiff) {
+            minimumAvailableTimeInSeconds = timeDiff;
+        }
+        console.log('minimumAvailableTimeInSeconds', minimumAvailableTimeInSeconds);
+
+        if (minimumAvailableTimeInSeconds <= 60) {
+            console.log('minimumAvailableTimeInSeconds remain 666666 => ', minimumAvailableTimeInSeconds);
+            let maxRideTime = UtilService.addTime(minimumAvailableTimeInSeconds, currentTime, 'seconds');
+            console.log('maxRideTime sm -> ', maxRideTime);
+
+            this.setEndRideIntervalForLowBalance(ride, minimumAvailableTimeInSeconds, currentTime, maxRideTime);
+            // return maxRideTime;
+        }
+        console.log('maxRideTime minimumAvailableTimeInSeconds sm 33333', minimumAvailableTimeInSeconds);
+
+        return minimumAvailableTimeInSeconds;
+    },
+
     async beforeCreate(rideBooking, cb) {
         const SeriesGeneratorService = require('./seriesGenerator');
         let seriesParams = {};
@@ -4120,6 +4532,33 @@ module.exports = {
         rideBooking.iotRideId = totalEntry[0].total + 1;
 
         cb(null, rideBooking);
+    },
+
+    async getLastRideAndTransactions(options) {
+        let userid = options;
+        userid = ObjectId(userid);
+        console.log(userid);
+        let query = [
+            {
+                $match: {
+                    userId: userid
+                }
+            },
+            {
+                $sort: {
+                    endDateTime: -1
+                }
+            },
+            {
+                $limit:
+                    1
+            }
+
+        ];
+
+        let totalEntry = await CommonService.runAggregateQuery(query, 'RideBooking');
+
+        return totalEntry;
     },
 
     afterCreate: async function (options) {

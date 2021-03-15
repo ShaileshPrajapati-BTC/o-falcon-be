@@ -13,20 +13,5 @@
         "code": "ABOUT_US",
         "description": "<h2><strong>rohak </strong> : first mile to last mile solutions</h2><p><strong>rohak the rising wagon</strong></p><p><span style=\"color: rgb(0,0,0);font-size: 16pt;font-family: Comic Sans MS;\"> Rohak will comfort your life building ease to operate, maintain and scale, software manifesto for the shared mobility players.</span></p><p><span style=\"color: rgb(0,0,0);font-size: 16pt;font-family: Comic Sans MS;\">A platform to share your ride as new paradigm that enables access to services beyond ownership, so let’s start scooting with smart commutes and share your assets.</span></p><p><span style=\"color: rgb(0,0,0);font-size: 16pt;font-family: Comic Sans MS;\">Rohak provide sustainable solutions to </span><span style=\"color: rgb(0,0,0);background-color: rgb(255,255,255);font-size: 16pt;font-family: Comic Sans MS;\">technological challenges, which will lead to,</span><span style=\"color: rgb(0,0,0);font-size: 16pt;font-family: Comic Sans MS;\">much stronger ecosystem within the urban mobility space.</span></p><p></p>\n",
         "forCustomer": true
-    },
-    {
-        "code": "PRIVACY_POLICY",
-        "description": "<h2></h2>",
-        "forCustomer": false
-    },
-    {
-        "code": "ABOUT_US",
-        "description": "<h2></h2>",
-        "forCustomer": false
-    },
-    {
-        "code": "TERMS_CONDITION",
-        "description": "<h2></h2>",
-        "forCustomer": false
     }
 ]
