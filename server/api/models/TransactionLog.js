@@ -103,6 +103,7 @@ module.exports = {
             type: 'string',
             columnType: 'datetime'
         },
+        // Same using for MPGS as order_id
         noqoodyReferenceId: {
             type: 'string'
         },

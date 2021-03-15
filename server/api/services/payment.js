@@ -1,5 +1,6 @@
 const StripeService = require(`./Payment/Stripe/payment`);
 const NoqoodyService = require(`./Payment/Noqoody/payment`);
+const MPGSService = require(`./Payment/Mastercard/payment`);
 
 const UtilService = require(`./util`);
 const CommonService = require('./common');
@@ -129,7 +130,7 @@ module.exports = {
         console.log('transactionDetail -> ', transactionDetail);
 
         try {
-            let DEFAULT_PAYMENT_METHOD = sails.config.DEFAULT_PAYMENT_METHOD;
+            let DEFAULT_PAYMENT_METHOD = "MASTERCARD";
             let res = { flag: false };
             let data;
 
@@ -143,11 +144,12 @@ module.exports = {
                     case sails.config.PAYMENT_GATEWAYS.STRIPE:
                         data = await StripeService.chargeCustomerForRide(transactionDetail);
                         break;
-
                     case sails.config.PAYMENT_GATEWAYS.NOQOODY:
                         data = await NoqoodyService.chargeCustomer(transactionDetail, paymentDetail);
                         break;
-
+                    case sails.config.PAYMENT_GATEWAYS.MASTERCARD:
+                        data = await MPGSService.chargeCustomer(transactionDetail, paymentDetail);
+                        break;
                     default:
                         break;
                 }
@@ -163,6 +165,17 @@ module.exports = {
                     } else {
                         res.data.noqoodyReferenceId = paymentData.noqoodyReferenceId;
                         res.data.paymentLink = paymentData.paymentLink;
+                    }
+                };
+                if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.MASTERCARD) {
+                    let paymentData = await MPGSService.getPaymentLink(transactionDetail, paymentDetail, res.data.id);
+                    if (!paymentData.paymentLink || !paymentData.noqoodyReferenceId) {
+                        res = {};
+                        res.flag = false;
+                        res.data = paymentData;
+                    } else {
+                        res.data.noqoodyReferenceId = paymentData.noqoodyReferenceId;
+                        res.data.htmlContent = paymentData.paymentLink;
                     }
                 };
             } else {

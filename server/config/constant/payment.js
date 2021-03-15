@@ -1,7 +1,8 @@
 module.exports = {
     PAYMENT_GATEWAYS: {
         STRIPE: 'STRIPE',
-        NOQOODY: 'NOQOODY'
+        NOQOODY: 'NOQOODY',
+        MASTERCARD: 'MASTERCARD'
     },
     PAYMENT_ERRORS: {
         STRIPE: {

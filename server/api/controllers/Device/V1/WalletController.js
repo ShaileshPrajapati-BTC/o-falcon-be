@@ -32,10 +32,10 @@ module.exports = {
                 }
             }
             await WalletService.validateAddWalletAmount(params.amount);
-
             let chargeObj = await PaymentService.addBalanceInUserWallet(
                 loggedInUser.id,
-                params.amount
+                params.amount,
+                params
             );
 
             let bonusAmount = 0;
