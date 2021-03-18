@@ -21,11 +21,12 @@ module.exports = {
     for (i = 0; i < keyLength; i++) {
         key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
     }
+    console.log("========",key)
     return key;
   },
     //Get MPGS payment token.
     async getToken() {
-        return 'Basic ' + new Buffer(Mpgs_Config.USERNAME + ":" + Mpgs_Config.PASSWORD).toString("base64");
+        return 'Basic ' + new Buffer.from(Mpgs_Config.USERNAME + ":" + Mpgs_Config.PASSWORD, 'utf-8').toString("base64");
     },
 
     async getBaseUrl(config) {
@@ -33,7 +34,7 @@ module.exports = {
     },
 
     async getMerchantUrl(config) {
-      return this.getBaseUrl(config) + "/api/rest/version/" + config.API_VERSION + "/merchant/" + config.MERCHANTID;
+      return await this.getBaseUrl(config) + "/api/rest/version/" + config.API_VERSION + "/merchant/" + config.MERCHANTID;
     },
   
     //Get noqoody payment project code.
@@ -42,41 +43,50 @@ module.exports = {
     },
 
     async getHtmlContent (amount, secureId, sessionId) {
-      var url = this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + secureId;
-      var requestData = {
-        "apiOperation": "CHECK_3DS_ENROLLMENT",
-        "order": {
-            "amount": amount,
-            "currency": "QAR"
-        },
-        "session": {
-            "id": sessionId
-        },
-        "3DSecure": {
-            "authenticationRedirect": {
-                "responseUrl": "/noqoody/payment-callback",
-                "pageGenerationMode": "SIMPLE"
+        var dsSecureID = await this.keyGen(10)
+        // var dsSecureID = "VJgCsdKxA"
+        console.log("dsSecureID",dsSecureID)
+        var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + dsSecureID;
+        var requestData = {
+            "apiOperation": "CHECK_3DS_ENROLLMENT",
+            "order": {
+                "amount": amount,
+                "currency": "QAR"
+            },
+            "session": {
+                "id": sessionId
+            },
+            "3DSecure": {
+                "authenticationRedirect": {
+                    "responseUrl": `https://7eae7c6be141.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    "pageGenerationMode": "SIMPLE"
+                }
             }
-        }
-      };
-      let response = await new Promise((resolve, reject) => {
-        const options = {
-            url: url,
-            json: requestData,
-            headers: {
-              Authorization: this.getToken()
-          },
-            timeout: 10000
         };
-        request(options, (error, response, body) => {
-          resolve(body);
-        });
+        let token = await this.getToken();
+        let response = await new Promise((resolve, reject) => {
+                const options = {
+                    url: url,
+                    json: requestData,
+                    headers: {
+                    Authorization: token
+                },
+                    timeout: 10000
+                };
+                console.log("options", options)
+                request.put(options, (error, response1, body) => {
+                console.log("body", body)
+                console.log("error", error)
+                // console.log("response",response1)
+                resolve(body);
+                });
+            });
+            // console.log(response);
         return response
-    });
     },
 
     //Function for request payment link and return payment link.
-    async getPaymentLink(ride, amount, transactionId) {
+    async getPaymentLink(ride, paymentDetail, transactionId) {
         const user = await User.findOne({ id: ride.userId });
         user.email = UtilService.getPrimaryEmail(user.emails);
         user.mobile = UtilService.getPrimaryValue(user.mobiles, 'mobile');
@@ -86,20 +96,20 @@ module.exports = {
         if (!user.mobile) {
             user.mobile = sails.config.NOQOODY_DEFAULT_MOBILE;
         }
-
+        console.log("========in Payment Link",{ride, paymentDetail, transactionId})
         let data = {};
         try {
             // API call to get the hmltcontent for payment gatway
             const paymentLink = await this.getHtmlContent(
                 ride.totalFare,
-                this.keyGen(10),
-                transactionId
+                transactionId,
+                paymentDetail.sessionId,
             );
-           
+            console.log("paymentLink",paymentLink)
             await TransactionLog.update({
                 id: transactionId
             }, { noqoodyReferenceId: transactionId }).fetch();
-            data.paymentLink = paymentLink;
+            data.paymentLink = paymentLink && paymentLink['3DSecure'] && paymentLink['3DSecure'].authenticationRedirect.simple.htmlBodyContent;
             data.noqoodyReferenceId = transactionId;
         } catch (e) {
             console.log('Payment error ******************', e);
@@ -158,4 +168,84 @@ module.exports = {
       }
       return data;
   },
+  async process3ds (req){
+    var pares = req.PaRes;
+    // var scid = await this.keyGen(10);
+    var ssid = req.sessionId;
+    var scid = req.secureId;
+    console.log("req.body", req)
+    var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + scid;
+    var requestData = {
+        "apiOperation": "PROCESS_ACS_RESULT",
+        "3DSecure": {
+            "paRes": pares
+        }
+    }
+    let token = await this.getToken();
+    var options = {
+        url: url,
+        json: requestData,
+        headers: {
+            Authorization: token
+        }
+        
+    };
+    let responseResult = await new Promise((resolve, reject) => {
+        request.post(options, async (error, response, Resultbody) => {
+            console.log("PROCESS_ACS_RESULT", Resultbody)
+            // return callback(error, body);
+            if (!error) {
+                var payload = {
+                    "apiOperation": "PAY",
+                    "3DSecureId": scid,
+                    "order": {
+                        "amount": 50,
+                        "currency": "QAR"
+                    },
+                    "session": {
+                        "id": ssid
+                    },
+                    "sourceOfFunds": {
+                        "type": "CARD"
+                    },
+                    "transaction":{
+                        "source": "INTERNET"
+                    }
+                }
+                // resolve(body)
+                var transactionId = await this.keyGen(10);
+                var orderId = await this.keyGen(10);
+                var requestUrl = await this.getMerchantUrl(Mpgs_Config) + "/order/" + orderId + "/transaction/" + transactionId;
+                var options = {
+                    url: requestUrl,
+                    method: "PUT",
+                    json: payload,
+                    headers: {
+                        Authorization: token
+                    }
+                }
+                request(options, function (error, response, body) {
+                    console.log({body})
+                    if (error) {
+                        resolve({error: true})
+                        return {
+                            error: true,
+                            message: error,
+                            url: requestUrl
+                        };
+                    } else {
+                        resolve(Resultbody)
+                        return{
+                            error: false,
+                            message: body,
+                            url: requestUrl
+                        };
+                    }
+                });
+            }
+        });
+    })
+
+    return responseResult;
+  }
 }

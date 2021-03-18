@@ -140,7 +140,7 @@ module.exports = {
             console.log('credit amount', amount);
             if (amount > 0) {
                 //Check payment method and proceed payment
-                switch (DEFAULT_PAYMENT_METHOD) {
+                switch (sails.config.PAYMENT_GATEWAYS.MASTERCARD) {
                     case sails.config.PAYMENT_GATEWAYS.STRIPE:
                         data = await StripeService.chargeCustomerForRide(transactionDetail);
                         break;
@@ -156,19 +156,20 @@ module.exports = {
                 data.isWalletTransaction = true;
                 res = await this.transactionLog(data, transactionDetail.walletTransactionType);
                 //Get payment link
-                if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.NOQOODY) {
-                    let paymentData = await NoqoodyService.getPaymentLink(transactionDetail, paymentDetail, res.data.id);
-                    if (!paymentData.paymentLink || !paymentData.noqoodyReferenceId) {
-                        res = {};
-                        res.flag = false;
-                        res.data = paymentData;
-                    } else {
-                        res.data.noqoodyReferenceId = paymentData.noqoodyReferenceId;
-                        res.data.paymentLink = paymentData.paymentLink;
-                    }
-                };
-                if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.MASTERCARD) {
+                // if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.NOQOODY) {
+                //     let paymentData = await NoqoodyService.getPaymentLink(transactionDetail, paymentDetail, res.data.id);
+                //     if (!paymentData.paymentLink || !paymentData.noqoodyReferenceId) {
+                //         res = {};
+                //         res.flag = false;
+                //         res.data = paymentData;
+                //     } else {
+                //         res.data.noqoodyReferenceId = paymentData.noqoodyReferenceId;
+                //         res.data.paymentLink = paymentData.paymentLink;
+                //     }
+                // };
+                if (sails.config.PAYMENT_GATEWAYS.MASTERCARD === sails.config.PAYMENT_GATEWAYS.MASTERCARD) {
                     let paymentData = await MPGSService.getPaymentLink(transactionDetail, paymentDetail, res.data.id);
+                    console.log("paymentData.ee",paymentData.paymentLink)
                     if (!paymentData.paymentLink || !paymentData.noqoodyReferenceId) {
                         res = {};
                         res.flag = false;
