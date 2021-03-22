@@ -58,7 +58,7 @@ module.exports = {
             },
             "3DSecure": {
                 "authenticationRedirect": {
-                    "responseUrl": `https://7eae7c6be141.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    "responseUrl": `https://8f38c8f90d29.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
                     "pageGenerationMode": "SIMPLE"
                 }
             }
@@ -227,14 +227,15 @@ module.exports = {
                 request(options, function (error, response, body) {
                     console.log({body})
                     if (error) {
-                        resolve({error: true})
+                        resolve({success: false})
                         return {
                             error: true,
                             message: error,
                             url: requestUrl
                         };
                     } else {
-                        resolve(Resultbody)
+                        let orderId = body.order.id
+                        resolve({...Resultbody, orderId, success: true})
                         return{
                             error: false,
                             message: body,
@@ -247,5 +248,90 @@ module.exports = {
     })
 
     return responseResult;
+  },
+  async validatePayment(orderId, response){
+    if (!orderId) {
+        throw sails.config.message.REFERENCE_ID_NOT_FOUND;
+    }
+    let transaction = await TransactionLog.findOne({
+        noqoodyReferenceId: orderId
+    });
+    if (!transaction || !transaction.id) {
+        throw sails.config.message.TRANSACTION_NOT_FOUND;
+    }
+    if (transaction && transaction.status === sails.config.STRIPE.STATUS.paid) {
+        throw sails.config.message.PAYMENT_ALREADY_SUCCESS;
+    }
+    //Check transaction is success.
+    if (response.success) {
+        transaction.statusTrack.push({
+            status: sails.config.STRIPE.STATUS.paid,
+            remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_DONE,
+            datetime: moment().toISOString(),
+            isByAdmin: false
+        });
+        //If success then update transaction status paid and add transaction id
+        let updateTransaction = {
+            status: sails.config.STRIPE.STATUS.paid,
+            remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_DONE,
+            paymentTransactionId: response.TransactionID,
+            statusTrack: transaction.statusTrack
+        };
+        let updatedTransaction = await TransactionLog.update({
+            id: transaction.id,
+        }).set(updateTransaction).fetch();
+        if (!updatedTransaction || !updatedTransaction.length) {
+            return sails.config.message.PAYMENT_REQUEST_FAILED;
+        }
+        const user = await User.findOne({ id: transaction.transactionBy });
+
+        //Add amount to user wallet.
+        let newAmount = user.walletAmount + transaction.amount;
+        newAmount = UtilService.getFloat(newAmount);
+        let updateUserWallet = await User.update(
+            { id: user.id },
+            { walletAmount: newAmount }
+        ).fetch();
+        await payment.addBonusForWalletTransaction(transaction);
+
+        if (updateUserWallet || updateUserWallet.length > 0) {
+            return true;
+        }
+    }
+
+    if (!response.success) {
+        
+        let updatedTransaction = await TransactionLog.update({
+            id: transaction.id
+            })
+            .set({
+                status: sails.config.STRIPE.STATUS.failed,
+                remark: sails.config.message.PAYTM_TRANSACTION_PENDING.message,
+                statusTrack: transaction.statusTrack
+            })
+            .fetch()
+        throw sails.config.message.PAYTM_TRANSACTION_PENDING;
+    }
+
+    transaction.statusTrack.push({
+        status: sails.config.STRIPE.STATUS.failed,
+        remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_FAILED,
+        datetime: moment().toISOString(),
+        isByAdmin: false
+    });
+    //If transaction fail then update transaction log status fail and remark.
+    let updateTransaction = {
+        status: sails.config.STRIPE.STATUS.failed,
+        remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_FAILED,
+        statusTrack: transaction.statusTrack
+    };
+    if (orderId) {
+        updateTransaction.paymentTransactionId = orderId;
+    }
+    let updatedTransaction = await TransactionLog.update({
+        id: transaction.id,
+    }).set(updateTransaction).fetch();
+
+    return false
   }
 }
