@@ -861,23 +861,26 @@ module.exports = {
             };
 
             // Inventory Report Tab Start here
-              
-            let locationData = await IOTCallbackLocationTrack.find(filter)
-            locationData = locationData.map((data) => data.data)
-            let vehicless = await Vehicle.find({})
+
+            await Vehicle.find({})
             .select(['nestId', 'imei', 'name', 'registerId']).populate('nestId', {select: ['zoneId']})
             .then(async res =>{
                 let vehicalList =  await Promise.all(res.map(async(vehicle)=>{
                     let zoneName = vehicle.nestId && await Zone.find({id: vehicle.nestId.zoneId}).select(['name'])
+                    let last24hourLocation = await IOTCallbackLocationData
+                    .find({'data.imei': vehicle.imei})
+                    .sort('createdAt DESC')
+                    .limit(24)
+                    .meta({ enableExperimentalDeepTargets: true })
                     return {
                         date: moment().tz(timezone).format(`DD/MM/YYYY`),
                         vehicleName: `${vehicle.name} -${vehicle.registerId}`,
                         zoneName: zoneName && zoneName[0] && zoneName[0].name,
-                        location: locationData.filter(locat=> locat.imei == vehicle.imei)
+                        location: last24hourLocation.map(locat=> locat.data)
                     }
                 }))
                 finalResult = vehicalList.map(({location, ...rest})=>{
-                    console.log("vehicalList", location, rest)
+                    // console.log("vehicalList", location, rest)
                     let locationTrack = {}
                     location.map((loc,i)=>{
                         return {

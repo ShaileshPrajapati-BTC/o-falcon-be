@@ -846,10 +846,40 @@ module.exports = {
             sails.log.error('Error while running cron removeDailyMonthlyBookingPass.', e);
         }
     },
-
+    async saveLocationDataOfVehicle() {
+        // Save last Location track data of each vehicle
+        try {
+            await Vehicle.find({})
+            .select(['nestId', 'imei', 'name', 'registerId']).populate('nestId', {select: ['zoneId']})
+            .then(async res =>{
+               await Promise.all(res.map(async(vehicle)=>{
+                    let zoneName = vehicle.nestId && await Zone.find({id: vehicle.nestId.zoneId}).select(['name'])
+                    let currentLocation = await IOTCallbackLocationTrack
+                    .find({'data.imei': vehicle.imei})
+                    .sort('createdAt DESC')
+                    .limit(1)
+                    .meta({ enableExperimentalDeepTargets: true });
+                    console.log("vehicle.imei",vehicle.imei,currentLocation)
+                    await IOTCallbackLocationData.create({
+                            imei: vehicle.imei,
+                            vehicleName: `${vehicle.name} -${vehicle.registerId}`,
+                            zoneName: zoneName && zoneName[0] && zoneName[0].name || "",
+                            data: currentLocation[0] && (currentLocation[0].data || {})
+                    })
+                }))
+            })    
+       
+        } catch (error) {
+            sails.log.error('Error while saving the location.', error);
+        }
+    },
+    async destroyLocationDataAfter2Days() {
+        let deleteTime = UtilService.subtractTime(1, null, 'days');
+        let filter = { createdAt: { '<': deleteTime } };
+        await IOTCallbackLocationData.destroy(filter)
+    },
     async sendExcelReport() {
         try {
-
             var timezone =  sails.config.DEFAULT_TIME_ZONE;
             let startTime = moment.tz(timezone).subtract('1', 'day').startOf('day').utc().toISOString();
             let endTime = moment.tz(timezone).startOf('day').utc().toISOString();
