@@ -289,7 +289,22 @@ module.exports.cron = {
             CronService.sendExcelReport();
         }
     },
-
+    saveLocationTrackData: {
+        // schedule: '*/1 * * * *',
+        schedule: '0 * * * *',//every hour
+        onTick: function () {
+            console.log('Save Location Data every hour ******************88', new Date());
+            CronService.saveLocationDataOfVehicle();
+        }
+    },
+    destroyLocationDataAfter2Days: {
+        // schedule: '*/1 * * * *',
+        schedule: '0 0 * * 0',//every 2 day
+        onTick: async function () {
+            console.log('Destroy Location Data every two day ******************88', new Date());
+            CronService.destroyLocationDataAfter2Days();
+        }
+    },
     endRideAfterSpecificTime: {
         schedule: '*/1 * * * *',
         onTick: function () {

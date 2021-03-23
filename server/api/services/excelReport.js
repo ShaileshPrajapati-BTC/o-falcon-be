@@ -860,6 +860,71 @@ module.exports = {
                 bold: true
             };
 
+            // Inventory Report Tab Start here
+
+            await Vehicle.find({})
+            .select(['nestId', 'imei', 'name', 'registerId']).populate('nestId', {select: ['zoneId']})
+            .then(async res =>{
+                let vehicalList =  await Promise.all(res.map(async(vehicle)=>{
+                    let zoneName = vehicle.nestId && await Zone.find({id: vehicle.nestId.zoneId}).select(['name'])
+                    let last24hourLocation = await IOTCallbackLocationData
+                    .find({'data.imei': vehicle.imei})
+                    .sort('createdAt DESC')
+                    .limit(24)
+                    .meta({ enableExperimentalDeepTargets: true })
+                    return {
+                        date: moment().tz(timezone).format(`DD/MM/YYYY`),
+                        vehicleName: `${vehicle.name} -${vehicle.registerId}`,
+                        zoneName: zoneName && zoneName[0] && zoneName[0].name,
+                        location: last24hourLocation.map(locat=> locat.data)
+                    }
+                }))
+                finalResult = vehicalList.map(({location, ...rest})=>{
+                    // console.log("vehicalList", location, rest)
+                    let locationTrack = {}
+                    location.map((loc,i)=>{
+                        return {
+                            [`latitude${i+1}`]: loc.lat, 
+                            [`longitude${i+1}`]: loc.lng
+                        }
+                    }).map((loc,i)=>(
+                        [
+                            {['latitude'+(i+1)]: loc['latitude'+(i+1)]}, 
+                            {['longitude'+(i+1)]: loc['longitude'+(i+1)]}
+                        ]))
+                        .flat()
+                        .map(loca=> Object.assign(locationTrack, loca))
+                    return {
+                        ...rest,
+                        ...locationTrack
+                    }
+                })
+                return [finalResult]
+            }).spread((result) =>{
+
+                const inventoryReport = workbook.addWorksheet('Inventory Report');
+                inventoryReport.mergeCells('A1', 'B1');
+                inventoryReport.getCell('A1').value = 'Inventory Report';
+                inventoryReport.getCell('A3').value = 'Start Date & Time:';
+                inventoryReport.getCell('B3').value = moment(startTime).tz(timezone).format(`DD-MM-YYYY HH:mm:ss`);
+                inventoryReport.getCell('A4').value = 'End Date & Time:';
+                inventoryReport.getCell('B4').value = moment(endTime).tz(timezone).format(`DD-MM-YYYY HH:mm:ss`);
+                inventoryReport.getRow(6).values = [
+                    'Date', 
+                    'E-Scooter / Vehicle ID', 
+                    'Zone Name', 
+                    ...[...Array(24).keys()]
+                    .map((row, i)=>(['latitude'+(i+1), 'longitude'+(i+1)])).flat()
+                ];
+                inventoryReport.columns = [
+                    { key: 'date', width: 32 },
+                    { key: 'vehicleName', width: 25, outlineLevel: 1 },
+                    { key: 'zoneName', width: 25, outlineLevel: 1 },
+                   ...[...Array(24).keys()].map((row, i)=>([{key: 'latitude'+(i+1), width: 25, outlineLevel: 1},{key: 'longitude'+(i+1), width: 25, outlineLevel: 1}])).flat()
+                ];
+                inventoryReport.addRows(result);
+            })
+            
             let currentDate = moment_tz(startTime).tz(timezone).format(`DD/MM/YY`);
             let subjectCurrentDate = moment_tz(startTime).tz(timezone).format(`MM/DD/YY`);
             let filepath = `${sails.config.appPath}/assets/excel`;
