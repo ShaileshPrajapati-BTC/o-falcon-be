@@ -308,4 +308,7 @@ module.exports.policies = {
     'Device/V1/ReferralBenefitController': {
         '*': ['hasDeviceToken']
     },
+    'Device/V1/UserCardController': {
+        '*': ['hasDeviceToken']
+    },
 };

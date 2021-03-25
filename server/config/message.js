@@ -2179,5 +2179,10 @@ module.exports = {
             message: 'Verifying transaction.',
             status: 200
         },
+        CARD_NOT_FOUND: {
+            code: 'E_NOT_FOUND',
+            message: 'Card not found.',
+            status: 404
+        },
     }
 };
