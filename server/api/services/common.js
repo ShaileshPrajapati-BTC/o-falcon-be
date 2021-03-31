@@ -581,7 +581,7 @@ module.exports = {
     },
     async convertPDFToImage(sourcePDF, destImagePath) {
         try {
-            let convertCommand = `convert ${sourcePDF} +profile "icc" 
+            let convertCommand = `convert ${sourcePDF} +profile "icc"
              -background white -alpha remove -alpha off ${destImagePath}`;
 
             return await new Promise((resolve, reject) => {
@@ -1246,7 +1246,7 @@ module.exports = {
         let mobileConfig = {
             rideSubscriptionFeatureActive: sails.config.RIDE_SUBSCRIPTION_FEATURE_ACTIVE,
             isBookingPassFeatureActive: sails.config.IS_BOOKING_PASS_FEATURE_ACTIVE,
-            riderCanAddCards: sails.config.RIDER_CAN_ADD_CARDS,
+            riderCanAddCards: true,
             kycAuthentication: sails.config.KYC_AUTHENTICATION,
             showGeoFenceInApp: sails.config.SHOW_GEO_FENCE_IN_APP,
             minAgeRequired: setting.minAgeRequired,

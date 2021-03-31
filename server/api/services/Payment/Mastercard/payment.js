@@ -36,32 +36,33 @@ module.exports = {
     async getMerchantUrl(config) {
       return await this.getBaseUrl(config) + "/api/rest/version/" + config.API_VERSION + "/merchant/" + config.MERCHANTID;
     },
-  
+
     //Get noqoody payment project code.
     async getProjectCode() {
         return sails.config.NOQOODYPAY_PROJECT_CODE;
     },
 
     async getHtmlContent (amount, secureId, sessionId) {
-        var dsSecureID = await this.keyGen(10)
+        //var dsSecureID = await this.keyGen(10)
+        var dsSecureID = secureId
         // var dsSecureID = "VJgCsdKxA"
         console.log("dsSecureID",dsSecureID)
         var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + dsSecureID;
         var requestData = {
-            "apiOperation": "CHECK_3DS_ENROLLMENT",
-            "order": {
-                "amount": amount,
-                "currency": "QAR"
+            apiOperation: "CHECK_3DS_ENROLLMENT",
+            order: {
+                amount: amount,
+                currency: "QAR",
             },
-            "session": {
-                "id": sessionId
+            session: {
+                id: sessionId,
             },
             "3DSecure": {
-                "authenticationRedirect": {
-                    "responseUrl": `http://lb.staging.falconride.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
-                    "pageGenerationMode": "SIMPLE"
-                }
-            }
+                authenticationRedirect: {
+                    responseUrl: `https://1bd7c94018a0.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    pageGenerationMode: "SIMPLE",
+                },
+            },
         };
         let token = await this.getToken();
         let response = await new Promise((resolve, reject) => {
@@ -155,7 +156,7 @@ module.exports = {
               datetime: moment().toISOString()
           }];
           data.statusTrack = statusTrack;
-          // return response; 
+          // return response;
       } catch (e) {
           console.log('Payment error ******************', e);
           data.transactionSuccess = false;
@@ -168,13 +169,14 @@ module.exports = {
       }
       return data;
   },
-  async process3ds (req){
+  async process3ds (req) {
     var pares = req.PaRes;
     // var scid = await this.keyGen(10);
     var ssid = req.sessionId;
     var scid = req.secureId;
+    const orderId = req.secureId;
     console.log("req.body", req)
-    var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + scid;
+    var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + orderId;
     var requestData = {
         "apiOperation": "PROCESS_ACS_RESULT",
         "3DSecure": {
@@ -188,33 +190,42 @@ module.exports = {
         headers: {
             Authorization: token
         }
-        
     };
+
+    const transaction = await TransactionLog.findOne({
+        id: orderId
+    });
+
     let responseResult = await new Promise((resolve, reject) => {
         request.post(options, async (error, response, Resultbody) => {
             console.log("PROCESS_ACS_RESULT", Resultbody)
             // return callback(error, body);
-            if (!error) {
+            const gatewayRecommendation = Resultbody.response && Resultbody.response.gatewayRecommendation
+                ? Resultbody.response && Resultbody.response.gatewayRecommendation
+                : '';
+            console.log("gatewayRecommendation", gatewayRecommendation)
+
+            if (!error && gatewayRecommendation === 'PROCEED') {
                 var payload = {
-                    "apiOperation": "PAY",
+                    apiOperation: "AUTHORIZE",
                     "3DSecureId": scid,
-                    "order": {
-                        "amount": 50,
-                        "currency": "QAR"
+                    order: {
+                        amount: transaction.amount,
+                        currency: "QAR",
                     },
-                    "session": {
-                        "id": ssid
+                    session: {
+                        id: ssid,
                     },
-                    "sourceOfFunds": {
-                        "type": "CARD"
+                    sourceOfFunds: {
+                        type: "CARD",
                     },
-                    "transaction":{
-                        "source": "INTERNET"
-                    }
-                }
+                    transaction: {
+                        source: "INTERNET",
+                    },
+                };
                 // resolve(body)
                 var transactionId = await this.keyGen(10);
-                var orderId = await this.keyGen(10);
+                //var orderId = await this.keyGen(10);
                 var requestUrl = await this.getMerchantUrl(Mpgs_Config) + "/order/" + orderId + "/transaction/" + transactionId;
                 var options = {
                     url: requestUrl,
@@ -227,13 +238,29 @@ module.exports = {
                 request(options, function (error, response, body) {
                     console.log({body})
                     if (error) {
-                        resolve({success: false})
-                        return {
+                        //resolve({success: false})
+                        return resolve({
+                            orderId,
+                            success: false,
                             error: true,
                             message: error,
                             url: requestUrl
-                        };
+                        });
+                    } else if(body && body.result !== 'SUCCESS') {
+                        const response = body.response;
+                        return resolve({
+                            orderId,
+                            success: false,
+                            error: true,
+                            message: response.acquirerMessage
+                                ? response.acquirerMessage
+                                : response.gatewayCode
+                                    ? response.gatewayCode
+                                    : 'Error',
+                            url: requestUrl
+                        });
                     } else {
+                        //let orderId = body.order.id
                         let orderId = body.order && body.order.id
                         resolve({...Resultbody, orderId, success: true})
                         return{
@@ -242,6 +269,14 @@ module.exports = {
                             url: requestUrl
                         };
                     }
+                });
+            } else if(gatewayRecommendation === 'DO_NOT_PROCEED') {
+                return resolve({
+                    orderId,
+                    success: false,
+                    error: true,
+                    message: gatewayRecommendation,
+                    url: requestUrl
                 });
             }
         });
@@ -300,7 +335,12 @@ module.exports = {
     }
 
     if (!response.success) {
-        
+        transaction.statusTrack.push({
+            status: sails.config.STRIPE.STATUS.failed,
+            remark: sails.config.message.PAYTM_TRANSACTION_PENDING.message,
+            datetime: moment().toISOString(),
+            isByAdmin: false
+        });
         let updatedTransaction = await TransactionLog.update({
             id: transaction.id
             })
@@ -310,6 +350,9 @@ module.exports = {
                 statusTrack: transaction.statusTrack
             })
             .fetch()
+        if (!updatedTransaction || !updatedTransaction.length) {
+            return sails.config.message.PAYMENT_REQUEST_FAILED;
+        }
         throw sails.config.message.PAYTM_TRANSACTION_PENDING;
     }
 

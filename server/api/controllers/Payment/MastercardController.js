@@ -9,7 +9,8 @@ module.exports = {
             console.log('-------------------Callback url params-------------');
             console.log(params);
             var result = await PaymentService.process3ds(params)
-            console.log("Payment resposne", result)
+            console.log("Payment response", result)
+            await PaymentService.validatePayment(result.orderId, result)
             if (result.success){
                 let response = { gatewayRecommendation: 'PROCEED', status: 'PROCEED', message: sails.config.message.WALLET_CREDIT_REQUEST_CHARGE_SUCCESS }
                 return res.redirect(`gatewaysdk://3dsecure?acsResult=${JSON.stringify(response)}`)

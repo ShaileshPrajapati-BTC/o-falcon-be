@@ -178,9 +178,9 @@ module.exports = {
         if (!noqoodyReferenceId) {
             throw sails.config.message.REFERENCE_ID_NOT_FOUND;
         }
-        let transaction = await TransactionLog.findOne({
-            noqoodyReferenceId: noqoodyReferenceId
-        });
+            let transaction = await TransactionLog.findOne({
+                noqoodyReferenceId: noqoodyReferenceId
+            });
         if (!transaction || !transaction.id) {
             throw sails.config.message.TRANSACTION_NOT_FOUND;
         }
