@@ -59,7 +59,7 @@ module.exports = {
             },
             "3DSecure": {
                 authenticationRedirect: {
-                    responseUrl: `https://1bd7c94018a0.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    responseUrl: `https://lb.staging.falconride.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
                     pageGenerationMode: "SIMPLE",
                 },
             },
