@@ -78,7 +78,7 @@ module.exports = {
             "bonusAmount": 0
         }
     ],
-    RIDER_CAN_ADD_CARDS: false,
+    RIDER_CAN_ADD_CARDS: true,
     MIN_WALLET_AMOUNT_FOR_RIDE: 5,
     IS_AUTO_CREATE_TASK: false,
     IS_AUTO_OVERDUE_TASK: true,

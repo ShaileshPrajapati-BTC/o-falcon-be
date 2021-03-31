@@ -1,8 +1,8 @@
 module.exports.routes = {
-  'get /api/v1/customer/cards/paginate': {
-      controller: 'Device/V1/UserCardController',
-      action: 'paginate',
-  },
+  'POST /api/v1/customer/cards/paginate': {
+    controller: 'Device/V1/UserCardController',
+    action: 'paginate',
+ },
   'POST /api/v1/customer/cards/add': {
     controller: 'Device/V1/UserCardController',
     action: 'addCard',

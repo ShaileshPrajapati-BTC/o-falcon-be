@@ -19,6 +19,22 @@ const encrypt = (plainText) => {
   }
 }
 
+const decrypt = (encText) => {
+  if (encText === '') {
+      return encText;
+  }
+  const workingKey = sails.config.CRYPTO_WORKING_KEY;
+  let m = crypto.createHash('md5');
+  m.update(workingKey);
+  let key = m.digest();
+  let iv = '\x0c\x0d\x0e\x0f\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b';
+  let decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+  let decoded = decipher.update(encText, 'hex', 'utf8');
+  decoded += decipher.final('utf8');
+
+  return decoded;
+}
+
 module.exports = {
   async paginate(req, res) {
       let params = req.allParams();
@@ -50,7 +66,9 @@ module.exports = {
           ...params,
           userId: userId
         }
-        console.log(await encrypt(params.cardNumber))
+        // let encryptText = await encrypt(params.cardNumber)
+        // console.log("encryptText",encryptText)
+        // console.log(await decrypt(encryptText))
         await commonValidator.validateCreateParams(option);
         await UserCard.create(body)
         return res.ok(response, sails.config.message.OK);

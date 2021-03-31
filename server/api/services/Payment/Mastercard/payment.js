@@ -58,7 +58,7 @@ module.exports = {
             },
             "3DSecure": {
                 "authenticationRedirect": {
-                    "responseUrl": `https://8f38c8f90d29.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    "responseUrl": `http://lb.staging.falconride.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
                     "pageGenerationMode": "SIMPLE"
                 }
             }
@@ -234,7 +234,7 @@ module.exports = {
                             url: requestUrl
                         };
                     } else {
-                        let orderId = body.order.id
+                        let orderId = body.order && body.order.id
                         resolve({...Resultbody, orderId, success: true})
                         return{
                             error: false,

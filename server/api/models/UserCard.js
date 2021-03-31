@@ -7,8 +7,7 @@ module.exports = {
       },
       cardNumber: { 
         type: "string",
-        required: true,
-        unique: true
+        required: true
       },
       nameOnCard: {
         type: "string",
@@ -26,6 +25,10 @@ module.exports = {
         type: "boolean",
         defaultsTo: false,
       },
+      cardType: {
+        type: "string",
+        required: true
+      }
   }
 };
 
