@@ -1012,7 +1012,7 @@ module.exports = {
 
     async checkTransactionStatus() {
         try {
-            const olderThanTenMin = moment().subtract(2, 'minute').toDate().toISOString();
+            const olderThanTenMin = moment().subtract(10, 'minute').toDate().toISOString();
             const pendingTransactions = await TransactionLog.find({
                 status: sails.config.STRIPE.STATUS.pending,
                 createdAt: { '<=': olderThanTenMin}
