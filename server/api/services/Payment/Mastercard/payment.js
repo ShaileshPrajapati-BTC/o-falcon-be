@@ -59,7 +59,7 @@ module.exports = {
             },
             "3DSecure": {
                 authenticationRedirect: {
-                    responseUrl: `http://lb.staging.falconride.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    responseUrl: `https://a5ba4129863b.ngrok.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
                     pageGenerationMode: "SIMPLE",
                 },
             },
@@ -291,6 +291,7 @@ module.exports = {
     let transaction = await TransactionLog.findOne({
         noqoodyReferenceId: orderId
     });
+
     if (!transaction || !transaction.id) {
         throw sails.config.message.TRANSACTION_NOT_FOUND;
     }
@@ -376,5 +377,62 @@ module.exports = {
     }).set(updateTransaction).fetch();
 
     return false
-  }
+  },
+    async checkPaymentStatus(orderId) {
+        const merchantURL = await this.getMerchantUrl(Mpgs_Config)
+        const requestUrl = merchantURL + '/order/' + orderId;
+        let token = await this.getToken();
+
+        let options = {
+            url: requestUrl,
+            headers: {
+                Authorization: token
+            }
+        };
+
+        return new Promise(function (resolve) {
+            request.get(options, function (error, response, body) {
+                if(typeof body === 'string') body = JSON.parse(body)
+                if(error){
+                    console.error(error);
+                    resolve({
+                        orderId,
+                        success: false,
+                        error: true,
+                        message: error.message || 'Transaction is failed',
+                        url: requestUrl
+                    });
+                    return;
+                }
+
+                const transaction = body && body.transaction && body.transaction.pop()
+                if(transaction && transaction.result === 'SUCCESS') {
+                    resolve({
+                        orderId,
+                        success: true,
+                        ...transaction
+                    })
+                } else if(transaction && transaction.result === 'FAILURE') {
+                    const gatewayResponse = transaction.response || {};
+                    resolve({
+                        orderId,
+                        success: false,
+                        error: true,
+                        message: gatewayResponse.acquirerMessage
+                            ? gatewayResponse.acquirerMessage
+                            : 'Transaction is failed',
+                        url: requestUrl
+                    })
+                } else {
+                    resolve({
+                        orderId,
+                        success: false,
+                        error: true,
+                        message: 'Transaction is failed',
+                        url: requestUrl
+                    })
+                }
+            });
+        })
+    }
 }

@@ -1,6 +1,7 @@
 const CronService = require('../api/services/cron');
 // const SocketEventsService = require("../api/services/socketEvents");
 // const moment = require("moment");
+
 module.exports.cron = {
     // cron every minute
     cancelRide: {
@@ -330,5 +331,15 @@ module.exports.cron = {
             console.log('sendOperationalHoursExpireNotification', new Date());
             CronService.sendOperationalHoursExpireNotification();
         }
+    },
+
+    checkTransactionStatus: {
+        schedule: '*/1 * * * *',
+        onTick: function () {
+            console.log('checkTransactionStatus', new Date());
+            CronService.checkTransactionStatus();
+        }
     }
 };
+
+

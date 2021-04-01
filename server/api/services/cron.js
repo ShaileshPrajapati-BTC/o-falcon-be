@@ -10,6 +10,7 @@ const BookingPassService = require('./bookingPass');
 const SocketEvents = require('./socketEvents');
 const EmailService = require(`./email`);
 const NOQOODYPaymentService = require(`./Payment/Noqoody/payment`);
+const MPGSPaymentService = require('./Payment/Mastercard/payment')
 const OperationHoursService = require(`./operationalHours`);
 const RedisDBService = require('./redisDB');
 const ExcelReportService = require('./excelReport');
@@ -861,7 +862,7 @@ module.exports = {
             }
 
             await ExcelReportService.sendExcelReport(option, true);
-            
+
         } catch (error) {
             sails.log.error('Error while running cron sendExcelReport.', error);
         }
@@ -1002,11 +1003,29 @@ module.exports = {
                                 });
                         }
                     }
-
                 }
             }
         } catch (error) {
             sails.log.error('Error while running cron sendOperationalHoursExpireNotification.', error);
+        }
+    },
+
+    async checkTransactionStatus() {
+        try {
+            const olderThanTenMin = moment().subtract(2, 'minute').toDate().toISOString();
+            const pendingTransactions = await TransactionLog.find({
+                status: sails.config.STRIPE.STATUS.pending,
+                createdAt: { '<=': olderThanTenMin}
+            });
+            console.log(`checking status of ${pendingTransactions.length} transactions`);
+            for(const trx of pendingTransactions) {
+                console.log('checking status for:', trx.noqoodyReferenceId)
+                const result = await MPGSPaymentService.checkPaymentStatus(trx.noqoodyReferenceId)
+                await MPGSPaymentService.validatePayment(trx.noqoodyReferenceId, result)
+            }
+        } catch (error) {
+            console.error(error)
+            sails.log.error('Error while running cron checkTransactionStatus.', error);
         }
     }
 };
