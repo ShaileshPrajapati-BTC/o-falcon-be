@@ -252,9 +252,9 @@ module.exports = {
                             orderId,
                             success: false,
                             error: true,
-                            message: response.acquirerMessage
+                            message: response && response.acquirerMessage
                                 ? response.acquirerMessage
-                                : response.gatewayCode
+                                : response && response.gatewayCode
                                     ? response.gatewayCode
                                     : 'Error',
                             url: requestUrl

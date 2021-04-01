@@ -10,15 +10,18 @@ module.exports = {
             console.log(params);
             var result = await PaymentService.process3ds(params)
             console.log("Payment response", result)
-            await PaymentService.validatePayment(result.orderId, result)
+
             if (result.success){
                 let response = { gatewayRecommendation: 'PROCEED', status: 'PROCEED', message: sails.config.message.WALLET_CREDIT_REQUEST_CHARGE_SUCCESS }
-                return res.redirect(`gatewaysdk://3dsecure?acsResult=${JSON.stringify(response)}`)
+                res.redirect(`gatewaysdk://3dsecure?acsResult=${JSON.stringify(response)}`)
                 // Payment success fully done update the transaction record
             }else{
                 let response = { gatewayRecommendation: 'FAILD', status: 'FAILD', message: sails.config.message.PAYMENT_REQUEST_FAILED }
-                return res.redirect(`gatewaysdk://3dsecure?acsResult=${JSON.stringify(response)}`)
+                res.redirect(`gatewaysdk://3dsecure?acsResult=${JSON.stringify(response)}`)
             }
+
+            await PaymentService.validatePayment(result.orderId, result)
+
             // let noqoodyReferenceId = params.reference;
             // if (sails.config.NOQOODY_TRANSACTION_VERIFYING.indexOf(noqoodyReferenceId) > -1) {
             //     return res.ok({}, sails.config.message.TRANSACTION_VERIFYING);
@@ -45,7 +48,7 @@ module.exports = {
             // return res.ok(`https://fd4be4c1a7f0.ngrok.io/mastercard/payment-callback?acsResult=${JSON.stringify(result.response)}`)
         } catch (error) {
             console.log(error);
-            res.serverError({}, error);
+            if(!res.headersSent) res.serverError({}, error);
         }
     },
 }
