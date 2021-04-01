@@ -239,7 +239,7 @@ module.exports = {
                     console.log({body})
                     if (error) {
                         //resolve({success: false})
-                        return resolve({
+                        resolve({
                             orderId,
                             success: false,
                             error: true,
@@ -248,7 +248,7 @@ module.exports = {
                         });
                     } else if(body && body.result !== 'SUCCESS') {
                         const response = body.response;
-                        return resolve({
+                        resolve({
                             orderId,
                             success: false,
                             error: true,
@@ -271,7 +271,7 @@ module.exports = {
                     }
                 });
             } else if(gatewayRecommendation === 'DO_NOT_PROCEED') {
-                return resolve({
+                resolve({
                     orderId,
                     success: false,
                     error: true,
