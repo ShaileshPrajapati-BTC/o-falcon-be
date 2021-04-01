@@ -62,7 +62,7 @@ module.exports.cron = {
         schedule: '*/1 * * * *',
         onTick: function () {
             console.log('expirePaymentTransaction', new Date());
-            CronService.expirePaymentTransaction();
+            // CronService.expirePaymentTransaction();
         }
     },
     deleteOldIotCallbackData: {
