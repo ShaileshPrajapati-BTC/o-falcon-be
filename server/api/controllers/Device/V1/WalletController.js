@@ -72,7 +72,10 @@ module.exports = {
                 return res.ok(response, resMsg);
             }
             let message = sails.config.message.WALLET_CREDIT_REQUEST_CHARGE_FAILED;
-            if (chargeObj.data.errorData.errorMessage && chargeObj.data.errorData.errorMessage != '') {
+            if (chargeObj.data
+                && chargeObj.data.errorData
+                && chargeObj.data.errorData.errorMessage
+                && chargeObj.data.errorData.errorMessage != '') {
                 message = {
                     ...message,
                     message: chargeObj.data.errorMessage
