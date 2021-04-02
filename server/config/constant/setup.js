@@ -70,5 +70,10 @@ module.exports = {
     OOREDOO_USERNAME: '',
     OOREDOO_USERPASSWORD: '',
     OOREDOO_ORIGINATOR: '',
-    OOREDOO_MESSAGE_TYPE: ''
+    OOREDOO_MESSAGE_TYPE: '',
+    MPGS_USERNAME: '',
+    MPGS_PASSWORD: '',
+    MPGS_MERCHANT_ID: '',
+    MPGS_API_VERSION: '',
+    MPGS_BASE_URL: ''
 };

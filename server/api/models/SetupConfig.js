@@ -70,5 +70,10 @@ module.exports = {
         ooredooUserpassword: { type: 'string' },
         ooredooOriginator: { type: 'string' },
         ooredooMessageType: { type: 'string' },
+        mpgsUsername: { type: 'string' },
+        mpgsPassword: { type: 'string' },
+        mpgsMerchantId: { type: 'string' },
+        mpgsApiVersion: { type: 'string' },
+        mpgsBaseUrl: { type: 'string' }
     }
 };
