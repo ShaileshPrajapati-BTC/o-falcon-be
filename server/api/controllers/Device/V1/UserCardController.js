@@ -43,7 +43,17 @@ module.exports = {
           let response = {};
           console.log(params,req.user.id)
           let cards = await UserCard.find({userId});
-          response.list = cards;
+          let decryptList = cards.map((c) => {
+            return {
+              ...c,
+              cardType:  decrypt(c.cardType),
+              cardNumber:  decrypt(c.cardNumber),
+              nameOnCard:  decrypt(c.nameOnCard),
+              month:  decrypt(c.month),
+              year:  decrypt(c.year),
+            }
+          })
+          response.list = decryptList;
           response.count = cards.length;
 
           return res.ok(response, sails.config.message.OK);
@@ -63,12 +73,15 @@ module.exports = {
           modelName: modelName
         };
         let body={
-          ...params,
+          // ...params,
+          isDefault: false,
+          cardType: await encrypt(params.cardType),
+          cardNumber: await encrypt(params.cardNumber),
+          nameOnCard: await encrypt(params.nameOnCard),
+          month: await encrypt(params.month),
+          year: await encrypt(params.year),
           userId: userId
         }
-        // let encryptText = await encrypt(params.cardNumber)
-        // console.log("encryptText",encryptText)
-        // console.log(await decrypt(encryptText))
         await commonValidator.validateCreateParams(option);
         await UserCard.create(body)
         return res.ok(response, sails.config.message.OK);
