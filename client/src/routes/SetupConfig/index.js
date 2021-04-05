@@ -311,6 +311,57 @@ class SetupConfig extends Component {
                                             </Row>
                                         </Card>
 
+                                        <Card title={<b>Mastercard</b>} style={cardStyle[0]} bodyStyle={cardStyle[1]} headStyle={cardStyle[2]}>
+                                            <Row type="flex" justify="start">
+
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS Username">
+                                                        {getFieldDecorator(
+                                                            "mpgsUsername"
+                                                        )(
+                                                            <Input placeholder="MPGS Username" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS Password">
+                                                        {getFieldDecorator(
+                                                            "mpgsPassword"
+                                                        )(
+                                                            <Input placeholder="MPGS Password" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS MERCHANT ID">
+                                                        {getFieldDecorator(
+                                                            "mpgsMerchantId"
+                                                        )(
+                                                            <Input placeholder="MPGS MERCHANT ID" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS API Version">
+                                                        {getFieldDecorator(
+                                                            "mpgsApiVersion"
+                                                        )(
+                                                            <Input placeholder="MPGS API Version" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS BaseUrl">
+                                                        {getFieldDecorator(
+                                                            "mpgsBaseUrl"
+                                                        )(
+                                                            <Input placeholder="MPGS BaseUrl" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
+
+                                            </Row>
+                                        </Card>
                                         <Row>
                                             <Col
                                                 span={24}

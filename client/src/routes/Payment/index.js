@@ -266,7 +266,7 @@ class Payment extends Component {
         this.setState({ loading: true });
         try {
             let fromDate = UtilService.getStartOfTheDay();
-            let response = await axios.post('admin/payment/updateStatusForNoqoodyTransaction', { fromDate: fromDate });
+            let response = await axios.post('admin/payment/updateStatusFormMPGSTransactions', { fromDate: fromDate });
             if (response && response.code === 'OK') {
                 this.fetch();
             }
