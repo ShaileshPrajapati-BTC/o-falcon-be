@@ -76,7 +76,7 @@ class WalletDetails extends Component {
     checkPaymentStatus = async (referenceId) => {
         try {
             this.setState({ loading: true });
-            let response = await axios.post('admin/payment/noqoody/checkPaymentStatusAndCredit', { noqoodyReferenceId: referenceId });
+            let response = await axios.post('admin/payment/mastercard/checkPaymentStatusAndCredit', { noqoodyReferenceId: referenceId });
             console.log('response', response);
             window.location.reload(true);
         } catch (error) {
