@@ -165,10 +165,14 @@ module.exports = {
     },
     async checkDuplication(params) {
         let filter = { where: { isDeleted: false } };
-        if (params.type === sails.config.USER.TYPE.CUSTOMER) {
-            filter.where.type = sails.config.USER.TYPE.CUSTOMER;
-        } else if (params.type) {
-            filter.where.type = { "!=": sails.config.USER.TYPE.CUSTOMER };
+        if (params.type === sails.config.USER.TYPE.CUSTOMER || params.type === sails.config.USER.TYPE.FEEDER) {
+            if (params.type === sails.config.USER.TYPE.CUSTOMER) {
+                filter.where.type = sails.config.USER.TYPE.CUSTOMER;
+            } else if (params.type === sails.config.USER.TYPE.FEEDER) {
+                filter.where.type = sails.config.USER.TYPE.FEEDER;
+            } else if (params.type) {
+                filter.where.type = { "!=": [sails.config.USER.TYPE.CUSTOMER,sails.config.USER.TYPE.FEEDER] };
+            }
         }
         if (params.id) {
             filter.where.id = { '!=': params.id };
