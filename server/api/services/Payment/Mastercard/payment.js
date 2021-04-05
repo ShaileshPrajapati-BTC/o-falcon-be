@@ -4,37 +4,30 @@ const request = require('request');
 const ProjectSetupConfigService = require('../../projectSetupConfig');
 const UtilService = require('../../util');
 
-const Mpgs_Config = {
-  BASEURL: "https://test-dohabank.mtf.gateway.mastercard.com",
-  API_VERSION: 57,
-  USERNAME: 'merchant.' + "TESTDB74147",
-  PASSWORD: "29814cc2d50733a5d7ec35aadfb17f6d" ,
-  MERCHANTID: "TESTDB74147"
-};
-
 module.exports = {
 
-  // Generate random 3DSecure id
-  async keyGen(keyLength) {
-    var i, key = "", characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    var charactersLength = characters.length;
-    for (i = 0; i < keyLength; i++) {
-        key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
-    }
-    console.log("========",key)
-    return key;
-  },
+    // Generate random 3DSecure id
+    async keyGen(keyLength) {
+        var i, key = "",
+            characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        var charactersLength = characters.length;
+        for (i = 0; i < keyLength; i++) {
+            key += characters.substr(Math.floor((Math.random() * charactersLength) + 1), 1);
+        }
+        console.log("========", key)
+        return key;
+    },
     //Get MPGS payment token.
     async getToken() {
-        return 'Basic ' + new Buffer.from(Mpgs_Config.USERNAME + ":" + Mpgs_Config.PASSWORD, 'utf-8').toString("base64");
+        return 'Basic ' + new Buffer.from(sails.config.MPGS_USERNAME + ":" + sails.config.MPGS_PASSWORD, 'utf-8').toString("base64");
     },
 
-    async getBaseUrl(config) {
-      return config.BASEURL;
+    async getBaseUrl() {
+        return sails.config.MPGS_BASE_URL;
     },
 
-    async getMerchantUrl(config) {
-      return await this.getBaseUrl(config) + "/api/rest/version/" + config.API_VERSION + "/merchant/" + config.MERCHANTID;
+    async getMerchantUrl() {
+        return await this.getBaseUrl() + "/api/rest/version/" + sails.config.MPGS_API_VERSION + "/merchant/" + sails.config.MPGS_MERCHANT_ID;
     },
 
     //Get noqoody payment project code.
@@ -42,12 +35,12 @@ module.exports = {
         return sails.config.NOQOODYPAY_PROJECT_CODE;
     },
 
-    async getHtmlContent (amount, secureId, sessionId) {
+    async getHtmlContent(amount, secureId, sessionId) {
         //var dsSecureID = await this.keyGen(10)
         var dsSecureID = secureId
         // var dsSecureID = "VJgCsdKxA"
-        console.log("dsSecureID",dsSecureID)
-        var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + dsSecureID;
+        console.log("dsSecureID", dsSecureID)
+        var url = await this.getMerchantUrl() + "/3DSecureId/" + dsSecureID;
         var requestData = {
             apiOperation: "CHECK_3DS_ENROLLMENT",
             order: {
@@ -66,29 +59,29 @@ module.exports = {
         };
         let token = await this.getToken();
         let response = await new Promise((resolve, reject) => {
-                const options = {
-                    url: url,
-                    json: requestData,
-                    headers: {
+            const options = {
+                url: url,
+                json: requestData,
+                headers: {
                     Authorization: token
                 },
-                    timeout: 10000
-                };
-                console.log("options", options)
-                request.put(options, (error, response1, body) => {
+                timeout: 10000
+            };
+            console.log("options", options)
+            request.put(options, (error, response1, body) => {
                 console.log("body", body)
                 console.log("error", error)
                 // console.log("response",response1)
                 resolve(body);
-                });
             });
-            // console.log(response);
+        });
+        // console.log(response);
         return response
     },
 
     //Function for request payment link and return payment link.
     async getPaymentLink(ride, paymentDetail, transactionId) {
-        const user = await User.findOne({ id: ride.userId });
+        const user = await User.findOne({id: ride.userId});
         user.email = UtilService.getPrimaryEmail(user.emails);
         user.mobile = UtilService.getPrimaryValue(user.mobiles, 'mobile');
         if (!user.email) {
@@ -97,7 +90,11 @@ module.exports = {
         if (!user.mobile) {
             user.mobile = sails.config.NOQOODY_DEFAULT_MOBILE;
         }
-        console.log("========in Payment Link",{ride, paymentDetail, transactionId})
+        console.log("========in Payment Link", {
+            ride,
+            paymentDetail,
+            transactionId
+        })
         let data = {};
         try {
             // API call to get the hmltcontent for payment gatway
@@ -106,10 +103,10 @@ module.exports = {
                 transactionId,
                 paymentDetail.sessionId,
             );
-            console.log("paymentLink",paymentLink)
+            console.log("paymentLink", paymentLink)
             await TransactionLog.update({
                 id: transactionId
-            }, { noqoodyReferenceId: transactionId }).fetch();
+            }, {noqoodyReferenceId: transactionId}).fetch();
             data.paymentLink = paymentLink && paymentLink['3DSecure'] && paymentLink['3DSecure'].authenticationRedirect.simple.htmlBodyContent;
             data.noqoodyReferenceId = transactionId;
         } catch (e) {
@@ -126,162 +123,162 @@ module.exports = {
     },
     //Function for add transaction log.
     async chargeCustomer(ride, amount) {
-      console.log('chargeCustomer', ride.id);
-      const user = await User.findOne({ id: ride.userId });
-      user.email = UtilService.getPrimaryEmail(user.emails);
-      user.mobile = UtilService.getPrimaryValue(user.mobiles, 'mobile');
-      let data = {
-          paymentType: 'MPGS',
-          rideId: ride.id,
-          rideCost: ride.totalFare,
-          userId: user.id,
-          userCards: user.cards,
-          vehicleType: ride.vehicleType,
-          rideNumber: ride.rideNumber,
-          isRideDepositTransaction: ride.deductMinFare,
-          rideType: ride.rideType
-      };
-      try {
-          let chargeObj = {
-              status: 'pending'
-          };
-          data.transactionAmount = ride.totalFare;
-          data.transactionSuccess = true;
-          data.chargeObj = chargeObj;
-          data.expiryDate = moment().add(30, 'minutes').toISOString();
-          let statusTrack = [{
-              status: sails.config.STRIPE.STATUS.pending,
-              remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_PENDING,
-              datetime: moment().toISOString()
-          }];
-          data.statusTrack = statusTrack;
-          // return response;
-      } catch (e) {
-          console.log('Payment error ******************', e);
-          data.transactionSuccess = false;
-          data.failedTransactionId = '';
-          data.status = 'failed';
-          data.errorData = sails.config.PAYMENT_ERRORS.NOQOODY.transaction_fail;
-          if (!data.errorMessage || data.errorMessage == '') {
-              data.errorMessage = 'Transaction was declined by payment gateway due to unknown reason';
-          }
-      }
-      return data;
-  },
-  async process3ds (req) {
-    var pares = req.PaRes;
-    // var scid = await this.keyGen(10);
-    var ssid = req.sessionId;
-    var scid = req.secureId;
-    const orderId = req.secureId;
-    console.log("req.body", req)
-    var url = await this.getMerchantUrl(Mpgs_Config) + "/3DSecureId/" + orderId;
-    var requestData = {
-        "apiOperation": "PROCESS_ACS_RESULT",
-        "3DSecure": {
-            "paRes": pares
-        }
-    }
-    let token = await this.getToken();
-    var options = {
-        url: url,
-        json: requestData,
-        headers: {
-            Authorization: token
-        }
-    };
-
-    const transaction = await TransactionLog.findOne({
-        id: orderId
-    });
-
-    let responseResult = await new Promise((resolve, reject) => {
-        request.post(options, async (error, response, Resultbody) => {
-            console.log("PROCESS_ACS_RESULT", Resultbody)
-            // return callback(error, body);
-            const gatewayRecommendation = Resultbody.response && Resultbody.response.gatewayRecommendation
-                ? Resultbody.response && Resultbody.response.gatewayRecommendation
-                : '';
-            console.log("gatewayRecommendation", gatewayRecommendation)
-
-            if (!error && gatewayRecommendation === 'PROCEED') {
-                var payload = {
-                    apiOperation: "AUTHORIZE",
-                    "3DSecureId": scid,
-                    order: {
-                        amount: transaction.amount,
-                        currency: "QAR",
-                    },
-                    session: {
-                        id: ssid,
-                    },
-                    sourceOfFunds: {
-                        type: "CARD",
-                    },
-                    transaction: {
-                        source: "INTERNET",
-                    },
-                };
-                // resolve(body)
-                var transactionId = await this.keyGen(10);
-                //var orderId = await this.keyGen(10);
-                var requestUrl = await this.getMerchantUrl(Mpgs_Config) + "/order/" + orderId + "/transaction/" + transactionId;
-                var options = {
-                    url: requestUrl,
-                    method: "PUT",
-                    json: payload,
-                    headers: {
-                        Authorization: token
-                    }
-                }
-                request(options, function (error, response, body) {
-                    console.log({body})
-                    if (error) {
-
-                        resolve({
-                            orderId,
-                            success: false,
-                            error: true,
-                            message: error,
-                            url: requestUrl
-                        });
-                    } else if(body && body.result !== 'SUCCESS') {
-                        const response = body.response;
-                        resolve({
-                            orderId,
-                            success: false,
-                            error: true,
-                            message: response && response.acquirerMessage
-                                ? response.acquirerMessage
-                                : response && response.gatewayCode
-                                    ? response.gatewayCode
-                                    : body.result,
-                            url: requestUrl
-                        });
-                    } else {
-                        let orderId = body.order && body.order.id
-                        resolve({...Resultbody, orderId, success: true})
-                        return{
-                            error: false,
-                            message: body,
-                            url: requestUrl
-                        };
-                    }
-                });
-            } else {
-                resolve({
-                    orderId,
-                    success: false,
-                    error: true,
-                    message: gatewayRecommendation,
-                    url: requestUrl
-                });
+        console.log('chargeCustomer', ride.id);
+        const user = await User.findOne({id: ride.userId});
+        user.email = UtilService.getPrimaryEmail(user.emails);
+        user.mobile = UtilService.getPrimaryValue(user.mobiles, 'mobile');
+        let data = {
+            paymentType: 'MPGS',
+            rideId: ride.id,
+            rideCost: ride.totalFare,
+            userId: user.id,
+            userCards: user.cards,
+            vehicleType: ride.vehicleType,
+            rideNumber: ride.rideNumber,
+            isRideDepositTransaction: ride.deductMinFare,
+            rideType: ride.rideType
+        };
+        try {
+            let chargeObj = {
+                status: 'pending'
+            };
+            data.transactionAmount = ride.totalFare;
+            data.transactionSuccess = true;
+            data.chargeObj = chargeObj;
+            data.expiryDate = moment().add(30, 'minutes').toISOString();
+            let statusTrack = [{
+                status: sails.config.STRIPE.STATUS.pending,
+                remark: sails.config.STRIPE.MESSAGE.CREDIT_WALLET_PENDING,
+                datetime: moment().toISOString()
+            }];
+            data.statusTrack = statusTrack;
+            // return response;
+        } catch (e) {
+            console.log('Payment error ******************', e);
+            data.transactionSuccess = false;
+            data.failedTransactionId = '';
+            data.status = 'failed';
+            data.errorData = sails.config.PAYMENT_ERRORS.NOQOODY.transaction_fail;
+            if (!data.errorMessage || data.errorMessage == '') {
+                data.errorMessage = 'Transaction was declined by payment gateway due to unknown reason';
             }
-        });
-    })
+        }
+        return data;
+    },
+    async process3ds(req) {
+        var pares = req.PaRes;
+        // var scid = await this.keyGen(10);
+        var ssid = req.sessionId;
+        var scid = req.secureId;
+        const orderId = req.secureId;
+        console.log("req.body", req)
+        var url = await this.getMerchantUrl() + "/3DSecureId/" + orderId;
+        var requestData = {
+            "apiOperation": "PROCESS_ACS_RESULT",
+            "3DSecure": {
+                "paRes": pares
+            }
+        }
+        let token = await this.getToken();
+        var options = {
+            url: url,
+            json: requestData,
+            headers: {
+                Authorization: token
+            }
+        };
 
-    return responseResult;
-  },
+        const transaction = await TransactionLog.findOne({
+            id: orderId
+        });
+
+        let responseResult = await new Promise((resolve, reject) => {
+            request.post(options, async (error, response, Resultbody) => {
+                console.log("PROCESS_ACS_RESULT", Resultbody)
+                // return callback(error, body);
+                const gatewayRecommendation = Resultbody.response && Resultbody.response.gatewayRecommendation
+                    ? Resultbody.response && Resultbody.response.gatewayRecommendation
+                    : '';
+                console.log("gatewayRecommendation", gatewayRecommendation)
+
+                if (!error && gatewayRecommendation === 'PROCEED') {
+                    var payload = {
+                        apiOperation: "AUTHORIZE",
+                        "3DSecureId": scid,
+                        order: {
+                            amount: transaction.amount,
+                            currency: "QAR",
+                        },
+                        session: {
+                            id: ssid,
+                        },
+                        sourceOfFunds: {
+                            type: "CARD",
+                        },
+                        transaction: {
+                            source: "INTERNET",
+                        },
+                    };
+                    // resolve(body)
+                    var transactionId = await this.keyGen(10);
+                    //var orderId = await this.keyGen(10);
+                    var requestUrl = await this.getMerchantUrl() + "/order/" + orderId + "/transaction/" + transactionId;
+                    var options = {
+                        url: requestUrl,
+                        method: "PUT",
+                        json: payload,
+                        headers: {
+                            Authorization: token
+                        }
+                    }
+                    request(options, function (error, response, body) {
+                        console.log({body})
+                        if (error) {
+
+                            resolve({
+                                orderId,
+                                success: false,
+                                error: true,
+                                message: error,
+                                url: requestUrl
+                            });
+                        } else if (body && body.result !== 'SUCCESS') {
+                            const response = body.response;
+                            resolve({
+                                orderId,
+                                success: false,
+                                error: true,
+                                message: response && response.acquirerMessage
+                                    ? response.acquirerMessage
+                                    : response && response.gatewayCode
+                                        ? response.gatewayCode
+                                        : body.result,
+                                url: requestUrl
+                            });
+                        } else {
+                            let orderId = body.order && body.order.id
+                            resolve({...Resultbody, orderId, success: true})
+                            return {
+                                error: false,
+                                message: body,
+                                url: requestUrl
+                            };
+                        }
+                    });
+                } else {
+                    resolve({
+                        orderId,
+                        success: false,
+                        error: true,
+                        message: gatewayRecommendation,
+                        url: requestUrl
+                    });
+                }
+            });
+        })
+
+        return responseResult;
+    },
     async validatePayment(orderId, response) {
         if (!orderId) {
             throw sails.config.message.REFERENCE_ID_NOT_FOUND;
@@ -381,7 +378,7 @@ module.exports = {
         return false
     },
     async checkPaymentStatus(orderId) {
-        const merchantURL = await this.getMerchantUrl(Mpgs_Config)
+        const merchantURL = await this.getMerchantUrl()
         const requestUrl = merchantURL + '/order/' + orderId;
         let token = await this.getToken();
 
@@ -394,9 +391,9 @@ module.exports = {
 
         return new Promise(function (resolve) {
             request.get(options, function (error, response, body) {
-                if(typeof body === 'string') body = JSON.parse(body)
+                if (typeof body === 'string') body = JSON.parse(body)
                 console.log('response:', body);
-                if(error){
+                if (error) {
                     console.error(error);
                     resolve({
                         orderId,
@@ -409,13 +406,13 @@ module.exports = {
                 }
 
                 const transaction = body && body.transaction && body.transaction.pop()
-                if(transaction && transaction.result === 'SUCCESS') {
+                if (transaction && transaction.result === 'SUCCESS') {
                     resolve({
                         orderId,
                         success: true,
                         ...transaction
                     })
-                } else if(transaction && transaction.result === 'FAILURE') {
+                } else if (transaction && transaction.result === 'FAILURE') {
                     const gatewayResponse = transaction.response || {};
                     resolve({
                         orderId,
