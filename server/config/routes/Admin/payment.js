@@ -173,5 +173,6 @@ module.exports.routes = {
         }
     },
     'POST /admin/payment/updateStatusForNoqoodyTransaction': 'Admin/PaymentController.updateStatusForNoqoodyTransaction',
+    'POST /admin/payment/updateStatusFormMPGSTransactions': 'Admin/PaymentController.updateStatusFormMPGSTransactions',
     'POST /admin/payment/updateStatusForNoqoodyTransactionViaReferenceIds': 'Admin/PaymentController.updateStatusForNoqoodyTransactionViaReferenceIds',
 }

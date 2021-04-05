@@ -2,6 +2,8 @@ const modelName = 'vehicle';
 const UtilService = require(`${sails.config.appPath}/api/services/util`);
 const CommonService = require(`${sails.config.appPath}/api/services/common`);
 const PaymentService = require(`${sails.config.appPath}/api/services/payment`);
+const MPGSPaymentService = require(`${sails.config.appPath}/api/services/payment/Mastercard/payment`);
+
 const uuid = require('uuid');
 const StripeHandlerService = require(`${sails.config.appPath}/api/services/Payment/Stripe/stripeHandler`);
 const moment = require("moment");
@@ -421,6 +423,46 @@ module.exports = {
         try {
             await PaymentService.updateNoqoodyTransactions(params.fromDate, params.toDate);
 
+            let response = {};
+            return res.ok(response, sails.config.message.OK);
+        } catch (e) {
+            console.log(e);
+            return res.serverError(null, e);
+        }
+    },
+    async updateStatusFormMPGSTransactions(req, res) {
+        let params = req.allParams();
+        if (!params || !params.fromDate) {
+            return res.badRequest(null, sails.config.message.BAD_REQUEST);
+        }
+        try {
+            const fromDate = moment(params.fromDate).toDate().toISOString();
+            let toDate;
+            if(params.toDate){
+                toDate = moment(params.toDate).toDate().toISOString();
+            }
+
+            const queryObj = {
+                status: [
+                    sails.config.STRIPE.STATUS.expired,
+                    sails.config.STRIPE.STATUS.pending,
+                    sails.config.STRIPE.STATUS.failed
+                ],
+                createdAt: { '>=': fromDate},
+            }
+            if (toDate) {
+                query.createdAt['<='] = toDate;
+            }
+
+            console.log('query:', queryObj)
+            const pendingTransactions = await TransactionLog.find(queryObj);
+
+            console.log(`checking status of ${pendingTransactions.length} transactions`);
+            for(const trx of pendingTransactions) {
+                console.log('checking status for:', trx.noqoodyReferenceId)
+                const result = await MPGSPaymentService.checkPaymentStatus(trx.noqoodyReferenceId)
+                await MPGSPaymentService.validatePayment(trx.noqoodyReferenceId, result)
+            }
             let response = {};
             return res.ok(response, sails.config.message.OK);
         } catch (e) {
