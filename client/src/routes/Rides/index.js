@@ -156,7 +156,8 @@ class Rides extends Component {
             if (isOnGoingRides) {
                 updateData.isShowRideMap = true;
             }
-            this.setState(updateData);
+            await this.setState(updateData);
+            console.log('Data****:', this.state.data);
         } catch (error) {
             console.log('Error****:', error.message);
             this.setState({

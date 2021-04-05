@@ -55,6 +55,16 @@ module.exports = {
                     walletAmount: latestUserObj.walletAmount,
                     isGuestUser: latestUserObj.isGuestUser
                 };
+
+                if (chargeObj.config) {
+                    response.config = chargeObj.config
+
+                    let mobileObj = loggedInUser.mobiles.filter(obj => {
+                        return obj.isPrimary === true;
+                    })
+                    console.log("mobile obj", mobileObj)
+                    response.config.userMobile = mobileObj[0].mobile;
+                }
                 let resMsg;
                 let cashbackMessage = ` Cashback of ${bonusAmount} will be credited to your wallet.`;
                 if (chargeObj.data.status === sails.config.STRIPE.STATUS.pending) {

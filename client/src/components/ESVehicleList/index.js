@@ -881,14 +881,16 @@ class VehicleList extends React.Component {
                                 </a>
                                 <span style={{ color: "#fff" }}> &nbsp;( {totalSelectedData} selected )</span>
                                 <Button
-                                    type="primary"
+                                    // type="primary"
                                     onClick={this.handleClick}
+                                    className="ridersButton"
                                 >
                                     <IntlMessages id="app.activeDeactive" />
                                 </Button>
                                 <Button
-                                    type="primary"
+                                    // type="primary"
                                     onClick={this.handleStopRide}
+                                    className="ridersButton"
                                 >
                                     Stop Ride
                                 </Button>

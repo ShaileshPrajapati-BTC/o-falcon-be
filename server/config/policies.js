@@ -134,6 +134,7 @@ module.exports.policies = {
     },
     'Admin/RideBookingController': {
         paginate: ['manageRole'],
+        chargeCustomerForFine: ['hasToken'],
         chargeCustomerForRide: ['hasToken']
     },
     'Admin/NotificationController': {

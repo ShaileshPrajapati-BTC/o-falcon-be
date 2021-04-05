@@ -1790,6 +1790,11 @@ module.exports = {
             message: 'Rent Payment request rejected.',
             status: 200
         },
+        HEADLIGHT_ON:{
+           code :'OK',
+           message:'Please check if the vehicle’s headlight switched ON.',
+           status:200
+        },
         INVITE_CODE_REGISTERED: {
             code: 'E_BAD_REQUEST',
             message: 'Invite code is already registered.',
@@ -1949,6 +1954,10 @@ module.exports = {
             code: 'OK',
             message: 'Alarm Should Ring.',
             status: 200
+        },
+        ALARM_ON_CLICK:{
+          code:'OK',
+          message:"Please check if the vehicle's alarm is ringing."
         },
         CLAIM_NEST_SUCCESS: {
             code: "OK",
@@ -2169,9 +2178,19 @@ module.exports = {
             message: 'Not Found duplicate data.',
             status: 200
         },
+        ZONE_AND_FARE_MANAGEMENT_NOT_FOUND: {
+            code: 'UNPROCESSABLE_ENTITY',
+            message: "FareManagement not found.",
+            status: 401
+        },
         TRANSACTION_VERIFYING: {
             code: 'OK',
             message: 'Verifying transaction.',
+            status: 200
+        },
+        PARKING_FINE_GREATER_THAN_0: {
+            code: 'UNPROCESSABLE_ENTITY',
+            message: 'Parking Fine greater than 0',
             status: 200
         },
     }

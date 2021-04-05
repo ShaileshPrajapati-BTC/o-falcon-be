@@ -8,7 +8,8 @@ module.exports = {
             WALLET_CREDIT: 6,
             WALLET_DEBIT: 7,
             RIDE_DEPOSIT: 8,
-            PROMO_CODE_WALLET: 9
+            PROMO_CODE_WALLET: 9,
+            PARKING_FINE: 10,
         },
         REMARK: {
             ADD_WALLET_BY_ADMIN: 'Wallet added by Admin',
@@ -23,6 +24,7 @@ module.exports = {
         6: 'Wallet Credit',
         7: 'Wallet Debit',
         8: 'Ride Deposit',
-        9: 'Promocode wallet'
+        9: 'Promocode wallet',
+        10: 'Parking Fine'
     }
 };

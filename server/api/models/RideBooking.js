@@ -128,6 +128,10 @@ module.exports = {
             defaultsTo: sails.config.RIDE_STATUS.UNLOCK_REQUESTED,
             extendedDescription: sails.config.RIDE_STATUS_ARRAY
         },
+        isWalletExpiredAtStop:{
+            type:'boolean',
+            defaultsTo:false
+        },
         statusTrack: {
             type: 'json',
             columnType: 'array',

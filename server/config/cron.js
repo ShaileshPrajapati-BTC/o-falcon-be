@@ -59,7 +59,7 @@ module.exports.cron = {
         }
     },
     expirePaymentTransaction: {
-        schedule: '*/1 * * * *',
+        schedule: '0 * * * *',
         onTick: function () {
             console.log('expirePaymentTransaction', new Date());
             CronService.expirePaymentTransaction();
@@ -182,16 +182,17 @@ module.exports.cron = {
         }
     },
 
-    // autoCreateTask: {
-    //     schedule: '*/5 * * * * *',
-    //     onTick: function () {
-    //         if (!sails.config.IS_AUTO_CREATE_TASK) {
-    //             return
-    //         }
-    //         console.log('autoCreateTask', new Date());
-    //         CronService.autoCreateTask();
-    //     }
-    // },
+    autoCreateTask: {
+        schedule: '*/1 * * * *',
+        onTick: function () {
+            console.log('autocreateTask test------------- :>> ');
+            if (!sails.config.IS_AUTO_CREATE_TASK) {
+                return;
+            }
+            console.log('autoCreateTask--------------------', new Date());
+            CronService.autoCreateTask();
+        }
+    },
     markTaskAsOverDue: {
         schedule: '*/1 * * * *',
         onTick: function () {
@@ -282,29 +283,14 @@ module.exports.cron = {
         // schedule: '*/1 * * * *',
         onTick: function () {
             console.log('emails :>> ', sails.config.EMAILS_FOR_EXPORT_EXCEL.length);
-            if (!sails.config.IS_EXCEL_EXPORT_DAILY && sails.config.EMAILS_FOR_EXPORT_EXCEL.length <= 0) {
+            if (!sails.config.IS_EXCEL_EXPORT_DAILY) {
                 return;
             }
             console.log('sendExcelReport******************88', new Date());
             CronService.sendExcelReport();
         }
     },
-    saveLocationTrackData: {
-        // schedule: '*/1 * * * *',
-        schedule: '0 * * * *',//every hour
-        onTick: function () {
-            console.log('Save Location Data every hour ******************88', new Date());
-            CronService.saveLocationDataOfVehicle();
-        }
-    },
-    destroyLocationDataAfter2Days: {
-        // schedule: '*/1 * * * *',
-        schedule: '0 0 * * 0',//every 2 day
-        onTick: async function () {
-            console.log('Destroy Location Data every two day ******************88', new Date());
-            CronService.destroyLocationDataAfter2Days();
-        }
-    },
+
     endRideAfterSpecificTime: {
         schedule: '*/1 * * * *',
         onTick: function () {
@@ -344,6 +330,27 @@ module.exports.cron = {
             }
             console.log('sendOperationalHoursExpireNotification', new Date());
             CronService.sendOperationalHoursExpireNotification();
+        }
+    },
+    userWalletExpired: {
+        schedule: '*/1 * * * *',
+        onTick: function () {
+            // CSJ - 1
+            // if (!sails.config.IS_OPERATIONAL_HOUR_ENABLE) {
+            //     return;
+            // }
+            console.log('userWalletExpired', new Date());
+            CronService.expiringWalletOfUser(null);
+        }
+    },
+    sendMessageBeforeExpireWallet: {
+        schedule: '0 0 * * *',
+        onTick: function () {
+            // if (!sails.config.IS_OPERATIONAL_HOUR_ENABLE) {
+            //     return;
+            // }
+            console.log('sendMessageBeforeExpireWallet', new Date());
+            CronService.sendMessageBeforeExpireWallet();
         }
     }
 };

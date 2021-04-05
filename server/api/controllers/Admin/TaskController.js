@@ -62,6 +62,7 @@ module.exports = {
                 userId: req.user.id
             }];
             params.statusTrack = newStatus;
+            params.canceledBy = [];
 
             let createdRecord = await Task.create(params).fetch();
             if (params.reportId) {

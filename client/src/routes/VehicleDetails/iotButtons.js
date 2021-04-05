@@ -39,6 +39,7 @@ import { ReactComponent as WheelLock } from '../../assets/svg/iotButtons/cable-l
 import { ReactComponent as CableLock } from '../../assets/svg/iotButtons/wheel-lock.svg';
 import { ReactComponent as WheelStatus } from '../../assets/svg/iotButtons/wheel-lock-status.svg';
 import { ReactComponent as BatteryStatus } from '../../assets/svg/iotButtons/bat-lock-status.svg';
+import { ReactComponent as AnyCommand } from '../../assets/svg/iotButtons/SetPingInterval.svg';
 import IntlMessages from '../../util/IntlMessages';
 
 
@@ -96,7 +97,8 @@ class IotButtons extends Component {
         BatteryStatus: BatteryStatus,
         BatteryLock: BatteryLock,
         WheelLock: WheelLock,
-        CableLock: CableLock
+        CableLock: CableLock,
+        AnyCommand: AnyCommand
     };
 
     returnComponent = icon => {

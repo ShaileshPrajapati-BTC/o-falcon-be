@@ -309,6 +309,11 @@ class RidersView extends Component {
                                                                 {UtilService.displayPrice(data.walletAmount)}
                                                             </span></>
                                                     }
+                                                    {WALLET_CONFIG_VISIBLE && hasWalletPermission &&
+                                                        <span>
+                                                            <b>{UtilService.displayExpiredMessage(data.walletExpiryDate)}</b>
+                                                        </span>
+                                                    }
                                                     {
                                                         (authUser.type === USER_TYPES.SUPER_ADMIN || authUser.type === USER_TYPES.ADMIN) ?
                                                             <a href="/#" onClick={(e) => {

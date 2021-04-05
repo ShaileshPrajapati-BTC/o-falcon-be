@@ -38,5 +38,14 @@ module.exports.routes = {
             description: '',
             body: {}
         }
+    }, 'POST /admin/ride-booking/charge-customer-for-fine': {
+        controller: 'Admin/RideBookingController',
+        action: 'chargeCustomerForFine',
+        swagger: {
+            summary: 'chargeCustomerForFine.',
+            description: '',
+            body: {}
+        }
     }
+
 };

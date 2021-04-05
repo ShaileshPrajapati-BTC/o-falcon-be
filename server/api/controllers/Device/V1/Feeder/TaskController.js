@@ -402,23 +402,24 @@ module.exports = {
             }
             let taskLevel = await TaskService.userLevelWiseTaskLevel(loggedInUser.level);
             let list = {};
-            list.damageTask = [];
-            params.taskType = params.taskType ? params.taskType : sails.config.TASK.TASK_TYPE.LEVEL_1.DAMAGE;
-            let damageTask = await TaskService.userDashboardTask({ taskType: params.taskType, level: taskLevel });
-            if (damageTask && damageTask.length) {
-                delete damageTask[0]._id;
-                list.damageTask = damageTask;
+            params.taskWorkFlow = params.taskWorkFlow ? params.taskWorkFlow : sails.config.TASK.WORK_FLOW.OPEN;
+            list.lowBatteryTask = [];
+
+            let lowBatteryTask = await TaskService.userDashboardTask({ taskWorkFlow: params.taskWorkFlow, lowBatteryTask: true, level: taskLevel, userId: loggedInUser.id });
+            if (lowBatteryTask && lowBatteryTask.length) {
+                delete lowBatteryTask[0]._id;
+                list.lowBatteryTask = lowBatteryTask;
             }
-            list.chargeTask = [];
-            params.priority = params.priority ? params.priority : sails.config.TASK.PRIORITY.URGENT;
-            let chargeTask = await TaskService.userDashboardTask({ priority: params.priority, level: taskLevel });
-            if (chargeTask && chargeTask.length) {
-                delete chargeTask[0]._id;
-                list.chargeTask = chargeTask;
+            list.idealTask = [];
+            let idealTask = await TaskService.userDashboardTask({ taskWorkFlow: params.taskWorkFlow, isIdealVehicleTask: true, level: taskLevel, userId: loggedInUser.id });
+            if (idealTask && idealTask.length) {
+                delete idealTask[0]._id;
+                list.idealTask = idealTask;
             }
             list.urgentTask = [];
-            params.taskWorkFlow = params.taskWorkFlow ? params.taskWorkFlow : sails.config.TASK.WORK_FLOW.OPEN;
-            let urgentTask = await TaskService.userDashboardTask({ taskWorkFlow: params.taskWorkFlow, level: taskLevel });
+            params.priority = params.priority ? params.priority : sails.config.TASK.PRIORITY.URGENT;
+
+            let urgentTask = await TaskService.userDashboardTask({ taskWorkFlow: params.taskWorkFlow, priority: params.priority, level: taskLevel, userId: loggedInUser.id });
             if (urgentTask && urgentTask.length) {
                 delete urgentTask[0]._id;
                 list.urgentTask = urgentTask;

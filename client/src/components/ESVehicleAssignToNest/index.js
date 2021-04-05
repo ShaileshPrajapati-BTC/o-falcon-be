@@ -7,7 +7,7 @@ import UtilService from '../../services/util';
 import Search from '../../components/ESSearch';
 import { ReactComponent as SelectCheck } from "../../assets/svg/selectCheck.svg";
 import ESPagination from '../../components/ESPagination';
-import { DEFAULT_API_ERROR, NEST_ROUTE, NEST_LABEL } from '../../constants/Common';
+import { DEFAULT_API_ERROR, NEST_ROUTE, NEST_LABEL, NEST_LABEL_STRING } from '../../constants/Common';
 import CustomScrollbars from '../../util/CustomScrollbars';
 const _ = require("lodash");
 
@@ -145,7 +145,7 @@ class AssignVehicle extends React.Component {   //componentName
         return (
             <Modal
                 visible={true}
-                title={`Add Vehicle to ${NEST_LABEL}`}      //Modal title
+                title={`Add Vehicle to ${NEST_LABEL_STRING}`}      //Modal title
                 okText='Add'      //add button text
                 onCancel={onCancel}
                 onOk={this.handleSubmit.bind(this)}

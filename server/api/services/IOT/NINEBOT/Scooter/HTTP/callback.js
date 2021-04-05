@@ -1,5 +1,6 @@
 const RideBookingService = require('../../../../rideBooking');
 const IotCallbackHandler = require('../../../../iotCallbackHandler');
+const TaskService = require('../../../../task');
 
 module.exports = {
     async scooterAlertCallback(data) {
@@ -11,6 +12,7 @@ module.exports = {
         };
         const notification = notificationData[data.code];
         await RideBookingService.sendIOTNotification(data.imei, notification);
+        await TaskService.autoCreateTaskForVehicleDamage(notificationData, data.imei);
     },
 
     async scooterFaultCallback(data) {

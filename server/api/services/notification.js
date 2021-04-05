@@ -37,6 +37,11 @@ module.exports = {
                 [language]: message
             }
         };
+        if(options.title){
+            configObj.headings ={
+                [language]:options.title
+            }
+        }
         if (options.data) {
             configObj.data = options.data;
         }

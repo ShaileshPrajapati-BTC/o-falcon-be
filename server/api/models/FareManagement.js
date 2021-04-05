@@ -75,6 +75,10 @@ module.exports = {
         perXBaseMinute: {
             type: 'number',
             defaultsTo: 1
+        },
+        isCaptureParkingImage: {
+            type: 'boolean',
+            defaultsTo: false
         }
     }
 };

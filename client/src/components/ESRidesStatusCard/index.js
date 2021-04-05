@@ -2,7 +2,7 @@ import { Button, Card, Modal, Rate, Tag, Icon, Tooltip , Input,Col,Form,message}
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ReactComponent as Delete } from "../../assets/svg/delete.svg";
-import { RIDE_STATUS, DEFAULT_DISTANCE_UNIT, FRANCHISEE_LABEL, BASE_URL, FRANCHISEE_VISIBLE, ZONE_LABEL, GUEST_USER_STRING,IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY ,USER_TYPES,PAGE_PERMISSION} from '../../constants/Common';
+import { RIDE_STATUS, DEFAULT_DISTANCE_UNIT, FRANCHISEE_LABEL, BASE_URL, FRANCHISEE_VISIBLE, ZONE_LABEL, GUEST_USER_STRING, IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY, USER_TYPES, PAGE_PERMISSION } from '../../constants/Common';
 import UtilService from '../../services/util';
 import { ReactComponent as RightArrow } from '../../assets/svg/right-arrow.svg';
 import NoImage from '../../assets/images/no-image.png';
@@ -13,6 +13,11 @@ import UserId from '../../routes/CommonComponent/UserId';
 import FranchiseeName from '../ESFranchiseeName';
 import IntlMessages from '../../util/IntlMessages';
 import PaymentView from './paymentBreakUp';
+import ParkingImage from './parkingImage';
+import {
+    IS_PARKING_FINE_FEATURE
+} from "../../constants/Common";
+
 const _ = require('lodash');
 
 class ESRidesStatusCard extends Component {
@@ -21,22 +26,32 @@ class ESRidesStatusCard extends Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
+            rideBookingId: 0,
+            parkingFine: 0,
+            isParkingFine: false,
+            parkingFineDate: null,
+            userName: null,
             fareSummary: {},
             showModal: false,
             deleteAccountRemark: '',
             confirmDeleteLoading: false,
-            deletedRecord : {},
+            deletedRecord: {},
             isDeleteModel: false
         };
     }
     handleCancel = () => {
-        return this.setState({ previewVisible: false ,isDeleteModel: false});
+        return this.setState({ previewVisible: false, isDeleteModel: false });
     };
-    handlePreview = async (image) => {
+    handlePreview = async (image, ride) => {
         if (image) {
             this.setState({
                 previewImage: image,
-                previewVisible: true
+                previewVisible: true,
+                rideBookingId: ride.id,
+                parkingFine: ride.fareData.parkingFine,
+                isParkingFine: ride.fareData.isParkingFine,
+                parkingFineDate: ride.fareData.parkingFineDate,
+                userName: ride.fareData.parkingFineUserName
             });
         }
     };
@@ -52,44 +67,50 @@ class ESRidesStatusCard extends Component {
             let ride = this.state.deletedRecord;
             this.setState({ confirmDeleteLoading: false });
 
-            if(ride && ride.id){
+            if (ride && ride.id) {
                 let obj = {
                     "password": "Coruscate@2021",
                     "model": "ride",
                     "filter": {
                         "id": [ride.id]
-                    } ,
-                    "remark":this.state.deleteAccountRemark 
+                    },
+                    "remark": this.state.deleteAccountRemark
                 }
-               
-                await axios.post(`/admin/developer/delete-model-wise-data`,obj);
+
+                await axios.post(`/admin/developer/delete-model-wise-data`, obj);
                 message.success('Record Deleted successfully');
                 this.props.fetch();
-                this.setState({ confirmDeleteLoading: true ,isDeleteModel : false , deleteAccountRemark:''});
-            }else{
+                this.setState({ confirmDeleteLoading: true, isDeleteModel: false, deleteAccountRemark: '' });
+            } else {
                 message.error('Record Not found');
             }
         } catch (error) {
             console.log('Error****:', error.message);
             this.setState({ loading: false });
-        } 
+        }
     };
 
     changeRemark = (e) => {
-       this.setState({ deleteAccountRemark: e.target.value });
+        this.setState({ deleteAccountRemark: e.target.value });
     }
 
-    showDeleteAccountConfirm = (ride)  => {
-        this.setState({deletedRecord: ride,isDeleteModel: true});
+    showDeleteAccountConfirm = (ride) => {
+        this.setState({ deletedRecord: ride, isDeleteModel: true });
     }
+
+    getList = () => {
+        this.props.fetch();
+    }
+
+
     render() {
+        
         const { data, completedRideId, status } = this.props;
-        const { previewVisible, previewImage } = this.state;
-
+        const { previewVisible, previewImage, rideBookingId, parkingFine, isParkingFine, parkingFineDate, userName } = this.state;
         const { authUser } = this.props.auth;
         let menuPermission = authUser.accessPermission;
         let indexes = _.findIndex(menuPermission, { module: Number(PAGE_PERMISSION.RIDERS) });
-        let hasDeletePermission =  menuPermission[indexes] &&
+        let hasDeletePermission = menuPermission[indexes] &&
             menuPermission[indexes].permissions &&
             menuPermission[indexes].permissions.delete;
 
@@ -113,11 +134,11 @@ class ESRidesStatusCard extends Component {
                                                     currentPage={this.props.currentPage}
                                                     filter={this.props.filter}
                                                 /> :
-                                                    <div >
+                                                    <div>
                                                         <h3 style={{ textTransform: 'capitalize' }}>
                                                             <b>{GUEST_USER_STRING}</b>
                                                         </h3>
-                                                    </div >}
+                                                    </div>}
                                             </>
                                         }</span>
                                     <h3 style={{ float: 'left' }}>(#{record.rideNumber})</h3>
@@ -132,18 +153,18 @@ class ESRidesStatusCard extends Component {
                                         /></div>
                                     : ''} */}
                                 {record.rating && <Rate disabled value={record.rating} />}
-                                { (status === RIDE_STATUS.COMPLETED || status === RIDE_STATUS.CANCELLED) 
-                                  && IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY && 
-                                  (this.props.auth.authUser.type == USER_TYPES.SUPER_ADMIN || this.props.auth.authUser.type === USER_TYPES.ADMIN) && hasDeletePermission &&
-                                   <Tooltip  title="Delete Ride Data with Transaction">
-                                    {/* <div className="scooterIC"> */}
-                                        <a 
+                                {(status === RIDE_STATUS.COMPLETED || status === RIDE_STATUS.CANCELLED)
+                                    && IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY &&
+                                    (this.props.auth.authUser.type == USER_TYPES.SUPER_ADMIN || this.props.auth.authUser.type === USER_TYPES.ADMIN) && hasDeletePermission &&
+                                    <Tooltip title="Delete Ride Data with Transaction">
+                                        {/* <div className="scooterIC"> */}
+                                        <a
                                             onClick={this.showDeleteAccountConfirm.bind(this, record)}
                                         >
                                             <Delete />
                                         </a>
-                                    {/* </div> */}
-                                 </Tooltip>
+                                        {/* </div> */}
+                                    </Tooltip>
                                 }
                             </div>
                             {FRANCHISEE_VISIBLE && record.franchiseeId && record.franchiseeId.name ?
@@ -209,8 +230,8 @@ class ESRidesStatusCard extends Component {
                                         <div>
                                             {record.status === RIDE_STATUS.CANCELLED && record.statusTrack.length ?
                                                 <>
-                                                   
-                                                   { !record.reservedDateTime &&  <div className="gx-mt-2">
+
+                                                    {!record.reservedDateTime && <div className="gx-mt-2">
                                                         <b><IntlMessages id="app.rides.unlockTime" defaultMessage="Ride Unlock Time" />  : </b>
                                                         {UtilService.displayDate(record.statusTrack[0].dateTime)}
                                                     </div>
@@ -228,7 +249,7 @@ class ESRidesStatusCard extends Component {
                                                                 return time;
                                                             }
                                                         })} </div>
-                                                   
+
                                                     {/* {record.reservedEndDateTime && <div className="gx-mt-2">
                                                         <b><IntlMessages id="app.rides.rideReservedEndTime" /> : </b>
                                                         {UtilService.displayDate(record.reservedEndDateTime)}
@@ -298,7 +319,7 @@ class ESRidesStatusCard extends Component {
                                     }
                                     {record.reservedEndDateTime && record.status === RIDE_STATUS.COMPLETED &&
                                         <div>
-                                            <IntlMessages id="app.rides.unlockTime" defaultMessage="Ride Unlock Time"/> : <span className="darkLabel">  {UtilService.displayDate(record.startDateTime)}</span>
+                                            <IntlMessages id="app.rides.unlockTime" defaultMessage="Ride Unlock Time" /> : <span className="darkLabel">  {UtilService.displayDate(record.startDateTime)}</span>
                                         </div>
                                     }
                                 </div>
@@ -328,21 +349,28 @@ class ESRidesStatusCard extends Component {
                                                     null}
                                             </span>
                                         </> :
-                                        <div className="ParkedImg"><div style={{ width: '65px' }}>
-                                            <b className="gx-mt-3"><IntlMessages id="app.rides.parkingPhoto" /></b>
-                                        </div>
-                                            <div className="parkedImage">
-                                                <Card
-                                                    className="parkedImageCard"
-                                                    cover={
-                                                        <img
-                                                            src={record.scooterImage ? `${BASE_URL}/${record.scooterImage}` : NoImage}
-                                                            alt=""
-                                                            onClick={record.scooterImage ? () => this.handlePreview(`${BASE_URL}/${record.scooterImage}`) : ''}
-                                                            className="parkedVehicleCover rotate90"
-                                                        />}
-                                                />
-                                            </div>
+
+
+                                        <div className="ParkedImg">
+                                            {IS_PARKING_FINE_FEATURE &&
+                                                <>
+                                                    <div style={{ width: '65px' }}>
+                                                        <b className="gx-mt-3"><IntlMessages id="app.rides.parkingPhoto" /></b>
+                                                    </div>
+                                                    <div className="parkedImage">
+                                                        <Card
+                                                            className="parkedImageCard"
+                                                            cover={
+                                                                <img
+                                                                    src={record.scooterImage ? `${BASE_URL}/${record.scooterImage}` : NoImage}
+                                                                    alt=""
+                                                                    onClick={record.scooterImage ? () => this.handlePreview(`${BASE_URL}/${record.scooterImage}`, record) : ''}
+                                                                    className="parkedVehicleCover rotate90"
+                                                                />}
+                                                        />
+                                                    </div>
+                                                </>
+                                            }
                                         </div>
                                     }
                                 </div>
@@ -351,15 +379,29 @@ class ESRidesStatusCard extends Component {
                     }
                     )
                 }
-                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                    <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                </Modal>
-                {this.state.showModal && (
-                    <PaymentView
-                        onCancel={this.handleCancelPayment}
-                        fareSummary={this.state.fareSummary}
+                {
+                    previewVisible && <ParkingImage
+                        onCancel={this.handleCancel}
+                        visible={previewVisible}
+                        footer={null}
+                        previewImage={previewImage}
+                        rideBookingId={rideBookingId}
+                        parkingFine={parkingFine}
+                        isParkingFine={isParkingFine}
+                        parkingFineDate={parkingFineDate}
+                        userName={userName}
+                        getList={this.getList.bind(this)}
                     />
-                )}
+                }
+
+                {
+                    this.state.showModal && (
+                        <PaymentView
+                            onCancel={this.handleCancelPayment}
+                            fareSummary={this.state.fareSummary}
+                        />
+                    )
+                }
                 <Modal
                     className="note-list-popup"
                     visible={this.state.isDeleteModel}
@@ -367,28 +409,28 @@ class ESRidesStatusCard extends Component {
                     onCancel={this.handleCancel}
                     footer={false}
                 >
-                   <Form>
-                   <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
-                          <Icon type="question-circle" /> <b>Are you sure you want to delete Ride : {this.state.deletedRecord.rideNumber} ?</b>
-                    </Col>
-                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
-                        <b>Note</b> - Associated transaction will also be deleted and cannot be retrieved again.
+                    <Form>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{ padding: '0px', marginTop: '20px' }}>
+                            <Icon type="question-circle" /> <b>Are you sure you want to delete Ride : {this.state.deletedRecord.rideNumber} ?</b>
                         </Col>
-                        <Col lg={24} md={24} sm={24} xs={24} style={{padding: '0px',marginTop:'20px'}}>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{ padding: '0px', marginTop: '20px' }}>
+                            <b>Note</b> - Associated transaction will also be deleted and cannot be retrieved again.
+                        </Col>
+                        <Col lg={24} md={24} sm={24} xs={24} style={{ padding: '0px', marginTop: '20px' }}>
                             Remark : <Input placeholder="Add Remark" required={true}
-                                onChange = {(e) => this.changeRemark(e)}/>
+                                onChange={(e) => this.changeRemark(e)} />
                         </Col>
                     </Form>
-                    <div className="notes-add-footer-btn" style={{paddingBottom:'35px'}} >
-                        <Button type="primary" className="mb-0"  style={{float:'right',marginTop:'5px'}} 
-                          disabled={!this.state.deleteAccountRemark || this.state.deleteAccountRemark === ''}
-                        onClick={() => { this.deleteRecordFromSystem()}}>Submit</Button>
-                        <Button className="mb-0"  style={{float:'right',marginTop:'5px'}} 
-                          onClick={() => {this.handleCancel()}}> Cancel
+                    <div className="notes-add-footer-btn" style={{ paddingBottom: '35px' }} >
+                        <Button type="primary" className="mb-0" style={{ float: 'right', marginTop: '5px' }}
+                            disabled={!this.state.deleteAccountRemark || this.state.deleteAccountRemark === ''}
+                            onClick={() => { this.deleteRecordFromSystem() }}>Submit</Button>
+                        <Button className="mb-0" style={{ float: 'right', marginTop: '5px' }}
+                            onClick={() => { this.handleCancel() }}> Cancel
                         </Button>
-                     </div>
+                    </div>
                 </Modal>
-            </div>
+            </div >
         );
     }
 }

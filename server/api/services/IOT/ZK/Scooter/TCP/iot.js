@@ -133,7 +133,32 @@ module.exports = {
 
         return res;
     },
-
+    async startFirmwareUpdate(scooter){
+        let subCommand='0';
+        const imei=scooter.imei;
+        let commandToSend=`AT+GTUPD=${scooterModel},${subCommand},1,10,0,,,http://3.7.80.234:13810/ZK105L_R61A03V09_CAN.enc,0,0,,,FFFF$`;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'startFirmwareUpdate');
+        if (!res.isRequested && !res.message) {
+          res.message = `Can't start update firmware`;
+      }
+      if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+          console.log('res', res);
+      }
+      return res;
+  },
+  async stopFirmwareUpdate(scooter){
+      let subCommand='1';
+      const imei=scooter.imei;
+      let commandToSend=`AT+GTUPD=${scooterModel},${subCommand},,,,,0001$`;
+      let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'stopFirmwareUpdate');
+      if (!res.isRequested && !res.message) {
+        res.message = `Can't stop update firmware`;
+    }
+    if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {
+        console.log('res', res);
+    }
+    return res;
+  },
     async setMaxSpeed(scooter, data) {
         const imei = scooter.imei;
         const commandToSend = `AT+GTECC=${scooterModel},,${data.value},0,1,,,,,,0ABF$`;
@@ -188,7 +213,7 @@ module.exports = {
 
     async batteryLockDisable(scooter) {
         const imei = scooter.imei;
-        const commandToSend = `AT+GTVAD=${scooterModel},0,1,0,0,0,0,10,0215$`;
+        const commandToSend = `AT+GTVAD=${scooterModel},0,1,0,0,1,2,10,0215$`;
         let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLockDisable');
         if (!res.isRequested && !res.message) {
             res.message = `Can't Lock Battery`;
@@ -198,7 +223,7 @@ module.exports = {
     },
     async batteryLockEnable(scooter) {
         const imei = scooter.imei;
-        const commandToSend = `AT+GTVAD=${scooterModel},1,1,0,0,0,0,10,0215$`;
+        const commandToSend = `AT+GTVAD=${scooterModel},1,1,0,0,1,2,10,0215$`;
         let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'batteryLockEnable');
         if (!res.isRequested && !res.message) {
             res.message = `Can't Unlock Battery`;
@@ -387,6 +412,18 @@ module.exports = {
         return res;
     },
 
+    async commandToPerform(scooter, params) {
+        console.log('in commandToPerform', params.data);
+        const imei = scooter.imei;
+        const commandToSend = params.data.value;
+        let res = await this.sendCommand(imei, commandToSend, scooter.userId, 'anyCommand');
+        console.log('commandToSend', commandToSend);
+        if (!res.isRequested && !res.message) {
+            res.message = `Can't send command to scooter`;
+        }
+
+        return res;
+    },
 
     async sendCommand(imei, command, userId, commandName = '', currentTry = 1) {
         if (sails.config.GET_SCOOTER_COMMAND_LOGS && (!sails.config.GET_LOGS_FOR_IMEI || sails.config.GET_LOGS_FOR_IMEI == imei)) {

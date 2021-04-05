@@ -106,6 +106,9 @@ module.exports = {
         noqoodyReferenceId: {
             type: 'string'
         },
+        paramReferenceId:{
+            type:'String'
+        },
         planInvoiceId: { model: 'PlanInvoice' },
         rideType: {
             type: 'number',
@@ -137,6 +140,7 @@ module.exports = {
             type: 'json'
         },
         promoCodeId: { model: 'PromoCode' },
-        promoCodeData: { type: 'json' }
+        promoCodeData: { type: 'json' },
+        comment:{type: 'string'}
     }
 };

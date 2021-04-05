@@ -738,13 +738,13 @@ module.exports = {
                     newRows[key]['manufacturer'] = value;
                     delete newRows[key][index];
                 } else if (index == 'LOCK MANUFACTURER') {
-                    newRows[key]['lockManufacturer'] = value;
+                    newRows[key]['lockManufacturer'] = value && value !== '' ? value : null;
                     delete newRows[key][index];
                 } else if (index == 'CHARGER PLUG') {
-                    newRows[key]['chargerPlugIds'] = value;
+                    newRows[key]['chargerPlugIds'] = value && value !== '' ? value : null;
                     delete newRows[key][index];
                 } else if (index == 'CHARGER POWER') {
-                    newRows[key]['chargerPowerTypes'] = value;
+                    newRows[key]['chargerPowerTypes'] = value && value !== '' ? value : null;
                     delete newRows[key][index];
                 }
             });

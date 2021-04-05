@@ -334,6 +334,15 @@ class VehicleDetails extends Component {
                 lng: data.currentLocation.coordinates[0]
             };
         }
+        let vehicleFullImage = image.scooter;
+        let vehicleHalfImage = image.halfScooter;
+        if (vehicleRecord && (vehicleRecord.type === VEHICLE_TYPES.BIKE || (vehicleRecord.type === VEHICLE_TYPES.BICYCLE && vehicleRecord.manufacturer.code === 'OMNI_TCP_E_BIKE'))) {
+            vehicleFullImage = image.bike;
+            vehicleHalfImage = image.halfbike;
+        } else if (vehicleRecord && vehicleRecord.type === VEHICLE_TYPES.BICYCLE) {
+            vehicleFullImage = image.bicycle;
+            vehicleHalfImage = image.halfbicycle;
+        }
 
         return (
             <div className="gx-module-box gx-mw-100">
@@ -381,8 +390,7 @@ class VehicleDetails extends Component {
                                 loading={loading}
                             >
                                 <div className="scooterImageCard">
-                                    <img alt=""
-                                        src={vehicleRecord.type === VEHICLE_TYPES.SCOOTER ? image.scooter : vehicleRecord.type === VEHICLE_TYPES.BIKE ? image.bike : image.bicycle} />
+                                    <img alt="" src={vehicleFullImage} />
                                 </div>
                                 <ul>
                                     <li>
@@ -582,8 +590,7 @@ class VehicleDetails extends Component {
                                                 </div>
                                             </Col>
                                             <Col span={16} className="VehicleImage">
-                                                <img alt=""
-                                                    src={vehicleRecord.type === VEHICLE_TYPES.SCOOTER ? image.halfScooter : vehicleRecord.type === VEHICLE_TYPES.BIKE ? image.halfbike : image.halfbicycle} />
+                                                <img alt="" src={vehicleHalfImage} />
                                             </Col>
                                         </Row>
                                     </Card>
@@ -636,4 +643,3 @@ const mapStateToProps = ({ auth }) => {
 };
 
 export default connect(mapStateToProps)(VehicleDetails);
-

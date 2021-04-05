@@ -13,6 +13,7 @@ const NOQOODYPaymentService = require(`./Payment/Noqoody/payment`);
 const OperationHoursService = require(`./operationalHours`);
 const RedisDBService = require('./redisDB');
 const ExcelReportService = require('./excelReport');
+const user = require('./user');
 
 module.exports = {
     async cancelRide() {
@@ -39,7 +40,7 @@ module.exports = {
                 pauseEndDateTime: { '<=': expiredPausedTime },
                 isPaused: true,
                 isRequested: false,
-                vehicleType: { '!=': sails.config.VEHICLE_TYPE.BICYCLE },
+                // vehicleType: { '!=': sails.config.VEHICLE_TYPE.BICYCLE },
                 status: sails.config.RIDE_STATUS.ON_GOING
             };
             let rides = await RideBooking.find(filter);
@@ -551,7 +552,7 @@ module.exports = {
                                 isDeleted: false
                             }
                         });
-                        console.log('vehicle Task is already created-----------------', vehicleTask);
+                        // console.log('vehicle Task is already created-----------------', vehicleTask);
                         // If particular vehicle have ongoing task the create move task for this particular vehicle
                         if (!vehicleTask.length) {
                             let nest = await Nest.find({
@@ -570,17 +571,20 @@ module.exports = {
                                     userId: null
                                 }];
                                 let taskObj = {
-                                    taskType: sails.config.TASK.TASK_TYPE.LEVEL_2.MOVE,
+                                    taskType: sails.config.TASK.TASK_TYPE.LEVEL_1.MOVE,
                                     taskHeading: sails.config.TASK.TASK_HEADING.MOVE[1],
                                     timeLimitType: sails.config.TASK_SETTING.moveTask.timeLimitType,
                                     timeLimitValue: sails.config.TASK_SETTING.moveTask.timeLimitValue,
-                                    incentiveRange: sails.config.TASK_SETTING.moveTask.incentiveRange,
+                                    incentiveAmount: sails.config.TASK_SETTING.moveTask.incentiveRange,
                                     taskWorkFlow: sails.config.TASK.WORK_FLOW.OPEN,
                                     module: sails.config.modules.vehicle,
                                     referenceId: vehicle.id,
                                     nestId: nest[0].id,
                                     statusTrack: newStatus,
-                                    isSystemCreated: true
+                                    isSystemCreated: true,
+                                    isIdealVehicleTask: true,
+                                    canceledBy: [],
+                                    level: sails.config.TASK.TASK_LEVEL.ONE
                                 }
                                 let createdRecord = await Task.create(taskObj).fetch();
                                 if (createdRecord) {
@@ -645,7 +649,7 @@ module.exports = {
             await Promise.all(_.map(vehicles, async function (vehicle) {
                 if (vehicle.id) {
                     let alreadyOngoingTaskForVehicle = await Task.findOne({
-                        referenceId: vehicle.referenceId,
+                        referenceId: vehicle.id,
                         taskWorkFlow: [
                             sails.config.TASK.WORK_FLOW.OPEN,
                             sails.config.TASK.WORK_FLOW.IN_PROGRESS
@@ -679,7 +683,9 @@ module.exports = {
                                 referenceId: vehicle.id,
                                 nestId: nest[0].id,
                                 statusTrack: newStatus,
-                                isSystemCreated: true
+                                isSystemCreated: true,
+                                canceledBy: [],
+                                level: sails.config.TASK.TASK_LEVEL.TWO
                             }
                             let createdRecord = await Task.create(taskObj).fetch();
                             if (createdRecord) {
@@ -880,18 +886,18 @@ module.exports = {
     },
     async sendExcelReport() {
         try {
-            var timezone =  sails.config.DEFAULT_TIME_ZONE;
+            var timezone = sails.config.DEFAULT_TIME_ZONE;
             let startTime = moment.tz(timezone).subtract('1', 'day').startOf('day').utc().toISOString();
             let endTime = moment.tz(timezone).startOf('day').utc().toISOString();
             console.log('start end time---- :>> ', startTime, endTime);
 
             let option = {
-               startTime:  startTime,
-               endTime : endTime
+                startTime: startTime,
+                endTime: endTime
             }
 
             await ExcelReportService.sendExcelReport(option, true);
-            
+
         } catch (error) {
             sails.log.error('Error while running cron sendExcelReport.', error);
         }
@@ -1038,5 +1044,185 @@ module.exports = {
         } catch (error) {
             sails.log.error('Error while running cron sendOperationalHoursExpireNotification.', error);
         }
+    },
+    async expiringWalletOfUser(userId) {
+        try {
+            let startTime = moment().subtract({ 'minutes': 1 }).toISOString();
+            let currentTime = moment().toISOString();
+            let filter = { type: sails.config.USER.TYPE.CUSTOMER };
+            if (!userId) {
+                filter.walletExpiryDate = { '>=': startTime, '<=': currentTime }
+            } else {
+                filter.id = userId;
+            }
+            let users = await User.find(filter);
+            // let walletExpiredTime = sails.config.WALLET_EXPIRED_TIME;
+            if (users && users.length > 0) {
+                await Promise.all(_.map(users, async (v, k) => {
+                    let onGoingRides = await RideBooking.find({ userId: v.id, status: sails.config.RIDE_STATUS.ON_GOING })
+                    if (onGoingRides && onGoingRides.length > 0 && onGoingRides[0].id) {
+                        // console.log("FOR TRUE FLAG ONGOING RIDE");
+                        await RideBooking.update({ id: onGoingRides[0].id }, { isWalletExpiredAtStop: true });
+                    } else {
+                        // console.log("FOR EXPIRED WALLET");
+                        let historyObj = {
+                            walletExpiredTime: '',
+                            walletAmount: v.walletAmount,
+                            datetime: moment().toISOString()
+                        }
+                        if (!v.walletExpiredHistory || _.size(v.walletExpiredHistory) === 0) {
+                            v.walletExpiredHistory = [];
+                        }
+                        v.walletExpiredHistory.push(historyObj);
+                        await User.update({ id: v.id }, { walletExpiryDate: '', walletExpiredHistory: v.walletExpiredHistory, walletAmount: 0 });
+                        if (v.walletAmount) {
+                            let transactionLog = {
+                                chargeType: sails.config.TRANSACTION_LOG.STATUS.WALLET_DEBIT,
+                                type: sails.config.STRIPE.TRANSACTION_TYPE.DEBIT,
+                                status: sails.config.STRIPE.STATUS.succeeded,
+                                amount: v.walletAmount,
+                                transactionBy: v.id,
+                                remark: sails.config.WALLET_EXPIRED,
+                                isWalletTransaction: true
+                            }
+                            await TransactionLog.create(transactionLog);
+
+                            let mobile = v.mobiles ? v.mobiles[0].countryCode + v.mobiles[0].mobile : '';
+                            let email = v.emails ? v.emails[0].email : '';
+                            // send SMS
+                            if (mobile) {
+                                await SMSService.send({
+                                    message: `Dear ${v.name},
+                                Your wallet has expired on ${moment(v.walletExpiryDate).startOf('day')} at ${moment(v.walletExpiryDate).format("hh:mm:ss a")}.
+                                Your wallet balance is 0.00 QR\n\n
+                                Regards,\n\n
+                                Team Falcon.`,
+                                    mobiles: mobile,
+                                });
+                            }
+
+                            // Send Push Notifications
+                            let playerIds = [];
+                            if (v.androidPlayerId) {
+                                playerIds = playerIds.concat(v.androidPlayerId);
+                            }
+                            if (v.iosPlayerId) {
+                                playerIds = playerIds.concat(v.iosPlayerId);
+                            }
+                            if (playerIds.length > 0) {
+                                await NotificationService
+                                    .sendPushNotification({
+                                        playerIds: playerIds,
+                                        content: `Your wallet has expired. Your wallet balance is 0.00 QR`,
+                                        title: `Wallet Expiry Message - Dear ${v.name},`
+                                    });
+                            }
+                            // send Email if user has email
+                            if (email) {
+                                let mail_obj = {
+                                    subject: `Your Wallet balance with Falcon has expired.`,
+                                    to: email,
+                                    template: "notificationEmail",
+                                    name: v.name,
+                                    data: {
+                                        content: `Dear Rider,\n\n
+                                    Your wallet has expired on ${moment(v.walletExpiryDate).startOf('day')} at ${moment(v.walletExpiryDate).format("hh:mm:ss a")}. 
+                                    Your wallet balance is 0.00 QR\n\n
+                                    Regards,\n\n
+                                    Team Falcon`,
+                                    },
+                                };
+                                await EmailService.send(mail_obj);
+                            }
+                        }
+                    }
+                }));
+            }
+
+        } catch (error) {
+            console.log(error)
+            throw new Error(error)
+        }
+
+    },
+    async sendMessageBeforeExpireWallet() {
+
+        let dateAfter30days = moment().add(30, "days").startOf("day").toISOString();
+        let dateAfter15days = moment().add(15, "days").startOf("day").toISOString();
+        let dateAfter7days = moment().add(7, "days").startOf("day").toISOString();
+        let today = moment().add(1, "days").startOf("day").toISOString();
+
+        let users = User.find({
+            type: sails.config.USER.TYPE.CUSTOMER,
+            // walletExpiryDate = { '>=': startTime, '<=': dateAfter30days },
+            select: ["firstName", "name", "emails", "mobiles", "walletExpiryDate"]
+        })
+        await Promise.all(_.map(users, async (v, k) => {
+            let mobile = v.mobiles[0].countryCode + v.mobiles[0].mobile;
+            let email = v.emails[0] ? v.emails[0].email : '';
+
+            if (v.walletExpiryDate) {
+                let walletExpiryDate = moment(v.walletExpiryDate).startOf("day").toISOString();
+                let daysMessageString = '';
+                if (walletExpiryDate == dateAfter30days) {
+                    daysMessageString = 'in 30 days';
+                } else if (walletExpiryDate == dateAfter15days) {
+                    daysMessageString = 'in 15 days';
+                } else if (walletExpiryDate == dateAfter7days) {
+                    daysMessageString = 'in 7 days';
+                } else if (walletExpiryDate == today) {
+                    daysMessageString = 'tomorrow at' + moment(v.walletExpiryDate).format("hh:mm:ss a");
+                }
+                if (daysMessageString) {
+                    // send SMS
+                    await SMSService.send({
+                        message: `Dear ${v.name},\n\nYour wallet is expires ${daysMessageString}.
+                        Please use the balance before it expires.\n\n
+                        Regards,\n\n
+                        Team Falcon.`,
+                        mobiles: mobile,
+                    });
+
+                    // Send Push Notifications
+                    let playerIds = [];
+                    if (v.androidPlayerId) {
+                        playerIds = playerIds.concat(v.androidPlayerId);
+                    }
+                    if (v.iosPlayerId) {
+                        playerIds = playerIds.concat(v.iosPlayerId);
+                    }
+                    if (playerIds.length > 0) {
+                        await NotificationService
+                            .sendPushNotification({
+                                playerIds: playerIds,
+                                content: `Your wallet is expires ${daysMessageString}.
+                                      Please use the balance before it expires.\n\n`,
+                                title: `Wallet Expiry Message - Dear ${v.name},`
+                            });
+                    }
+                    // send Email if user has email
+                    if (email) {
+                        let mail_obj = {
+                            subject: `Your Wallet balance with Falcon expires ${daysMessageString.includes('tomorrow') ? 'tomorrow' : daysMessageString}`,
+                            to: email,
+                            template: "notificationEmail",
+                            name: v.name,
+                            data: {
+                                content: `Dear ${v.name},\n\nYour wallet is expires ${daysMessageString}.
+                                Please use the balance before it expires.\n\n
+                                Regards,\n\n
+                                Team Falcon.`,
+                            },
+                        };
+                        await EmailService.send(mail_obj);
+                    }
+                }
+
+            }
+        }));
+
+
+
     }
+
 };

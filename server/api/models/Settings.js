@@ -107,5 +107,9 @@ module.exports = {
             type: 'json',
             columnType: 'array',
         },
+        isCaptureParkingImage: {
+            type: 'boolean',
+            defaultsTo: false
+        }
     }
 };

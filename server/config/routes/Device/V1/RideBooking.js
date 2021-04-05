@@ -209,6 +209,15 @@ module.exports.routes = {
                 }
             }
         }
+    },
+    'POST /api/v1/customer/ride-parking-fine': {
+        controller: 'Device/V1/RideBookingController',
+        action: 'checkParkingIsRequired',
+        swagger: {
+            summary: 'Send command to Scooter.',
+            description: '',
+          
+        }
     }
 
 };

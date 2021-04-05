@@ -216,6 +216,41 @@ const UtilService = {
         //     </Tooltip>
         // );
     },
+    displayExpiredMessage: (walletExpireDate) => {
+        if (walletExpireDate) {
+            let startDate = moment(moment().toISOString(), 'YYYY-MM-DD');
+            let endDate = moment(walletExpireDate, 'YYYY-MM-DD');
+        
+            let years = endDate.diff(startDate, 'year');
+            startDate = moment(startDate).add(years, 'years');
+        
+            let months = endDate.diff(startDate, 'months');
+            startDate = moment(startDate).add(months, 'months');
+        
+            let days = endDate.diff(startDate, 'days');
+            startDate = moment(startDate).add(days, 'days');
+            if (days === 0 && months === 0 && years === 0) {
+                
+                let sDate = moment().toISOString()
+                let eDate = moment(walletExpireDate);
+
+                let days = moment(eDate).diff(sDate, 'days');
+                sDate = moment(sDate).add(days, 'days');
+
+                let hours = moment(eDate).diff(sDate, 'hours');
+                sDate = moment(sDate).add(hours, 'hours');
+
+                let minutes = moment(eDate).diff(sDate, 'minutes');
+                sDate = moment(sDate).add(minutes, 'minutes');
+                if(hours===0){ 
+                   return ` ${minutes>0?`(Expires in ${minutes} Minutes)`:''}`;       
+                }
+                return ` (Expires in ${hours} Hours and ${minutes} Minutes)`;
+            }
+            return ` (Expires in ${years !== 0 ? years + " Year" : ''}${months !== 0 ? months===1?months+ "  Month ":months+ "  Months " : ''}${days !== 0 ? days + " Days" : ''})`;
+        }
+        return '';
+    },
     checkAlphaNumericPassword: pwd => {
         const letter = /[a-zA-Z]/;
         const number = /[0-9]/;

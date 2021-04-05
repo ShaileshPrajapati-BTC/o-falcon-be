@@ -11,7 +11,8 @@ import {
     FEEDER_LABEL,
     FILTER_BY_TASK_LEVEL,
     RIDER_LABEL,
-    RIDER_ROUTE
+    RIDER_ROUTE,
+    FEEDER_LABEL_STRING
 } from "../../constants/Common";
 import React, { Component } from "react";
 import ActionButton from "./action";
@@ -331,7 +332,7 @@ class Feeder extends Component {
                                 />
                                 <AddButton
                                     onClick={this.onAdd}
-                                    text={`Add ${FEEDER_LABEL}`}
+                                    text={`Add ${FEEDER_LABEL_STRING}`}
                                     pageId={PAGE_PERMISSION.RIDERS}
                                 />
                             </div>

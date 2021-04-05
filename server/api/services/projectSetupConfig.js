@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const StripeHandler = require('./Payment/Stripe/stripeHandler');
 const TwilioHandler = require('./SMS/Twilio/twilioHandler');
 const AwsSNSHandler = require('./SMS/AWS_SNS/awsSNSHandler');
+const ProjectConfig = require('../models/ProjectConfig');
 
 module.exports = {
     camelCaseToCapitalUnderscore(inputStr) {
@@ -74,6 +75,7 @@ module.exports = {
                 paramsToUpdate[prop] = this.encrypt(paramsToUpdate[prop]);
             }
         }
+        let beforUpdateData = await modelName.find().limit(1);
         let updatedRecord = await modelName.update({ id: params.id })
             .set(paramsToUpdate)
             .fetch();
@@ -81,6 +83,16 @@ module.exports = {
         updatedRecord = this.omitExtras(updatedRecord);
 
         this.setValueToSailsConfig(updatedRecord, securityEnabled);
+        if (model === "projectconfig") {
+            
+            if (updatedRecord  && beforUpdateData[0]) {
+                // console.log("updatedRecord.walletExpiredTime ====",updatedRecord.walletExpiredTime)
+                // console.log("beforUpdateData[0].walletExpiredTime====",beforUpdateData[0].walletExpiredTime)
+                if (updatedRecord.walletExpiredTime !== beforUpdateData[0].walletExpiredTime) {
+                    await user.updateWalletExpriedTime(updatedRecord.walletExpiredTime);
+                }
+            }
+        }
         if ('stripeSecretKey' in paramsToUpdate && paramsToUpdate.stripeSecretKey !== sails.config.STRIPE_SECRET_KEY) {
             await StripeHandler.setStripeNewInstance();
         }

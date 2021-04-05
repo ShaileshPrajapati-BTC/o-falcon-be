@@ -159,5 +159,9 @@ module.exports = {
     SMS_PASSWORD_KEY: 'password',
     SMS_NO_KEY: 'no',
     SMS_MSG_KEY: 'msg',
-    SMS_MSGHEADER_KEY: 'msgheader'
+    SMS_MSGHEADER_KEY: 'msgheader',
+    IS_SYSTEM_ENABLE_LANGUAGE: false,
+    SET_LOW_BATTERY: 20,
+    IS_CAPTURE_PARKING_IMAGE: 1,
+    WALLET_EXPIRED_TIME: ''
 };

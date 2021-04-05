@@ -33,6 +33,7 @@ export const DISPLAY_AFTER_SPECIFIC_DATE  = '2021-01-01';
 export const OPERATIONAL_HOURS_VISIBLE = true;
 export const IS_NOQOODY_PG =  true;
 export const IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY =  true;
+export const IS_PARKING_FINE_FEATURE = true;
 
 export const DEFAULT_BASE_CURRENCY = 'QR';
 export const UNIT_TYPE_ARRAY = [

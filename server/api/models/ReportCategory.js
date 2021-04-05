@@ -9,7 +9,7 @@ module.exports = {
             type: 'string'
         },
         parentId: {
-            model: 'ReportCategory'
+            model: "ReportCategory"
         },
         addedBy: {
             model: 'user'

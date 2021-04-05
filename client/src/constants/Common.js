@@ -679,19 +679,23 @@ export const FILTER_BY_TASK_LEVEL = [
 ];
 export const TASK_HEADING = {
     1: {
-        1: <IntlMessages id="app.constant.move" defaultMessage="Move" />,
+        1: "Move"
+        // 1: <IntlMessages id="app.constant.move" defaultMessage="Move" />,
         // 2: "Move for repair"
     },
     2: {
-        1: <IntlMessages id="app.constant.damageMove" defaultMessage="Damage Move" />,
+        1: "Damage Move"
+        // 1: <IntlMessages id="app.constant.damageMove" defaultMessage="Damage Move" />,
         // 2: "Damage Battery"
     },
     3: {
-        1: <IntlMessages id="app.constant.charge" defaultMessage="Charge" />,
+        1: "Charge"
+        // 1: <IntlMessages id="app.constant.charge" defaultMessage="Charge" />,
         // 2: "Move for repair"
     },
     4: {
-        1: <IntlMessages id="app.constant.damageCharge" defaultMessage="Damage Charge" />,
+        1: "Damage Charge"
+        // 1: <IntlMessages id="app.constant.damageCharge" defaultMessage="Damage Charge" />,
         // 2: "Move for repair"
     },
     // 5: {
@@ -848,4 +852,13 @@ export const BOOKING_PASS_EXPIRATION_TYPES_FILTER = [
     { label: <IntlMessages id="app.hour" defaultMessage="Hour" />, value: 1, type: BOOKING_PASS_EXPIRATION_TYPES.HOUR },
     { label: <IntlMessages id="app.constant.day" defaultMessage="Day" />, value: 2, type: BOOKING_PASS_EXPIRATION_TYPES.DAY },
     { label: <IntlMessages id="app.constant.month" defaultMessage="Month" />, value: 3, type: BOOKING_PASS_EXPIRATION_TYPES.MONTH },
+];
+export const WALLET_EXPIRES_TIME = [
+    { label: "1 Month", value: 1 },
+    { label: "2 Month", value: 2 },
+    { label: "3 Month", value: 3 },
+    { label: "6 Month", value: 4 },
+    { label: "1 Year", value: 5 },
+    { label: "2 Year", value: 6 },
+    { label: "No Limit", value: 0 }
 ];

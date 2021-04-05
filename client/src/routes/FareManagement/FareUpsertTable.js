@@ -6,7 +6,8 @@ import {
     Row,
     Select,
     Spin,
-    message
+    message,
+    Switch
 } from "antd";
 import {
     DECIMAL_NUMBER_REG_EXP,
@@ -16,7 +17,8 @@ import {
     DEFAULT_BASE_CURRENCY,
     DEFAULT_DISTANCE_UNIT,
     RIDER_LABEL,
-    DEFAULT_API_ERROR
+    DEFAULT_API_ERROR,
+    IS_PARKING_FINE_FEATURE
 } from "../../constants/Common";
 import CustomScrollbars from "../../util/CustomScrollbars";
 import ESInfoLabel from "../../components/ESInfoLabel";
@@ -29,10 +31,12 @@ class FareUpsertTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: props.data
+            data: props.data,
+            isShowParkingFine: props.data.isCaptureParkingImage
         };
     }
-    componentDidMount() {
+
+    async componentDidMount() {
         let formVal = _.omit(this.props.data, [
             "boundary",
             "name",
@@ -42,7 +46,7 @@ class FareUpsertTable extends Component {
         if ("minimumFareType" in formVal && formVal.minimumFareType === 0) {
             formVal.minimumFareType = MINIMUM_FARE_TYPE[0].value;
         }
-        this.props.form.setFieldsValue(formVal);
+        await this.props.form.setFieldsValue(formVal);
     }
     fareTypeSelection = value => {
         let val = _.find(MINIMUM_FARE_TYPE, { code: "PER_DISTANCE_UNIT_CHARGE" }).value;
@@ -58,10 +62,20 @@ class FareUpsertTable extends Component {
             this.props.form.setFieldsValue({ baseFare: value });
         }
     };
+    handleChange = (value) => {
+        this.setState({ isShowParkingFine: value });
+    }
     handleSubmit = e => {
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (err) {
+
+
+                return false;
+            }
+            if (values.isCaptureParkingImage && values.parkingFine <= 0) {
+                message.error(`Please Set Parking Fine.`);
+
                 return false;
             }
             if (!values.ridePauseFare) {
@@ -89,7 +103,9 @@ class FareUpsertTable extends Component {
     };
     render() {
         const { loading, form } = this.props;
+        let isCaptureParkingImage = this.props.data.isCaptureParkingImage;
         const { getFieldDecorator } = form;
+        const { isShowParkingFine } = this.state;
         return (
             <Spin spinning={loading} delay={100}>
                 <div className="gx-module-box-content">
@@ -480,39 +496,6 @@ class FareUpsertTable extends Component {
                                             )}
                                         </Form.Item>
                                     </Col>
-                                    {/* <Col lg={6} md={6} sm={12} xs={24}>
-                                        <Form.Item
-                                            label={
-                                                <ESInfoLabel
-                                                    label={<IntlMessages id="app.faremanagement.parkingFine" defaultMessage="Parking Fine" />}
-                                                    message={<IntlMessages id="app.faremanagement.photoNotUploadedMessage" defaultMessage="Customer will be charged, if parking photo is not uploaded." />}
-                                                    unit={`(${DEFAULT_BASE_CURRENCY})`}
-                                                />
-                                            }
-                                            hasFeedback
-                                        >
-                                            {getFieldDecorator("parkingFine", {
-                                                rules: [
-                                                    {
-                                                        required: false,
-                                                        message: <IntlMessages id="app.faremanagement.addParkingFine" defaultMessage="Please add parking fine!" />
-                                                    },
-                                                    {
-                                                        pattern: new RegExp(
-                                                            DECIMAL_NUMBER_REG_EXP
-                                                        ),
-                                                        message: <IntlMessages id="app.faremanagement.invalidParkingFine" defaultMessage="Invalid Parking Fine!" />
-
-                                                    }
-                                                ]
-                                            })(
-                                                <InputNumber
-                                                    placeholder="Parking Fine"
-                                                    step={0.1}
-                                                />
-                                            )}
-                                        </Form.Item>
-                                    </Col> */}
                                     <Col lg={6} md={6} sm={12} xs={24}>
                                         <Form.Item
                                             label={
@@ -582,6 +565,61 @@ class FareUpsertTable extends Component {
                                             )}
                                         </Form.Item>
                                     </Col>
+                                    {IS_PARKING_FINE_FEATURE &&
+                                        <>
+                                            <Col lg={6} md={6} sm={12} xs={24}>
+                                                <Form.Item
+                                                    label={
+                                                        <ESInfoLabel
+                                                            label={<IntlMessages id="app.fareManagement.parking" defaultMessage="Parking functionality enabled for zone?" />}
+                                                            message={<IntlMessages id="app.faremanagement.parkingInfo" defaultMessage="Enable/Disable parking functionality for zone." />}
+                                                        />
+                                                    }
+
+                                                >
+                                                    {getFieldDecorator('isCaptureParkingImage', {})(
+                                                        <Switch defaultChecked={isCaptureParkingImage} onChange={this.handleChange} />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+
+                                            <Col lg={6} md={6} sm={12} xs={24} style={{ display: isShowParkingFine ? 'block' : 'none' }}>
+                                                <Form.Item
+                                                    label={
+                                                        <ESInfoLabel
+                                                            label={<IntlMessages id="app.faremanagement.parkingFine" defaultMessage="Parking Fine" />}
+                                                            message={<IntlMessages id="app.faremanagement.parkingFinePhotoUploadedMessage" defaultMessage="Admin can charge Customer, if parking photo is not properlly uploaded." />}
+                                                            unit={`(${DEFAULT_BASE_CURRENCY})`}
+                                                        />
+                                                    }
+                                                    hasFeedback
+                                                >
+                                                    {getFieldDecorator("parkingFine", {
+                                                        rules: [
+                                                            {
+                                                                required: false,
+                                                                message: <IntlMessages id="app.faremanagement.addParkingFine" defaultMessage="Please add parking fine!" />
+                                                            },
+                                                            {
+                                                                pattern: new RegExp(
+                                                                    DECIMAL_NUMBER_REG_EXP
+                                                                ),
+                                                                message: <IntlMessages id="app.faremanagement.invalidParkingFine" defaultMessage="Invalid Parking Fine!" />
+
+                                                            }
+                                                        ]
+                                                    })(
+                                                        <InputNumber
+                                                            placeholder="Parking Fine"
+                                                            step={0.1}
+                                                            min={0}
+                                                            max={100}
+                                                        />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                        </>
+                                    }
                                 </Row>
                                 <Row>
                                     <Col span={24} className="gx-text-right">

@@ -1,5 +1,5 @@
 const UtilService = require(`${sails.config.appPath}/api/services/util`);
-
+const UserService = require(`${sails.config.appPath}/api/services/user`);
 module.exports = {
     async addBalance(req, res) {
         try {
@@ -26,12 +26,12 @@ module.exports = {
                 isWalletTransaction : true
             };
             if (params.remark) {
-                transactionObj.remark = params.remark;
-            } else {
-                transactionObj.remark = sails.config.TRANSACTION_LOG.REMARK.ADD_WALLET_BY_ADMIN;
-            }
-
+                transactionObj.comment = params.remark;
+            } 
+            transactionObj.remark = sails.config.TRANSACTION_LOG.REMARK.ADD_WALLET_BY_ADMIN;
             await TransactionLog.create(transactionObj);
+            await UserService.updateWalletExpriedTime(sails.config.WALLET_EXPIRED_TIME,user.id);
+
 
             return res.ok(transactionObj, sails.config.message.WALLET_CREDIT_REQUEST_CHARGE_SUCCESS);
         } catch (error) {

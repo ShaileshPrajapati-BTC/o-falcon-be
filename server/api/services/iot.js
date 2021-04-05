@@ -1,6 +1,7 @@
 const OmniIotService = require('./IOT/OMNI/Scooter/HTTP/iot');
 const OmniTcpScooterIotService = require('./IOT/OMNI/Scooter/TCP/iot');
 const OmniBicycleIotService = require('./IOT/OMNI/Bicycle/TCP/iot');
+const OmniEBikeIotService = require('./IOT/OMNI/Ebike/TCP/iot');
 
 const ZimoIotService = require('./IOT/ZIMO/Scooter/MQTT/iot');
 
@@ -100,6 +101,10 @@ module.exports = {
                 res = await OmniTcpScooterIotService[command](data, extraData);
                 break;
 
+            case manufacturer === manufacturers.OMNI_TCP_E_BIKE && typeof OmniEBikeIotService[command] === 'function':
+                res = await OmniEBikeIotService[command](data, extraData);
+                break;
+
             case manufacturer.startsWith('TELTONIKA'):
                 res = await TeltonikaService.sendCommand(data, command, manufacturer, extraData);
                 break;
@@ -163,7 +168,15 @@ module.exports = {
                 res = await OmniTcpScooterIotService.lockUnlock(command, data, extraData);
                 break;
 
+            case manufacturers.OMNI_TCP_E_BIKE:
+                res = await OmniEBikeIotService.lockUnlock(command, data, extraData);
+                break;
+
             case manufacturers.TELTONIKA_TST100:
+                res = await TeltonikaService.sendCommand(data, command, manufacturer, extraData);
+                break;
+
+            case manufacturers.TELTONIKA_TST100_FIT_RIDER:
                 res = await TeltonikaService.sendCommand(data, command, manufacturer, extraData);
                 break;
 

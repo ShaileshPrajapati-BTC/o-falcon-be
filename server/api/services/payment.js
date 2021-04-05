@@ -1,11 +1,17 @@
+const AlloService = require(`./Payment/Allo/payment`);
 const StripeService = require(`./Payment/Stripe/payment`);
+const HyperpayService = require(`./Payment/HyperPay/payment`);
+const PagcertoService = require(`./Payment/Pagecerto/payment`);
+const ProxyPayService = require(`./Payment/ProxyPay/payment`);
 const NoqoodyService = require(`./Payment/Noqoody/payment`);
+const InicisServices = require(`./Payment/Inicis/payment`);
 
 const UtilService = require(`./util`);
 const CommonService = require('./common');
 const WalletService = require(`./wallet`);
 const DealerService = require(`./dealerService`);
 const FranchiseeService = require(`./franchiseeService`);
+const ParamPaymentService = require("./Payment/Param/payment");
 
 module.exports = {
     async createCustomer(user) {
@@ -54,6 +60,27 @@ module.exports = {
                     return card;
                     break;
 
+                case sails.config.PAYMENT_GATEWAYS.PAGCERTO:
+                    if (params.cardToken) {
+                        throw sails.config.message.UPDATE_APP;
+                    }
+                    if (!params.id || !params.exp_month || !params.exp_year || !params.brand ||
+                        !params.last4 || !params.first4) {
+                        throw sails.config.message.BAD_REQUEST;
+                    }
+                    break;
+                case sails.config.PAYMENT_GATEWAYS.INICIS:
+                    if (!params.id || !params.expYear || !params.expMonth ||
+                        !params.last4 || !params.tid) {
+                        throw sails.config.message.BAD_REQUEST;
+                    }
+                    break;
+                case sails.config.PAYMENT_GATEWAYS.PARAM:
+                    // call service from here, remove below condition
+                    // need to set params here, we need card response properlly to save card, so check controller code and return response accoring to it
+                    params = await ParamPaymentService.addCardToParam(params);
+
+                    break;
                 default:
                     break;
             }
@@ -61,6 +88,10 @@ module.exports = {
             return params;
         } catch (e) {
             console.log('e------------------------------', e);
+            let DEFAULT_PAYMENT_METHOD = sails.config.DEFAULT_PAYMENT_METHOD;
+            if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.PAGCERTO) {
+                throw e;
+            }
             throw new Error(e);
         }
     },
@@ -78,6 +109,8 @@ module.exports = {
                 );
 
                 return card;
+            } else if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.ALLO) {
+                return true;
             }
 
             return true;
@@ -89,14 +122,35 @@ module.exports = {
     async removedCardFromCustomer(user, params) {
         try {
             let DEFAULT_PAYMENT_METHOD = sails.config.DEFAULT_PAYMENT_METHOD;
-            if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.STRIPE) {
-                await StripeService.removedCardFromCustomer(user.stripeCustomerId, params.cardId);
-            }
 
+            switch (DEFAULT_PAYMENT_METHOD) {
+                case sails.config.PAYMENT_GATEWAYS.STRIPE:
+                    await StripeService.removedCardFromCustomer(user.stripeCustomerId, params.cardId);
+                    break;
+                case sails.config.PAYMENT_GATEWAYS.PARAM:
+                    await ParamPaymentService.removeCardToParam(params.cardId)
+                    break;
+                default:
+                    break;
+            }
+            // if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.STRIPE) {
+            //     await StripeService.removedCardFromCustomer(user.stripeCustomerId, params.cardId);
+            // } 
             return true;
         } catch (e) {
             throw new Error(e);
         }
+    },
+
+    async generateCheckOutId(paymentDetail) {
+        let response = await HyperpayService.generateCheckoutId(paymentDetail);
+
+        return response;
+    },
+
+    async verifyCheckoutId(paymentDetail, userId) {
+        let response = await HyperpayService.verifyTransaction(paymentDetail);
+        return response;
     },
 
     async setDefaultCustomerCard(user, params) {
@@ -112,7 +166,7 @@ module.exports = {
         }
     },
 
-    async addBalanceInUserWallet(userId, amount, paymentDetail = false) {
+    async addBalanceInUserWallet(userId, amount,paymentDetail = false) {
         if (!amount || !userId) {
             let response = { flag: false, data: 'Transaction failed.' };
 
@@ -144,8 +198,28 @@ module.exports = {
                         data = await StripeService.chargeCustomerForRide(transactionDetail);
                         break;
 
+                    case sails.config.PAYMENT_GATEWAYS.ALLO:
+                        data = await AlloService.chargeCustomerForRide(transactionDetail);
+                        break;
+
+                    case sails.config.PAYMENT_GATEWAYS.PAGCERTO:
+                        data = await PagcertoService.chargeCustomerForRide(transactionDetail);
+                        break;
+
+                    case sails.config.PAYMENT_GATEWAYS.HYPERPAY:
+                        data = await HyperpayService.getTransactionDetail(transactionDetail, paymentDetail);
+                        break;
+
+                    case sails.config.PAYMENT_GATEWAYS.PROXYPAY:
+                        data = await ProxyPayService.chargeCustomer(transactionDetail, paymentDetail);
+                        break;
+
                     case sails.config.PAYMENT_GATEWAYS.NOQOODY:
                         data = await NoqoodyService.chargeCustomer(transactionDetail, paymentDetail);
+                        break;
+                    case sails.config.PAYMENT_GATEWAYS.PARAM:
+                        console.log("PARAM PAYMENT")
+                        data = await ParamPaymentService.chargeCustomer(transactionDetail)
                         break;
 
                     default:
@@ -165,6 +239,21 @@ module.exports = {
                         res.data.paymentLink = paymentData.paymentLink;
                     }
                 };
+                // if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.PARAM) {
+                //     let paymentData = await ParamPaymentService.getPaymentLink(transactionDetail, paymentDetail, res.data.id, cvv);
+                //     if (!paymentData.paymentLink) {
+                //         res = {};
+                //         res.flag = false;
+                //         res.data = paymentData;
+                //     } else {
+                //         res.data.paramReferenceId = paymentData.paramReferenceId;
+                //         res.data.paymentLink = paymentData.paymentLink;
+                //     }
+                // }
+                if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.PARAM) {
+                    let paymentData = await ParamPaymentService.getPaymentConfigData(transactionDetail, res.data.id);
+                    res.config = paymentData
+                }
             } else {
                 res.flag = true;
             }
@@ -178,6 +267,34 @@ module.exports = {
         } catch (e) {
             throw e;
         }
+    },
+
+    async getTokenOfDefaultMethod() {
+        let data = {
+            authToken: ''
+        };
+        console.log(sails.config.DEFAULT_PAYMENT_METHOD)
+        switch (sails.config.DEFAULT_PAYMENT_METHOD) {
+            case 'ALLO':
+                data.authToken = sails.config.ALLO_PAYMENT_TOKEN
+                break;
+
+            case 'PAGCERTO':
+                let tokenData = await PagcertoPaymentService.getNewToken();
+                data = {
+                    authToken: tokenData.token
+                };
+                break;
+
+            case 'HYPERPAY':
+                data = await HyperpayService.getToken();
+                break;
+
+            default:
+                break;
+        }
+
+        return data;
     },
 
     async creditNewCustomerForWallet(userId, amount) {
@@ -404,6 +521,21 @@ module.exports = {
                             data = await StripeService.chargeCustomerForRide(ride);
                             break;
 
+                        case sails.config.PAYMENT_GATEWAYS.ALLO:
+                            data = await AlloService.chargeCustomerForRide(ride);
+                            break;
+
+                        case sails.config.PAYMENT_GATEWAYS.PAGCERTO:
+                            data = await PagcertoService.chargeCustomerForRide(ride);
+                            break;
+
+                        case sails.config.PAYMENT_GATEWAYS.HYPERPAY:
+                            data = await HyperpayService.chargeCustomerForRide(ride);
+                            break;
+                        case sails.config.PAYMENT_GATEWAYS.INICIS:
+                            data = await InicisServices.billingApprovalAndChargeCustomerForRide(ride);
+                            break;
+
                         default:
                             break;
                     }
@@ -446,6 +578,28 @@ module.exports = {
             console.log('****** chargeCustomerForRide Ends *******', ride.id);
 
             return res;
+        } catch (e) {
+            throw e;
+        }
+    },
+
+    async chargeCustomerForFine(ride, reqUserId) {
+        let data;
+        try {
+            ride.fareData.parkingFine = parseFloat(ride.fareData.parkingFine.toFixed(2));
+            let rideTotalParkingFine = parseFloat(ride.fareData.parkingFine.toFixed(2));
+
+            if (rideTotalParkingFine > 0) {
+                transactionObj = await WalletService.chargeCustomerForRideFine(ride, rideTotalParkingFine);
+                transactionObj.addedBy = reqUserId;
+                transactionObj.updatedBy = reqUserId;
+                data = await TransactionLog.create(transactionObj).fetch();
+            } else {
+         
+                throw sails.config.message.PARKING_FINE_GREATER_THAN_0;
+                
+            }
+            return data;
         } catch (e) {
             throw e;
         }
@@ -634,7 +788,9 @@ module.exports = {
                     );
                 }
             }
-
+            if (inicisDetails) {
+                transactionDebitLog.inicisDetails = inicisDetails;
+            }
             let transactionData = transactionSuccess ? transactionDebitLog : errorData;
 
             return { flag: transactionSuccess, data: transactionData };
@@ -689,10 +845,14 @@ module.exports = {
                 }
             }
             if (rideType === sails.config.RIDE_TYPE.BOOKING_PASS) {
-                if (!isExtraTakenTimePlanPayment) {
+                if (!rideNumber && !isExtraTakenTimePlanPayment) {
                     transactionObj.remark = sails.config.STRIPE.MESSAGE.PLAN_BUY_DONE;
-                } else {
+                }
+                if (isExtraTakenTimePlanPayment) {
                     transactionObj.remark = sails.config.STRIPE.MESSAGE.EXTRA_TIME_PLAN_PAYMENT;
+                    if (rideNumber) {
+                        transactionObj.remark += `For Ride ${rideNumber}`;
+                    }
                 }
             }
             if (isSystemTransaction && bonusTransactionId) {
@@ -717,7 +877,7 @@ module.exports = {
             mail: {
                 template: 'common',
                 subject: 'Ride - Payment',
-                message: ''
+                message: `You have been charged of ${amount} ${sails.config.CURRENCY_SYM} for ride.`
             },
             pushNotification: {
                 data: {
@@ -733,15 +893,11 @@ module.exports = {
                 ]
         };
         if (transactionSuccess) {
-            if (rideType === sails.config.RIDE_TYPE.DEFAULT) {
-                obj.mail.message = `You have been charged of ${amount} ${sails.config.CURRENCY_SYM} for ride.`;
-            } else if (rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
+            if (rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
                 obj.mail.message = `You have been charged of ${amount} ${sails.config.CURRENCY_SYM} for plan.`;
             }
         } else {
-            if (rideType === sails.config.RIDE_TYPE.DEFAULT) {
-                obj.mail.message = `Your payment of ride has been failed. Due to ${errorMessage}`;
-            } else if (rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
+            if (rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
                 obj.mail.message = `Your payment of plan has been failed. Due to ${errorMessage}`;
             }
         }
@@ -774,6 +930,42 @@ module.exports = {
         };
         obj.users = [transaction.transactionBy];
         await CommonService.sendMailSMSAndPushNotification(obj);
+    },
+
+    async getPendingTransactionWithInicisDetails(ride) {
+        const user = await User.findOne({ id: ride.userId });
+        user.email = UtilService.getPrimaryEmail(user.emails);
+        user.mobile = UtilService.getPrimaryValue(user.mobiles, 'mobile');
+        let ridePendingTransaction = await TransactionLog.find({
+            rideId: ride.id,
+            status: sails.config.STRIPE.STATUS.pending
+        });
+        if (ridePendingTransaction[0]) {
+            ridePendingTransaction[0].inicisDetails = {
+                type: 'Pay',
+                paymethod: 'Card',
+                mid: sails.config.INICIS_MID,
+                url: sails.config.INICIS_URL,
+                moid: ride.rideNumber,
+                goodName: 'Ride Payment',
+                price: ride.totalFare,
+                currency: sails.config.CURRENCY_CODE,
+                buyerName: user.name ? user.name : "",
+                buyerEmail: user.email ? user.email : "",
+                buyerTel: user.mobile ? user.mobile : "",
+                inicisKey: sails.config.INICIS_KEY,
+                inicisIV: sails.config.INICIS_IV,
+                inicisMID: sails.config.INICIS_MID,
+                regNo:
+                    await InicisServices.aesEncryption(sails.config.INICIS_REG_NO),
+                quotaInterest: sails.config.INICIS_QUOTA_INTEREST,
+                cardQuota: '00',
+                authentification: '00',
+                language: 'eng',
+            }
+        }
+
+        return ridePendingTransaction;
     },
 
     async makeStripeIdAndCardEmpty(id) {

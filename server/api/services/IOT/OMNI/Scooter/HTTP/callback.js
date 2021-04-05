@@ -1,6 +1,7 @@
 const RideBookingService = require(`../../../../rideBooking`);
 const NotificationService = require('../../../../notification');
 const IotCallbackHandler = require('../../../../iotCallbackHandler');
+const TaskService = require('../../../../task');
 
 module.exports = {
 
@@ -35,6 +36,7 @@ module.exports = {
             const notification = notificationData[status];
             //await RideBookingService.sendOmniNotificationToAdmin(data, vehicle.id, vehicle.type);
             await RideBookingService.sendIOTNotification(imei, notification);
+            await TaskService.autoCreateTaskForVehicleDamage(notificationData, imei);
         } catch (e) {
             console.log('omniCallback heart ', e);
         }
@@ -79,6 +81,7 @@ module.exports = {
         const status = data.status;
         const notification = notificationData[status];
         await RideBookingService.sendIOTNotification(data.imei, notification);
+        await TaskService.autoCreateTaskForVehicleDamage(notificationData, data.imei);
     },
 
     async fault(data) {

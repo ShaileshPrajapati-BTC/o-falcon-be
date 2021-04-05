@@ -2,6 +2,7 @@ const modelName = 'ridebooking';
 const PaymentService = require(`${sails.config.appPath}/api/services/payment`);
 const RatingService = require(`${sails.config.appPath}/api/services/rating`);
 const RidebookingService = require(`${sails.config.appPath}/api/services/rideBooking`);
+const NotificationService = require(`${sails.config.appPath}/api/services/notification`);
 const UtilService = require(`${sails.config.appPath}/api/services/util`);
 let moment = require('moment');
 
@@ -128,6 +129,55 @@ module.exports = {
         } catch (error) {
             console.log(error);
 
+            return res.serverError(null, error);
+        }
+    },
+
+    async chargeCustomerForFine(req, res) {
+        try {
+            const fields = [
+                'rideId',
+                'remark'
+            ];
+            let RideBookingData = {};
+            let params = req.allParams();
+            commonValidator.checkRequiredParams(fields, params);
+            const ride = await RideBooking.findOne({
+                id: params.rideId
+            });
+
+            let reqUserId = req.user.id;
+
+            if (!ride || !ride.id) {
+                throw sails.config.message.RIDE_NOT_FOUND;
+            }
+            let chargeObj = await PaymentService.chargeCustomerForFine(ride, reqUserId);
+
+            if (chargeObj.id) {
+                ride.fareData.isParkingFine = true;
+                ride.fareData.fineRemark = params.remark;
+                // we need to populate data for name, so saving name with id
+                ride.fareData.parkingFineUserId = reqUserId;
+                ride.fareData.parkingFineUserName = req.user.name;
+                let updateObj = {
+                    fareData: ride.fareData
+                };
+                RideBookingData = await RideBooking.update({ id: ride.id }, updateObj).fetch();
+                let userData = await UtilService.getNotificationPlayerIds(ride.userId);
+                let rideTotalParkingFine = parseFloat(ride.fareData.parkingFine.toFixed(2));
+                let currencySymbol = sails.config.CURRENCY_SYM;
+
+                await NotificationService
+                    .sendPushNotification({
+                        playerIds: userData.playerIds,
+                        content: `You have charged ${currencySymbol} ${rideTotalParkingFine} for ${sails.config.STRIPE.MESSAGE.RIDE_REQUEST_PARKING_FINE_CHARGE} ${ride.rideNumber}.`,
+                        language: userData.preferredLang
+                    });
+            }
+
+            return res.ok(RideBookingData, sails.config.message.OK);
+        } catch (error) {
+            console.log(error);
             return res.serverError(null, error);
         }
     }

@@ -1,8 +1,8 @@
-import { Button, Col, Form, Input, InputNumber, Row, message, Spin } from 'antd';
+import { Button, Col, Form, Input, InputNumber, Row, message, Spin ,Select} from 'antd';
 import React, { Component } from 'react';
 import axios from 'util/Api';
 import CustomScrollbars from '../../util/CustomScrollbars';
-import { PAGE_PERMISSION, DEFAULT_API_ERROR } from '../../constants/Common';
+import { PAGE_PERMISSION, DEFAULT_API_ERROR ,WALLET_EXPIRES_TIME} from '../../constants/Common';
 import { connect } from 'react-redux';
 import IntlMessages from '../../util/IntlMessages';
 const _ = require('lodash');
@@ -213,6 +213,30 @@ class ProjectSetup extends Component {
                                             )}
                                         </Form.Item>
                                     </Col>
+                                    <Col lg={6} md={6} sm={12} xs={24}>
+                                        <Form.Item label={<IntlMessages id="app.walletconfig.walletExpiresTime" defaultMessage="Select Wallet Expired Time" />}>
+                                            {getFieldDecorator(
+                                                'walletExpiredTime'
+                                            )(
+                                                <Select placeholder="Select Level">
+                                                    {
+                                                        WALLET_EXPIRES_TIME.map(val=> {
+                                                            return (
+                                                                <Select.Option
+                                                                    key={val.value}
+                                                                    value={val.value}
+                                                                >
+                                                                    {val.label}
+                                                                </Select.Option>
+                                                            );
+                                                        })
+                                                    }
+                                                </Select>
+                                            )}
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row type="flex" justify="start">
                                     <Col lg={12} md={12} sm={24} xs={24}>
                                         <Form.Item label={<IntlMessages id="app.walletconfig.walletTopUps" defaultMessage="Wallet Top-ups"/>} style={{ margin: 0 }}>
                                             {

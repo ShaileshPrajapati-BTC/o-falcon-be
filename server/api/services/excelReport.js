@@ -230,7 +230,9 @@ module.exports = {
                 tax: 0,
                 unlockFees: 0,
                 pausedCharge: 0,
-                cancelledCharge: 0
+                cancelledCharge: 0,
+                expiredWalletAmount:0,
+                parkingFine:0
             }
 
             let walletCumulativeDataTotal = {
@@ -246,7 +248,9 @@ module.exports = {
                 tax: 0,
                 unlockFees: 0,
                 pausedCharge: 0,
-                cancelledCharge: 0
+                cancelledCharge: 0,
+                expiredWalletAmount:0,
+                parkingFine:0
             }
             let walletCumulativeData = [];
             if (walletActivityList.length > 0) {
@@ -269,14 +273,14 @@ module.exports = {
                     }
 
                     if (!isDailyReport) {
-                        if(!userBalances[tmpUserId].opBalance){
+                        if (!userBalances[tmpUserId].opBalance) {
                             userBalances[tmpUserId].opBalance = await this.calculateOpeningClosingBalance(tmpUserId, startTime);
                         }
-                        
-                        if(!userBalances[tmpUserId].clBalance){
+
+                        if (!userBalances[tmpUserId].clBalance) {
                             userBalances[tmpUserId].clBalance = await this.calculateOpeningClosingBalance(tmpUserId, endTime);
                         }
-                       
+
                     } else {
                         if (!userBalances[tmpUserId].opBalance) {
                             userBalances[tmpUserId].opBalance = record.transactionBy.walletAmount;
@@ -307,6 +311,16 @@ module.exports = {
                     }
                     if (!obj.riderName) {
                         obj.riderName = 'Guest User';
+                    }
+
+                    obj.expiredWalletAmount= 0;
+                    if(record.remark===sails.config.WALLET_EXPIRED){
+                        obj.expiredWalletAmount  = record.amount;
+                    }
+
+                    obj.parkingFine = 0;
+                    if(record.chargeType === sails.config.TRANSACTION_LOG.STATUS.PARKING_FINE){
+                        obj.parkingFine = record.amount;
                     }
 
                     obj.mobile = '-';
@@ -351,7 +365,7 @@ module.exports = {
                     } else {
                         if (planInvoiceId) {
                             obj.bookingPassPurchase = record.amount || 0;
-                        } else if(record.noqoodyReferenceId && record.status === sails.config.STRIPE.STATUS.succeeded){
+                        } else if (record.noqoodyReferenceId && record.status === sails.config.STRIPE.STATUS.succeeded) {
                             obj.topUpAmount = record.amount;
                         }
 
@@ -396,6 +410,12 @@ module.exports = {
                     }
                     if (Number(obj.cancelledCharge)) {
                         walletActivityDataTotal.cancelledCharge += Number(obj.cancelledCharge);
+                    }
+                    if (Number(obj.expiredWalletAmount)) {
+                        walletActivityDataTotal.expiredWalletAmount += Number(obj.expiredWalletAmount);
+                    }
+                    if (Number(obj.parkingFine)) {
+                        walletActivityDataTotal.parkingFine += Number(obj.parkingFine);
                     }
                     // manage cumulative data
                     if (obj.status === 'Succeeded') {
@@ -449,6 +469,13 @@ module.exports = {
                             if (Number(obj.cancelledCharge)) {
                                 data.cancelledCharge += Number(obj.cancelledCharge);
                             }
+                            if (Number(obj.expiredWalletAmount)) {
+                                data.expiredWalletAmount += Number(obj.expiredWalletAmount);
+                            }
+
+                            if (Number(obj.parkingFine)) {
+                                data.parkingFine += Number(obj.parkingFine);
+                            }
 
                             walletCumulativeData[existIndex] = data;
                         } else {
@@ -468,6 +495,8 @@ module.exports = {
             walletActivityDataTotal.unlockFees = UtilService.getFloat(walletActivityDataTotal.unlockFees);
             walletActivityDataTotal.pausedCharge = UtilService.getFloat(walletActivityDataTotal.pausedCharge);
             walletActivityDataTotal.cancelledCharge = UtilService.getFloat(walletActivityDataTotal.cancelledCharge);
+            walletActivityDataTotal.expiredWalletAmount = UtilService.getFloat(walletActivityDataTotal.expiredWalletAmount);
+            walletActivityDataTotal.parkingFine = UtilService.getFloat(walletActivityDataTotal.parkingFine);
 
 
             walletActivityData.push(walletActivityDataTotal);
@@ -510,6 +539,12 @@ module.exports = {
                     if (Number(obj.cancelledCharge)) {
                         walletCumulativeDataTotal.cancelledCharge += Number(obj.cancelledCharge);
                     }
+                    if (Number(obj.expiredWalletAmount)) {
+                        walletCumulativeDataTotal.expiredWalletAmount += Number(obj.expiredWalletAmount);
+                    }
+                    if (Number(obj.parkingFine)) {
+                        walletCumulativeDataTotal.parkingFine += Number(obj.parkingFine);
+                    }
                 });
             }
 
@@ -525,7 +560,11 @@ module.exports = {
             walletCumulativeDataTotal.unlockFees = UtilService.getFloat(walletCumulativeDataTotal.unlockFees);
             walletCumulativeDataTotal.pausedCharge = UtilService.getFloat(walletCumulativeDataTotal.pausedCharge);
             walletCumulativeDataTotal.cancelledCharge = UtilService.getFloat(walletCumulativeDataTotal.cancelledCharge);
+            walletCumulativeDataTotal.expiredWalletAmount = UtilService.getFloat(walletCumulativeDataTotal.expiredWalletAmount);
+            walletCumulativeDataTotal.parkingFine = UtilService.getFloat(walletCumulativeDataTotal.parkingFine);
+         
             walletCumulativeData.push(walletCumulativeDataTotal);
+
             let topUpFilter = JSON.parse(JSON.stringify(filter));
             topUpFilter.type = sails.config.STRIPE.TRANSACTION_TYPE.CREDIT;
             topUpFilter.status = sails.config.STRIPE.STATUS.succeeded;
@@ -719,7 +758,7 @@ module.exports = {
 
             walletActivitySheet.getRow(6).values = ['Date', 'Rider Name', 'Mobile', 'Email', 'Wallet Op.Balance',
                 'Top-Up Amount', 'Booking Pass Purchase', 'Bonus Top-Up', 'Discount', 'Total Fare', 'Expired Amt', 'Wallet Cl.Balance', 'Ride Number', 'Description',
-                'Payment gateway Ref. No.', 'ChargeType', 'Status', 'Reserved Charge', 'Tax', 'UnlockFees', 'Paused Charge', 'Cancelled Charge'];
+                'Payment gateway Ref. No.', 'ChargeType', 'Status', 'Reserved Charge', 'Tax', 'UnlockFees', 'Paused Charge', 'Cancelled Charge','Expired Amount','Parking Fine'];
 
             walletActivitySheet.columns = [
                 { key: 'date', width: 15 },
@@ -744,6 +783,9 @@ module.exports = {
                 { key: 'unlockFees', width: 15, outlineLevel: 1 },
                 { key: 'pausedCharge', width: 15, outlineLevel: 1 },
                 { key: 'cancelledCharge', width: 15, outlineLevel: 1 },
+                { key: 'expiredWalletAmount', width: 15, outlineLevel: 1 },
+                { key: 'parkingFine', width: 15, outlineLevel: 1 },
+
             ];
 
             walletActivitySheet.addRows(walletActivityData);
@@ -766,7 +808,7 @@ module.exports = {
 
             walletCumulativeSheet.getRow(6).values = ['Rider Name', 'Mobile', 'Email', 'Wallet Op.Balance',
                 'Top-Up Amount', 'Booking Pass Purchase', 'No. Of Pass Purchase', 'Bonus Top-Up', 'Discount', 'Total Fare', 'Wallet Cl.Balance',
-                'Reserved Charge', 'Tax', 'UnlockFees', 'Paused Charge', 'Cancelled Charge'];
+                'Reserved Charge', 'Tax', 'UnlockFees', 'Paused Charge', 'Cancelled Charge','Expired Amount','Parking Fine'];
 
             walletCumulativeSheet.columns = [
                 { key: 'riderName', width: 32 },
@@ -785,6 +827,8 @@ module.exports = {
                 { key: 'unlockFees', width: 15, outlineLevel: 1 },
                 { key: 'pausedCharge', width: 15, outlineLevel: 1 },
                 { key: 'cancelledCharge', width: 15, outlineLevel: 1 },
+                { key: 'expiredWalletAmount', width: 15, outlineLevel: 1 }, 
+                { key: 'parkingFine', width: 15, outlineLevel: 1 },
             ];
 
             walletCumulativeSheet.addRows(walletCumulativeData);
@@ -860,6 +904,88 @@ module.exports = {
                 bold: true
             };
 
+
+            // wallet Expired Wallet
+            let expiredfilter = {
+                createdAt: {
+                    '>=': startTime,
+                    '<=': endTime
+                },
+                type: sails.config.STRIPE.TRANSACTION_TYPE.DEBIT,
+                status: sails.config.STRIPE.STATUS.succeeded,
+                remark: sails.config.WALLET_EXPIRED
+            }
+            let walletExpiredData = await TransactionLog.find(expiredfilter).populate('transactionBy');
+            let walletExpiredDetail = [];
+            let walletExpiredTotal = {
+                riderId: 'Total',
+                walletExpiredAmount: 0
+            };
+            console.log("walletExpiredData=========>",walletExpiredData.length);
+            if (walletExpiredData) {
+                for (const record of walletExpiredData) {
+                    let obj = {};
+
+                    obj.riderName = record.transactionBy.name;
+                    if (!obj.riderName && record.transactionBy.firstName) {
+                        obj.riderName = `${record.transactionBy.firstName} ${record.transactionBy.lastName}`;
+                    }
+                    if (!obj.riderName) {
+                        obj.riderName = 'Guest User';
+                    }
+
+                    obj.mobile = '-';
+                    obj.email = '-';
+                    if (record.transactionBy && record.transactionBy.mobiles) {
+                        let primaryMobile = UtilService.getPrimaryValue(record.transactionBy.mobiles, 'mobile');
+                        let countryCode = UtilService.getPrimaryValue(record.transactionBy.mobiles, 'countryCode');
+                        obj.mobile = countryCode + ' ' + primaryMobile;
+                    }
+                    if (record.transactionBy && record.transactionBy.emails) {
+                        let primaryEmail = UtilService.getPrimaryEmail(record.transactionBy.emails);
+                        obj.email = primaryEmail;
+                    }
+                    obj.walletAvailableBalance = Number(parseFloat(record.transactionBy.walletAmount).toFixed(2));;
+                    obj.date = record.transactionBy.createdAt ? moment_tz(record.transactionBy.createdAt).tz(timezone).format(`DD/MM/YYYY`) : '-';
+
+                    /////////// find Last Transcation
+                    obj.lastActivityDate = '-';
+                    if (lastActivityDataObj[record.transactionBy.id]) {
+                        obj.lastActivityDate = lastActivityDataObj[record.transactionBy.id];
+                    }
+
+                    obj.walletExpiredAmount = record.amount;
+                    obj.walletExpiredDate = record.createdAt ? moment_tz(record.createdAt).tz(timezone).format(`DD/MM/YYYY`) : '-';
+                    
+                    if(record.transactionBy){
+                        let userTranscation = await TransactionLog.find({
+                            remark: [sails.config.STRIPE.MESSAGE.CREDIT_WALLET_DONE,sails.config.TRANSACTION_LOG.REMARK.ADD_WALLET_BY_ADMIN],
+                            status: sails.config.STRIPE.STATUS.succeeded,
+                            transactionBy: record.transactionBy.id
+                        }).sort('createdAt DESC').limit(1);
+
+                        if(userTranscation && userTranscation.length>0){
+                            obj.lastTopUpDate = userTranscation[0].createdAt ? moment_tz(userTranscation[0].createdAt).tz(timezone).format(`DD/MM/YYYY`) : '-';
+                        }
+
+                        let lastRideFilter = {
+                            status:sails.config.RIDE_STATUS.COMPLETED,
+                            userId:record.transactionBy.id
+                        }
+                        let lastRideData = await RideBooking.find(lastRideFilter).sort('createdAt DESC').limit(1);
+
+                        if(lastRideData && lastRideData.length>0){
+                            obj.lastRideDate =  lastRideData[0].createdAt ? moment_tz(lastRideData[0].createdAt).tz(timezone).format(`DD/MM/YYYY`) : '-';
+                        }
+                    }
+                    
+                    walletExpiredDetail.push(obj);
+                    if (Number(obj.walletExpiredAmount)) {
+                        walletExpiredTotal.walletExpiredAmount += Number(obj.walletExpiredAmount);
+                    }
+                }
+                walletExpiredDetail.push(walletExpiredTotal);
+            }
             // Inventory Report Tab Start here
 
             await Vehicle.find({})
@@ -920,11 +1046,40 @@ module.exports = {
                     { key: 'date', width: 32 },
                     { key: 'vehicleName', width: 25, outlineLevel: 1 },
                     { key: 'zoneName', width: 25, outlineLevel: 1 },
-                   ...[...Array(24).keys()].map((row, i)=>([{key: 'latitude'+(i+1), width: 25, outlineLevel: 1},{key: 'longitude'+(i+1), width: 25, outlineLevel: 1}])).flat()
+                ...[...Array(24).keys()].map((row, i)=>([{key: 'latitude'+(i+1), width: 25, outlineLevel: 1},{key: 'longitude'+(i+1), width: 25, outlineLevel: 1}])).flat()
                 ];
                 inventoryReport.addRows(result);
             })
-            
+
+            const walletExpiredSheet = workbook.addWorksheet('Expired Wallet');
+            walletExpiredSheet.mergeCells('A1', 'B1');
+            walletExpiredSheet.getCell('A1').value = 'Wallet Expired Report';
+            walletExpiredSheet.getCell('A3').value = 'As On Date :';
+            walletExpiredSheet.getCell('B3').value = moment_tz(startTime).tz(timezone).format(`DD-MM-YYYY HH:mm:ss`);
+            walletExpiredSheet.getRow(6).values = ['Rider/Wallet ID', 'Rider Name', 'Mobile', 'Email',
+                'Wallet Available Balance', 'Wallet Opened Date',
+                'Last Top-Up Date', 'Last Ride Date', 'Last Activity Date',
+                'Wallet Expired Amount', 'Wallet Expired Date'];
+
+                walletExpiredSheet.columns = [
+                { key: 'riderId', width: 32 },
+                { key: 'riderName', width: 15, outlineLevel: 1 },
+                { key: 'mobile', width: 15, outlineLevel: 1 },
+                { key: 'email', width: 25, outlineLevel: 1 },
+                { key: 'walletAvailableBalance', width: 15, outlineLevel: 1 },
+                { key: 'date', width: 15 },
+                { key: 'lastTopUpDate', width: 15 },
+                { key: 'lastRideDate', width: 15 },
+                { key: 'lastActivityDate', width: 15 },
+                { key: 'walletExpiredAmount', width: 15 },
+                { key: 'walletExpiredDate', width: 20, outlineLevel: 1 },
+            ];
+
+            walletExpiredSheet.addRows(walletExpiredDetail);
+            walletExpiredSheet.getRow(walletExpiredSheet.rowCount).font = {
+                bold: true
+            };
+
             let currentDate = moment_tz(startTime).tz(timezone).format(`DD/MM/YY`);
             let subjectCurrentDate = moment_tz(startTime).tz(timezone).format(`MM/DD/YY`);
             let filepath = `${sails.config.appPath}/assets/excel`;
