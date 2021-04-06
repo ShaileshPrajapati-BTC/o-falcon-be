@@ -13,7 +13,7 @@
  * https://sailsjs.com/config/security
  */
 
-module.exports.security = {
+ module.exports.security = {
 
   /***************************************************************************
   *                                                                          *
@@ -30,7 +30,11 @@ module.exports.security = {
 
   cors: {
     allRoutes: true,
-    allowOrigins: ['http://localhost:3000']
+    allowOrigins: '*',
+    allowCredentials: false,
+    allowRequestMethods: 'GET,POST,PUT,DELETE,OPTIONS,HEAD',
+    allowRequestHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Language, Accept-Language'
+    //allowOrigins: ['http://localhost:3000', 'http://test-react-app-1.s3-website.me-south-1.amazonaws.com', 'http://falconride-staging-lb-1308507947.me-south-1.elb.amazonaws.com', 'http://staging.falconride.io.s3-website.me-south-1.amazonaws.com', 'http://staging.falconride.io', 'http://lb.staging.falconride.io']
 },
 
 
