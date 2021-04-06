@@ -2,7 +2,7 @@ const modelName = 'vehicle';
 const UtilService = require(`${sails.config.appPath}/api/services/util`);
 const CommonService = require(`${sails.config.appPath}/api/services/common`);
 const PaymentService = require(`${sails.config.appPath}/api/services/payment`);
-const MPGSPaymentService = require(`${sails.config.appPath}/api/services/payment/Mastercard/payment`);
+const MPGSPaymentService = require(`${sails.config.appPath}/api/services/Payment/Mastercard/payment`);
 
 const uuid = require('uuid');
 const StripeHandlerService = require(`${sails.config.appPath}/api/services/Payment/Stripe/stripeHandler`);
