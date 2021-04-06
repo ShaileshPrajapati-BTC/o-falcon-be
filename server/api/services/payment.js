@@ -1,17 +1,11 @@
-const AlloService = require(`./Payment/Allo/payment`);
 const StripeService = require(`./Payment/Stripe/payment`);
-const HyperpayService = require(`./Payment/HyperPay/payment`);
-const PagcertoService = require(`./Payment/Pagecerto/payment`);
-const ProxyPayService = require(`./Payment/ProxyPay/payment`);
 const NoqoodyService = require(`./Payment/Noqoody/payment`);
-const InicisServices = require(`./Payment/Inicis/payment`);
 
 const UtilService = require(`./util`);
 const CommonService = require('./common');
 const WalletService = require(`./wallet`);
 const DealerService = require(`./dealerService`);
 const FranchiseeService = require(`./franchiseeService`);
-const ParamPaymentService = require("./Payment/Param/payment");
 
 module.exports = {
     async createCustomer(user) {
