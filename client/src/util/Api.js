@@ -4,7 +4,7 @@ import * as _      from 'lodash';
 import { message } from 'antd';
 
 export default axios.create({
-    baseURL: '/',
+    baseURL: process.env.REACT_APP_BASE_URL,
     headers: {
         'Content-Type': 'application/json'
     }

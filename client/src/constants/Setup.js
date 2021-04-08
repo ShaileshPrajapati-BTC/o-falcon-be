@@ -2,7 +2,7 @@ import IntlMessages from "../util/IntlMessages";
 import React from 'react';
 
 export const PROJECT_NAME = 'Falcon Ride';
-export const BASE_URL = window.location.origin;
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const FILTER_VISIBLE = true;
 export const SUBSCRIPTION_VISIBLE = false;
