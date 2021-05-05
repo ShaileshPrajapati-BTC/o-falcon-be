@@ -1,7 +1,7 @@
 import IntlMessages from "../util/IntlMessages";
 import React from 'react';
 
-export const PROJECT_NAME = 'Falcon Ride';
+export const PROJECT_NAME = 'O Falcon';
 export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const FILTER_VISIBLE = true;
