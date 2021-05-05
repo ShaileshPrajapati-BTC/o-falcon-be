@@ -37,7 +37,7 @@ module.exports = {
     cache: 365.25 * 24 * 60 * 60 * 1000 // One year
     // trustProxy: true,
   },
-  port: 13810,
+  port: 1381,
   // ssl: undefined,
   custom: {
     internalEmailAddress: "support@example.com",
