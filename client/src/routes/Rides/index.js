@@ -35,7 +35,7 @@ class Rides extends Component {
                 "<=": UtilService.getEndOfTheDay(moment().toISOString())
             },
             status: RIDE_STATUS.ON_GOING,
-            vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+            vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
             rideType: RIDE_TYPE.DEFAULT
         };
         if (!FRANCHISEE_VISIBLE) {

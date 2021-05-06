@@ -34,7 +34,7 @@ class Zone extends Component {
     constructor(props) {
         super(props);
         let filter = {
-            vehicleTypes: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type
+            vehicleTypes: FILTER_BY_VEHICLE_TYPE[0].type
         };
         if (!FRANCHISEE_VISIBLE) {
             filter.franchiseeId = null;

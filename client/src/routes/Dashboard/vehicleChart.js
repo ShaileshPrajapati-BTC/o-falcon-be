@@ -23,14 +23,14 @@ const GoogleMapWithRideInfo = withGoogleMap((props) => {
 
     const getVehicleIcon = vehicleType => {
         switch (vehicleType) {
-            case VEHICLE_TYPES.SCOOTER:
-                return ScooterMapMarker;
-            case VEHICLE_TYPES.BICYCLE:
-                return BicycleMapMarker;
+            // case VEHICLE_TYPES.SCOOTER:
+            //     return ScooterMapMarker;
+            // case VEHICLE_TYPES.BICYCLE:
+            //     return BicycleMapMarker;
             case VEHICLE_TYPES.BIKE:
                 return BikeMapMarker;
             default:
-                return ScooterMapMarker;
+                return BikeMapMarker;
         }
     }
 
@@ -187,7 +187,7 @@ class VehicleChart extends React.Component {
     constructor(props) {
         super(props);
         let filter = {
-            vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+            vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
             // franchiseeId: null
         };
         if (!FRANCHISEE_VISIBLE) {

@@ -52,33 +52,33 @@ export let DEFAULT_MAP_CENTER = {
 };
 
 export const VEHICLE_TYPES = {
-    SCOOTER: 1,
-    BICYCLE: 2,
+ //   SCOOTER: 1,
+ //   BICYCLE: 2,
     BIKE: 3
 };
 export const FILTER_BY_VEHICLE_TYPE = [
-    {
-        label: <IntlMessages id="app.all" defaultMessage="All" />,
-        value: 0,
-        type: [VEHICLE_TYPES.SCOOTER, VEHICLE_TYPES.BICYCLE, VEHICLE_TYPES.BIKE]
-    },
-    { label: <IntlMessages id="app.vehicle.scooter" defaultMessage="Scooter" />, value: 1, type: [VEHICLE_TYPES.SCOOTER] },
-    { label: <IntlMessages id="app.vehicle.bicycle" defaultMessage="Bicycle" />, value: 2, type: [VEHICLE_TYPES.BICYCLE] },
+    //  {
+    //      label: <IntlMessages id="app.all" defaultMessage="All" />,
+    //      value: 0,
+    //      type: [VEHICLE_TYPES.SCOOTER, VEHICLE_TYPES.BICYCLE, VEHICLE_TYPES.BIKE]
+    //  },
+    // { label: <IntlMessages id="app.vehicle.scooter" defaultMessage="Scooter" />, value: 1, type: [VEHICLE_TYPES.SCOOTER] },
+    // { label: <IntlMessages id="app.vehicle.bicycle" defaultMessage="Bicycle" />, value: 2, type: [VEHICLE_TYPES.BICYCLE] },
     { label: <IntlMessages id="app.vehicle.bike" defaultMessage="Bike" />, value: 3, type: [VEHICLE_TYPES.BIKE] }
 ];
 
 export const VEHICLE_TYPE_FILTER = [
-    { label: <IntlMessages id="app.all" defaultMessage="All" />, value: 0 },
-    { label: <IntlMessages id="app.vehicle.scooter" defaultMessage="Scooter" />, value: 1, type: VEHICLE_TYPES.SCOOTER },
-    { label: <IntlMessages id="app.vehicle.bicycle" defaultMessage="Bicycle" />, value: 2, type: VEHICLE_TYPES.BICYCLE },
+     { label: <IntlMessages id="app.all" defaultMessage="All" />, value: 0 },
+     { label: <IntlMessages id="app.vehicle.scooter" defaultMessage="Scooter" />, value: 1, type: VEHICLE_TYPES.SCOOTER },
+     { label: <IntlMessages id="app.vehicle.bicycle" defaultMessage="Bicycle" />, value: 2, type: VEHICLE_TYPES.BICYCLE },
     { label: <IntlMessages id="app.vehicle.bike" defaultMessage="Bike" />, value: 3, type: VEHICLE_TYPES.BIKE }
 ];
 export const VEHICLE_TYPE_FILTER_FOR_EXCEL = [
     { label: "Scooter", value: 1, type: VEHICLE_TYPES.SCOOTER },
-    { label: "Bicycle", value: 2, type: VEHICLE_TYPES.BICYCLE },
+     { label: "Bicycle", value: 2, type: VEHICLE_TYPES.BICYCLE },
     { label: "Bike", value: 3, type: VEHICLE_TYPES.BIKE }
 ];
-export const DEFAULT_VEHICLE = FILTER_BY_VEHICLE_TYPE[1].value;
+export const DEFAULT_VEHICLE = FILTER_BY_VEHICLE_TYPE[0].value;
 
 export const LANGUAGES = [
     // LTR

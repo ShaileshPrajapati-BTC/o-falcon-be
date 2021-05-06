@@ -2,7 +2,7 @@ module.exports = {
     datastores: {
         default: {
             adapter: 'sails-mongo',
-            url: 'mongodb://127.0.0.1:27017/O-Falcon',
+            url: 'mongodb://127.0.0.1:27017/falcon-db',
             // sets the max retry times(seconds)
             reconnectTries: 600,
             // sets the delay between every retry (milliseconds)
@@ -18,7 +18,8 @@ module.exports = {
     security: {
         cors: {
             allRoutes: true,
-            allowOrigins: ['http://localhost:3000']
+            //allowOrigins: ['http://localhost:3000']
+            allowOrigins: '*'
         }
     },
     session: {

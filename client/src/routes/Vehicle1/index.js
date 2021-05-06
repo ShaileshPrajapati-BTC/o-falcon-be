@@ -453,7 +453,7 @@ class Vehicles extends Component {
                                                     <Location />{item.currentLocation ? item.currentLocation.name : '-'}
                                                 </div>
                                                 <div className="ant-list-item-meta-description m-r-20">
-                                                    {item.type === VEHICLE_TYPES.SCOOTER ?
+                                                    {VEHICLE_TYPES.SCOOTER!=undefined && item.type === VEHICLE_TYPES.SCOOTER ?
                                                         <Speed /> :
                                                         <BicycleRider />}
                                                     Speed Limit  &nbsp;

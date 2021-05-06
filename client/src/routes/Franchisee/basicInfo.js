@@ -29,7 +29,7 @@ class BasicInfo extends Component {
             ],
             filter: {
                 filter: {
-                    vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+                    vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
                     franchiseeId: props.id
                 }
             },

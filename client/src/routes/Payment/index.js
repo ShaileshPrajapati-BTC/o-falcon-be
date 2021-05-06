@@ -60,7 +60,7 @@ class Payment extends Component {
                     .toISOString()),
                 "<=": UtilService.getEndOfTheDay(moment().toISOString())
             },
-            vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+            vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
             // status: PAYMENT_STATUS.SUCCEEDED      need to set this if we are changing default.
             rideType: RIDE_TYPE.DEFAULT
         };

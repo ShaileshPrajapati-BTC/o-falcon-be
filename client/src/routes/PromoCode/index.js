@@ -34,7 +34,7 @@ class PromoCode extends Component {
                 page: 1,
                 limit: 20,
                 filter: {
-                    vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type
+                    vehicleType: FILTER_BY_VEHICLE_TYPE[0].type
                     // isDelete: false
                 },
                 showViewModal: false

@@ -27,7 +27,7 @@ class Dashboard extends React.Component {
             title: '',
             loginUser: this.props.auth && this.props.auth.authUser ? this.props.auth.authUser : null,
             filter: {
-                type: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+                type: FILTER_BY_VEHICLE_TYPE[0].type,
                 franchisee: ''
             }
         };
