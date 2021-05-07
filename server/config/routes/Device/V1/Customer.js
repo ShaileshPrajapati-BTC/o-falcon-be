@@ -429,5 +429,10 @@ module.exports.routes = {
     'POST /api/v1/customer/location-update': {
         controller: 'Device/V1/CustomerController',
         action: 'locationUpdate'
+    },
+
+    'GET /api/v1/customer/get-project-config': {
+        controller: 'Device/V1/CustomerController',
+        action: 'getProjectConfig'
     }
 };

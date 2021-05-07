@@ -13,9 +13,12 @@ export const ZK_SCOOTER = [
     { label: 'Pile Lock', command: 'pileLock', icon: 'BatLock', isPopUp: false, types: [1] },
     { label: 'Pile Unlock', command: 'pileUnlock', icon: 'BatUnlock', isPopUp: false, types: [1] },
     { label: 'Get Location', command: 'location', icon: 'Locations', isPopUp: false, types: [1, 2] },
+    { label: 'Start Firmware Update', command: 'startFirmwareUpdate', icon: 'LightOn', isPopUp: false, types: [1] },
+    { label: 'Stop Firmware Update', command: 'stopFirmwareUpdate', icon: 'LightOff', isPopUp: false, types: [1] },
     { label: 'Max Speed', command: 'setMaxSpeed', icon: 'SetMaxSpeed', isPopUp: true, types: [1], key: 'maxSpeedLimit' },
     { label: 'Ping Interval', command: 'setPingInterval', icon: 'SetPingInterval', isPopUp: true, types: [1], key: 'pingInterval' },
     { label: 'Ride Ping Interval', command: 'setRidePingInterval', icon: 'SetRidePingInterval', isPopUp: true, types: [1], key: 'ridePingInterval' },
     { label: 'Throttle On', command: 'throttleOn', icon: 'Idleledon', isPopUp: false, types: [1] },
-    { label: 'Throttle Off', command: 'throttleOff', icon: 'Idleledoff', isPopUp: false, types: [1] }
+    { label: 'Throttle Off', command: 'throttleOff', icon: 'Idleledoff', isPopUp: false, types: [1] },
+    { label: 'Command To Send', command: 'anyCommand', icon: 'AnyCommand', isPopUp: true, types: [1], isNewMethod: true }
 ];

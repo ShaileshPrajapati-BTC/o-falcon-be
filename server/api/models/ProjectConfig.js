@@ -82,6 +82,9 @@ module.exports = {
                 },
             }
         },
+        walletExpiredTime: {
+            type: 'number',
+        },
         riderCanAddCards: { type: 'boolean' },
         isAutoCreateTask: { type: 'boolean' },
         isAutoOverdueTask: { type: 'boolean' },
@@ -194,6 +197,8 @@ module.exports = {
         smsPasswordKey: { type: 'string' },
         smsNoKey: { type: 'string' },
         smsMsgKey: { type: 'string' },
-        smsMsgHeaderKey: { type: 'string' }
+        smsMsgHeaderKey: { type: 'string' },
+        isSystemEnableLanguage: { type: 'boolean' },
+        setLowBattery: { type: 'number' },
     }
 };

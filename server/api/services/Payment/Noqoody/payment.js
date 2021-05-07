@@ -3,6 +3,7 @@ const moment = require("moment");
 const request = require('request');
 const ProjectSetupConfigService = require('../../projectSetupConfig');
 const UtilService = require('../../util');
+const UserService  =  require("../../user");
 
 module.exports = {
     //Get noqoody payment token.
@@ -108,12 +109,11 @@ module.exports = {
         let authToken = await this.getToken();
         console.log("authToken----------------------", authToken);
         let description = "Add balance into Falcon wallet";
-        let url = `${sails.config.NOQOODYPAY_PAYMENT_URL}/api/Members/GetPaymentLinks/${projectCode}?reference=${referenceId}&description=${description}&amount=${amount}&CustomerEmail=${user.email}&CustomerMobile=${user.mobile}&CustomerName=${user.name}`;
+        let url = `${sails.config.NOQOODYPAY_PAYMENT_URL}/api/Members/GetPaymentLinks/${projectCode}?reference=${referenceId}&description=${description}&amount=${amount}&CustomerEmail=${user.email}&CustomerMobile=${user.mobile}&CustomerName=${encodeURIComponent(user.name)}`;
         console.log("url---------------------------", url);
         const method = 'GET';
         let response = await new Promise((resolve, reject) => {
             const options = {
-                url: url,
                 method: method,
                 headers: {
                     Authorization: authToken
@@ -122,7 +122,7 @@ module.exports = {
                 followRedirect: true,
                 maxRedirects: 10
             };
-            request(options, (error, response, body) => {
+            request(url, options, (error, response, body) => {
                 resolve(body);
             });
         });
@@ -251,6 +251,9 @@ module.exports = {
                 { id: user.id },
                 { walletAmount: newAmount }
             ).fetch();
+
+             // update wallet expiry date
+            await UserService.updateWalletExpriedTime(sails.config.WALLET_EXPIRED_TIME,user.id);
             await payment.addBonusForWalletTransaction(transaction);
 
             if (updateUserWallet || updateUserWallet.length > 0) {

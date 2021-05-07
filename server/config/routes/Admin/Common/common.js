@@ -56,5 +56,17 @@ module.exports.routes = {
     }
   },
 
+  'POST /admin/common/check-duplication': {
+    controller: 'Admin/common/CommonController',
+    action: 'checkDuplicationDynamically',
+    swagger: {
+      summary: 'List users which have duplicate mobile , email etc...',
+      description: '',
+      body: {
+
+      }
+    }
+  },
+
   "post /admin/remove-record": "Admin/Common/CommonController.deleteRecord"
 };

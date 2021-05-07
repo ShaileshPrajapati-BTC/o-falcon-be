@@ -101,7 +101,7 @@ const _onLocalStrategyAuth = async (req, username, password, next) => {
         }
     };
     if (req.headers.devicetype === sails.config.DEVICE_TYPE.ADMIN) {
-        filter.where.type = { '!=': sails.config.USER.TYPE.CUSTOMER };
+        filter.where.type = { '!=': [sails.config.USER.TYPE.CUSTOMER, sails.config.USER.TYPE.FEEDER] };
     }
     try {
         let user = await User.findOne(filter).meta({ enableExperimentalDeepTargets: true });
@@ -123,7 +123,7 @@ const _onLocalStrategyAuth = async (req, username, password, next) => {
         if (!user.isActive) {
             return next(null, null, sails.config.message.USER_NOT_ACTIVE);
         }
-        if (user.type === sails.config.USER.TYPE.CUSTOMER) {
+        if (user.type === sails.config.USER.TYPE.CUSTOMER || user.type === sails.config.USER.TYPE.FEEDER) {
             let userMobile;
             if (user.mobiles && user.mobiles.length > 0) {
                 userMobile = user.mobiles[0];

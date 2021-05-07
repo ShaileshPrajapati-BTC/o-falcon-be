@@ -73,5 +73,8 @@ export const IOT_BUTTON_INFO = {
         \nC: ring times, default: 5 times, range: 1-20
         
         As per example the Alarm will ring for 3s for 5 times.`
+    },
+    anyCommand: {
+        eg: 'write any command to send, Please double check before sending it, May Scooter loss connectivity if wrong config are sent!'
     }
 };

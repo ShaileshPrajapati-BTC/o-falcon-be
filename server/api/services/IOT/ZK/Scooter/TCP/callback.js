@@ -39,7 +39,7 @@ module.exports = {
         data.protocolVersion = reqData[1];
         data.imei = imei;
         data.countNumber = countNumber;
-        // data.deviceName = reqData[3];
+        data.deviceName = reqData[3];
         data.vin = reqData[4];
         data.qrCode = reqData[5];
         // 6,7 Reserved
@@ -82,11 +82,30 @@ module.exports = {
         }
     },
 
+    async respGtupd(reqData) {
+        let obj = {};
+        let imei = reqData[2];
+        let code = reqData[4];
+        if (code === '100') {
+            obj['conformrd'] = 'the update command is conformed by device';
+            console.log('the update command is conformed by device');
+        }
+        if (code === '200') {
+            obj['download'] = 'device started updated package';
+            console.log("device started updated package");
+        }
+        if (code === '300') {
+            obj['update'] = 'device started updating';
+            console.log("device started updating");
+        }
+        await IotCallbackHandler.createFirmwareUpdate(imei,obj);
+    },
     async respGtuls(reqDataObj) {
         let iotRideId = reqDataObj.taskId;
         let data = {
             status: 0,
-            uid: iotRideId
+            uid: iotRideId,
+            imei: reqDataObj.imei
         };
         await IotCallbackHandler.unlockCallbackReceived(data);
     },
@@ -107,7 +126,8 @@ module.exports = {
         let iotRideId = reqDataObj.taskId;
         let data = {
             status: 1,
-            uid: iotRideId
+            uid: iotRideId,
+            imei: reqDataObj.imei
         };
         console.log('uid = ', data.uid);
         await IotCallbackHandler.unlockCallbackReceived(data);
@@ -163,7 +183,7 @@ module.exports = {
         });
         const data = {};
         data.imei = imei;
-        // data.deviceName = reqData[3];
+        data.deviceName = reqData[3];
         data.vin = reqData[4];
         data.powerSupply = reqData[9];
         data.mainPowerVoltage = reqData[10];

@@ -63,11 +63,11 @@
     "scripts": {
         "clean": "rm -rf build",
         "start": "react-app-rewired start",
-        "build": "react-app-rewired build",
-        "test": "react-app-rewired --env=jsdom"
+        "production:build": "REACT_APP_BASE_URL=http://lb.o.falconride.io react-app-rewired build",
+        "test": "react-app-rewired --env=jsdom",
+        "production-deploy": "aws s3 sync build/ s3://oadmin.falconride.io --acl public-read"
     },
     "devDependencies": {},
-    "proxy": "http://localhost:1381",
     "browserslist": [
         ">0.2%",
         "not dead",

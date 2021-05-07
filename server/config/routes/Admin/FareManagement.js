@@ -68,7 +68,8 @@ module.exports.routes = {
                 lateFare: { type: 'number' },
                 cancellationFare: { type: 'number' },
                 timeFareFreeLimit: { type: 'number' },
-                distanceFareFreeLimit: { type: 'number' }
+                distanceFareFreeLimit: { type: 'number' },
+                parkingCaptureImage: { type: 'boolean' }
             }
         }
     },

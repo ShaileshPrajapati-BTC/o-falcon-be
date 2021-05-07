@@ -1,8 +1,8 @@
 import IntlMessages from "../util/IntlMessages";
 import React from 'react';
 
-export const PROJECT_NAME = 'Falcon Ride';
-export const BASE_URL = window.location.origin;
+export const PROJECT_NAME = 'O Falcon';
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const FILTER_VISIBLE = true;
 export const SUBSCRIPTION_VISIBLE = false;
@@ -33,6 +33,7 @@ export const DISPLAY_AFTER_SPECIFIC_DATE  = '2021-01-01';
 export const OPERATIONAL_HOURS_VISIBLE = true;
 export const IS_NOQOODY_PG =  true;
 export const IS_SYSTEM_RECORD_DELETE_BUTTON_DISPLAY =  true;
+export const IS_PARKING_FINE_FEATURE = true;
 
 export const DEFAULT_BASE_CURRENCY = 'QR';
 export const UNIT_TYPE_ARRAY = [

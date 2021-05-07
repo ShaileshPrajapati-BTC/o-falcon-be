@@ -14,6 +14,8 @@ const BookPlanService = require('./bookPlan');
 const BookingPassService = require('./bookingPass');
 const UserService = require('./user');
 const RedisDBService = require('./redisDB');
+const redisDB = require('./redisDB');
+const TaskService = require('./task');
 
 // Till Migration use flag as false
 const isUseMinutesForRideSummary = false;
@@ -286,9 +288,9 @@ module.exports = {
                 updateObj.ridePausedCount = ride.ridePausedCount;
                 updateObj.maxPauseLimitReached = ride.maxPauseLimitReached;
             }
-            if (ride.vehicleType !== sails.config.VEHICLE_TYPE.BICYCLE) {
-                updateObj.pauseEndDateTime = pauseEndDateTime;
-            }
+            // if (ride.vehicleType !== sails.config.VEHICLE_TYPE.BICYCLE) {
+            updateObj.pauseEndDateTime = pauseEndDateTime;
+            // }
             await RideBooking.update(
                 { id: ride.id },
                 updateObj
@@ -400,7 +402,7 @@ module.exports = {
                 lastConnectionCheckDateTime: currentTime
             };
             await Vehicle.update({ id: vehicleId }, updateVehicleData);
-            if (rideLimitData.maxRideTime <= 0) {
+            if (rideLimitData.maxRideTime !== false && rideLimitData.maxRideTime <= 0) {
                 let rideData = await RideBooking.findOne({ id: ride.id });
                 this.setEndRideIntervalForLowBalance(rideData, maxRideTimeInSeconds, currentTime, updateObj.maxRideTime);
             }
@@ -501,7 +503,7 @@ module.exports = {
             { id: vehicle.id },
             updateObj
         );
-        if (!data.mode) {
+        if (!data.mode) {sendPushNotification
             return;
         }
         // console.log('here 3');
@@ -649,7 +651,7 @@ module.exports = {
 
     //     return setting[key];
     // },
-   
+
     async findMatchedScooters(options, user) {
         try {
             const setting = await this.getSetting();
@@ -679,16 +681,24 @@ module.exports = {
             if (isClusteringEnable) {
                 matchFilter.currentLocation = { $ne: null };
             }
-            let vehicleType = options.vehicleType;
-            if (vehicleType) {
-                if (vehicleType === sails.config.VEHICLE_TYPE.SCOOTER) {
-                    matchFilter.type = sails.config.VEHICLE_TYPE.SCOOTER;
-                    matchFilter.batteryLevel = { $gte: setting.minBatteryLevel };
-                } else if (vehicleType === sails.config.VEHICLE_TYPE.BICYCLE) {
-                    matchFilter.type = sails.config.VEHICLE_TYPE.BICYCLE;
-                } else if (vehicleType === sails.config.VEHICLE_TYPE.BIKE) {
-                    matchFilter.type = sails.config.VEHICLE_TYPE.BIKE;
-                    // matchFilter.batteryLevel = { $gte: setting.minBatteryLevel };
+            let vehicleTypeOfParam = options.filterType;
+            if (vehicleTypeOfParam && !Array.isArray(vehicleTypeOfParam)) {
+                vehicleTypeOfParam = [vehicleTypeOfParam];
+            }
+            if (vehicleTypeOfParam && vehicleTypeOfParam.length === 1) {
+                vehicleType = options.filterType;
+                switch (vehicleType[0]) {
+                    case sails.config.VEHICLE_TYPE.SCOOTER:
+                        matchFilter.type = sails.config.VEHICLE_TYPE.SCOOTER;
+                        matchFilter.batteryLevel = { $gte: setting.minBatteryLevel };
+
+                        break;
+                    case sails.config.VEHICLE_TYPE.BICYCLE:
+                        matchFilter.type = sails.config.VEHICLE_TYPE.BICYCLE;
+                        break;
+                    case sails.config.VEHICLE_TYPE.BIKE:
+                        matchFilter.type = sails.config.VEHICLE_TYPE.BIKE;
+                        break;
                 }
             } else {
                 matchFilter['$or'] = [
@@ -757,15 +767,14 @@ module.exports = {
                 query,
                 'vehicle'
             );
-
             // return matchedScooters;
             if (matchedScooters.length > 0 || !sails.config.ADD_DUMMY_SCOOTERS) {
                 return matchedScooters;
             }
-
+            //      console.log("matchScooter",matchedScooters);
             await this.generateDummyZoneAndScooters(options);
             matchedScooters = await this.findMatchedScooters(options, user);
-
+            //         console.log("matchedScooters",matchedScooters);
             return matchedScooters;
         } catch (e) {
             throw new Error(e);
@@ -811,6 +820,50 @@ module.exports = {
                 isTaskCreated: false
             };
 
+            // let vehicleTypeOfParam = options.vehicleType;
+            // if (vehicleTypeOfParam && !Array.isArray(vehicleTypeOfParam)) {
+            //     vehicleTypeOfParam = [vehicleTypeOfParam];
+            // }
+            // if (vehicleTypeOfParam && vehicleTypeOfParam.length === 1) {
+            //     vehicleType = options.vehicleType;
+            //     switch (vehicleType[0]) {
+            //         case sails.config.VEHICLE_TYPE.SCOOTER:
+            //             matchFilter.type = sails.config.VEHICLE_TYPE.SCOOTER;
+            //             matchFilter.batteryLevel = { $gte: setting.minBatteryLevel };
+            //             break;
+            //         case sails.config.VEHICLE_TYPE.BICYCLE:
+            //             matchFilter.type = sails.config.VEHICLE_TYPE.BICYCLE;
+            //             break;
+            //         case sails.config.VEHICLE_TYPE.BIKE:
+            //             matchFilter.type = sails.config.VEHICLE_TYPE.BIKE;
+            //             break;
+            //     }
+            // } else {
+            //     if (!vehicleTypeOfParam || vehicleTypeOfParam.length <= 0) {
+            //         vehicleTypeOfParam = sails.config.ALL_VEHICLE_TYPE_ARRAY;
+            //     }
+            //     matchFilter["$or"] = [];
+            //     for (let vType of vehicleTypeOfParam) {
+            //         switch (vType) {
+            //             case sails.config.VEHICLE_TYPE.SCOOTER:
+            //                 matchFilter["$or"].push({
+            //                     type: sails.config.VEHICLE_TYPE.SCOOTER,
+            //                     batteryLevel: { $gte: setting.minBatteryLevel }
+            //                 });
+            //                 break;
+            //             case sails.config.VEHICLE_TYPE.BICYCLE:
+            //                 matchFilter['$or'].push({
+            //                     type: sails.config.VEHICLE_TYPE.BICYCLE
+            //                 });
+            //                 break;
+            //             case sails.config.VEHICLE_TYPE.BIKE:
+            //                 matchFilter['$or'].push({
+            //                     type: sails.config.VEHICLE_TYPE.BIKE
+            //                 });
+            //                 break;
+            //         }
+            //     }
+            // }
             let vehicleType = options.vehicleType;
             if (vehicleType) {
                 if (vehicleType === sails.config.VEHICLE_TYPE.SCOOTER) {
@@ -946,6 +999,9 @@ module.exports = {
     },
 
     async checkRiderInsideRadius(currentLocation, vehicleId, radius) {
+        // console.log('currentLocation', currentLocation);
+        // console.log('vehicleId', vehicleId);
+        // console.log('radius', radius);
         try {
             let query = [
                 {
@@ -970,20 +1026,39 @@ module.exports = {
                     }
                 }
             ];
+            console.log('query', query);
             let matchedScooters = await CommonService.runAggregateQuery(
                 query,
                 'vehicle'
             );
             if (matchedScooters.length > 0) {
+                console.log('if');
                 return true;
-            }
 
+            }
+            console.log('false');
             return false;
         } catch (e) {
             throw new Error(e);
         }
     },
 
+    async addWalkingDistanceFromCurrentLocation(currentLocation, scooters, language) {
+        for (let key in scooters) {
+            if (!scooters[key]) {
+                continue;
+            }
+            let walkingDistance = await this.calculateDistanceFromGoogleApi(
+                currentLocation,
+                scooters[key].currentLocation,
+                language
+            );
+            scooters[key].walkingDistance = walkingDistance.distance;
+            scooters[key].walkingTime = walkingDistance.time;
+        }
+
+        return scooters;
+    },
 
     async rideDepositPaymentFail(ride, chargeObj) {
         ride.statusTrack.push({
@@ -1114,6 +1189,11 @@ module.exports = {
         if (pendingPaymentRide && pendingPaymentRide.id) {
             if (isReturn) {
                 let res = await this.getRideResponse(pendingPaymentRide.id);
+                // let DEFAULT_PAYMENT_METHOD = sails.config.DEFAULT_PAYMENT_METHOD;
+                // if (DEFAULT_PAYMENT_METHOD === sails.config.PAYMENT_GATEWAYS.INICIS) {
+                //     let ridePendingTransaction = await PaymentService.getPendingTransactionWithInicisDetails(res);
+                //     res.paymentData = ridePendingTransaction;
+                // }
 
                 return res;
             }
@@ -1122,6 +1202,7 @@ module.exports = {
     },
 
     async updateVehicle(vehicle, data) {
+        // console.log('in updateVehicle', data);
         const currentTime = UtilService.getTimeFromNow();
         let diff = 0;
         if (data.lng && data.lat) {
@@ -1194,10 +1275,23 @@ module.exports = {
                 isPaused: false
             });
         let isVehicleOutsideZone = false;
+        let throttleOffAllowed = [
+            'OMNI_TCP_SCOOTER',
+            'ZK_SCOOTER',
+            'OMNI_TCP_E_BIKE'
+        ];
         if (ride && data.currentLocation) {
             isVehicleOutsideZone = await this.checkRideOutsideZone(ride, vehicle.imei, data.currentLocation.coordinates);
             data.isVehicleOutsideZone = isVehicleOutsideZone;
             if (!isVehicleOutsideZone) {
+                if (vehicle.isVehicleOutsideZone) {
+                    let vehicleData = await this.getVehicleForIOT(vehicle.id);
+                    console.log("-------------------\nthrottleOn\n--------------------");
+                    if (throttleOffAllowed.indexOf(vehicleData.manufacturer.code) > -1) {
+                        console.log("-------------------\nthrottleOn\n--------------------");
+                        await IotService.commandToPerform('nthrottleOn', vehicleData);
+                    }
+                }
                 if (vehicle.lastSpeedSet != '') {
                     data.lastSpeedSet = '';
                 }
@@ -1222,6 +1316,7 @@ module.exports = {
         }
         vehicle = await Vehicle.update({ id: vehicle.id }, data).fetch();
         vehicle = vehicle[0];
+
         if (isSendConnectionNotification) {
             const connectionType = sails.config.NOTIFICATION.ADMIN_NOTIFICATION.TYPE.VEHICLE_CONNECTED;
             await notification.sendConnectionNotification(vehicle, connectionType);
@@ -1275,7 +1370,7 @@ module.exports = {
             vehicleData: vehicle
         };
         let isRideEndForceFully = false;
-        if (isVehicleOutsideZone && vehicle.type == sails.config.VEHICLE_TYPE.SCOOTER) {
+        if (isVehicleOutsideZone) {
             try {
                 let nextCommandSentTimeLimit = await UtilService.subtractTime(sails.config.OUTSIDE_ZONE_COMMAND_INTERVAL, currentTime, 'seconds');
                 let vehicleData = await this.getVehicleForIOT(vehicle.id);
@@ -1284,15 +1379,21 @@ module.exports = {
                     console.log("-------------------\nAlarm on\n--------------------");
                     data.lastAlarmed = currentTime;
                     await IotService.commandToPerform('alarmOn', vehicleData, { value: sails.config.OUT_SIDE_ZONE_ALARM_DURATION });
-                    data.lastSpeedSet = currentTime;
-                    console.log("-------------------\nSpeed Set\n--------------------");
-                    await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: sails.config.OUT_SIDE_ZONE_SPEED_LIMIT });
+                    console.log("-------------------\nthrottleOff\n--------------------");
+                    if (throttleOffAllowed.indexOf(vehicleData.manufacturer.code) > -1) {
+                        console.log("-------------------\nthrottleOff\n--------------------");
+                        await IotService.commandToPerform('throttleOff', vehicleData);
+                    }
+                    // data.lastSpeedSet = currentTime;
+                    // console.log("-------------------\nSpeed Set\n--------------------");
+                    // await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: sails.config.OUT_SIDE_ZONE_SPEED_LIMIT });
                     await Vehicle.update({ id: vehicle.id }, data);
                 } else if (vehicle.lastSpeedSet <= nextCommandSentTimeLimit && vehicle.lastSpeedSet != '') {
                     console.log("-------------------\nEnd Ride\n--------------------");
                     let rideData = await RideBooking.findOne({ id: ride.id });
                     if (sails.config.IS_STOP_RIDE_OUT_SIDE_ZONE) {
                         isRideEndForceFully = true;
+                        await TaskService.autoCreateTaskForVehicleDamage(sails.config.IS_STOP_RIDE_OUT_SIDE_ZONE, vehicle.imei);
                         await this.stopRideForceFully(rideData, null, sails.config.IS_AUTO_DEDUCT, true);
                     }
                 }
@@ -1342,7 +1443,8 @@ module.exports = {
         let isStopRideForceFully = false;
         let throttleOffAllowed = [
             'OMNI_TCP_SCOOTER',
-            'ZK_SCOOTER'
+            'ZK_SCOOTER',
+            'OMNI_TCP_E_BIKE'
         ];
         switch (currentNest.type) {
             case sails.config.NEST_TYPE.NON_RIDE:
@@ -1418,7 +1520,11 @@ module.exports = {
                     console.log("-------------------\nAlarm off\n--------------------");
                     await IotService.commandToPerform('alarmOff', vehicleData, { value: 0 });
                     console.log("-------------------\nSet Speed Limit\n--------------------");
-                    await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: vehicleData.lastSpeedLimit });
+                    let lastSpeedLimit = vehicleData.lastSpeedLimit;
+                    if (!lastSpeedLimit) {
+                        lastSpeedLimit = sails.config.DEFAULT_VEHICLE_SPEED_LIMIT;
+                    }
+                    await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: lastSpeedLimit });
                 }
                 await Vehicle.update({ id: vehicle.id }, { isVehicleInsideNoRideZone: false });
 
@@ -1429,7 +1535,11 @@ module.exports = {
 
             case sails.config.NEST_TYPE.SLOW_SPEED:
                 console.log("-------------------\nSet Speed Limit\n--------------------");
-                await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: vehicleData.lastSpeedLimit });
+                let lastSpeedLimit = vehicleData.lastSpeedLimit;
+                if (!lastSpeedLimit) {
+                    lastSpeedLimit = sails.config.DEFAULT_VEHICLE_SPEED_LIMIT;
+                }
+                await IotService.commandToPerform('setMaxSpeed', vehicleData, { value: lastSpeedLimit });
                 break;
 
             case sails.config.NEST_TYPE.PARKING:
@@ -1463,6 +1573,10 @@ module.exports = {
                     sendInterval: sendInterval,
                     priority: priority
                 };
+                // Call auto create task service for create auto task when vehicle battery is low.
+                if (vehicle.batteryLevel >= sails.config.SET_LOW_BATTERY) {
+                    await TaskService.createTaskForLowBatteryVehicle(vehicle.id);
+                }
                 this.sendIOTNotification(vehicle.imei, notification);
             }
         }
@@ -1507,16 +1621,19 @@ module.exports = {
     },
 
     async isRiderInsideUnlockRadius(currentLocation, vehicleId) {
+        console.log('currentLocation', currentLocation);
+        console.log('vehicleId', vehicleId);
         const setting = await this.getSetting();
         if (!setting.unlockRadius) {
             await this.checkLocationIsInsideNoRideArea(currentLocation);
-
             return true;
         }
         const isInsideRadius = await this.checkRiderInsideRadius(
             currentLocation, vehicleId, setting.unlockRadius
         );
+        console.log('isInsideRadius', isInsideRadius);
         if (!isInsideRadius) {
+            console.log("!isInsideRadius");
             throw sails.config.message.CANT_START_RIDE_AT_THIS_LOCATION;
         }
         await this.checkLocationIsInsideNoRideArea(currentLocation);
@@ -1663,21 +1780,57 @@ module.exports = {
         if (vehicle.type === sails.config.VEHICLE_TYPE.BICYCLE && vehicle.lockStatus === false) {
             throw sails.config.message.LOCK_BICYCLE;
         }
+
+        let isCaptureParkingImage = false;
+        let parkingFine = 0;
+        if (sails.config.IS_CAPTURE_PARKING_IMAGE) {
+            console.log('vehicle.currentLocation sm', vehicle.currentLocation);
+
+            let zoneData = await this.findZoneDataForLocation(
+                vehicle.currentLocation.coordinates,
+                null,
+                vehicle.type
+            );
+            if (!zoneData || !zoneData[0]) {
+                throw sails.config.message.CANT_STOP_RIDE;
+            }
+            const zoneId = zoneData[0]._id.toString();
+            let fareData = await FareManagement.findOne({ zoneId: zoneId, vehicleType: vehicle.type, isDeleted: false })
+                .select(['zoneId', 'isCaptureParkingImage', 'parkingFine']);
+            console.log('fareData 1 sm => ', fareData);
+            if (fareData && fareData.isCaptureParkingImage) {
+                parkingFine = fareData.parkingFine;
+                isCaptureParkingImage = true;
+            }
+
+            ride.fareData.zoneIdForParking = zoneId;
+        };
+        ride.fareData.parkingFine = parkingFine;
+        ride.fareData.isCaptureParkingImage = isCaptureParkingImage;
+        ride.fareData.isParkingFine = false;
+        ride.fareData.fineRemark = null;
+        ride.fareData.parkingFineDate = moment().toISOString();
+        ride.fareData.parkingFineUserId = null;
+        ride.fareData.parkingFineUserName = null;
+
         let updateObj = {
             scooterImage: scooterImage ? scooterImage : '',
             updatedBy: userId,
-            isRideEndFromAdmin: isRideEndFromAdmin
+            isRideEndFromAdmin: isRideEndFromAdmin,
+            fareData: ride.fareData
         };
+
         if (sails.config.IS_NEST_TO_NEST_RIDE_ENABLED) {
             let nest = await this.addRemoveVehicleInNest(vehicle, 'stop');
             await NestTrack.update({ rideId: ride.id }).set({ nestId: nest.id });
-
             if (!nest) {
                 throw sails.config.message.END_RIDE_IN_NEST;
             } else {
                 updateObj.endNest = nest.id;
             }
         }
+
+
 
         let updatedRecord = await RideBooking.update({ id: ride.id }, updateObj).fetch();
         ride = updatedRecord[0];
@@ -1686,6 +1839,11 @@ module.exports = {
             await this.stopRideFromIOT(ride, vehicle.currentLocation, userId);
         } else {
             chargeData = await this.stopRideInstant(ride, vehicle.currentLocation, userId, {}, isAutoDeduct, sendSocketEvent);
+        }
+        // if ride has isWalletExpiredAtStop = true then Expired Wallet and Amount 0
+        if (ride.isWalletExpiredAtStop) {
+            console.log(ride.userId, " userid in wallet expired ........ stop ride")
+            await cron.expiringWalletOfUser(ride.userId);
         }
         rideData = await this.getRideResponse(ride.id);
         console.log('rideData.isPaid for id - ', rideData.isPaid, ride.id);
@@ -1720,6 +1878,11 @@ module.exports = {
             await this.stopRideFromIOT(ride, vehicle.currentLocation, userId);
         } else {
             chargeData = await this.stopRideInstant(ride, vehicle.currentLocation, userId, {}, isAutoDeduct);
+        }
+        // if ride has isWalletExpiredAtStop = true then Expired Wallet and Amount 0
+        if (ride.isWalletExpiredAtStop) {
+            console.log(ride.userId, " userid in wallet expired ........ stop ride")
+            await cron.expiringWalletOfUser(ride.userId);
         }
         rideData = await this.getRideResponse(ride.id);
         console.log('rideData.isPaid for id - ', rideData.isPaid, ride.id);
@@ -1802,7 +1965,7 @@ module.exports = {
             isPaused = true;
         }
         let fareSummary = await this.calculateFareForRide(ride, data);
-        console.log('fareSummary========== :>> ', fareSummary);
+        // console.log('fareSummary========== :>> ', fareSummary);
         let promoCodeObj;
         if (ride.isPromoCodeApplied && !ride.promoCodeAmount) {
             promoCodeObj = await PromoCodeService.addPromoCodeAmount(fareSummary, ride.promoCodeId);
@@ -1887,7 +2050,6 @@ module.exports = {
             vehicleUpdateObj.lastConnectedDateTime = currentTime;
             vehicleUpdateObj.lastConnectionCheckDateTime = currentTime;
         }
-
         if (isPaused) {
             vehicleUpdateObj.isAvailable = true;
         }
@@ -3623,7 +3785,7 @@ module.exports = {
                 .select([
                     'id', 'imei', 'connectionStatus', 'currentLocation', 'lastSpeedSet',
                     'lastAlarmed', 'isRideCompleted', 'isAvailable', 'maxSpeedLimit',
-                    'pingInterval', 'ridePingInterval', 'type', 'franchiseeId', 'dealerId', 'lastLocation'
+                     'pingInterval', 'ridePingInterval', 'type', 'franchiseeId', 'dealerId', 'lastLocation', 'isVehicleOutsideZone'
                 ]);
 
             await RedisDBService.setData(imei, vehicle);
@@ -3642,6 +3804,7 @@ module.exports = {
             return false;
         } catch (e) {
             const notification = sails.config.NOTIFICATION.IOT_NOTIFICATION.OUTSIDE_ZONE;
+            await TaskService.autoCreateTaskForVehicleDamage(notification, imei);
             await this.sendIOTNotification(imei, notification);
 
             return true;

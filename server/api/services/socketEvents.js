@@ -741,7 +741,7 @@ module.exports = {
         socket = sails.sockets.get(socket.id);
         let userId = socket && socket.handshake && socket.handshake.headers && socket.handshake.headers.userId || null;
         try {
-            data.userId = userId;
+            // data.userId = userId;
             this.createSocketLog(
                 'findFalconDetail',
                 'EVENT_LISTEN',

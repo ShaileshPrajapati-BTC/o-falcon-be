@@ -218,11 +218,11 @@ class FeederView extends Component {
                                                 <TabPane tab="Info" key="1">
                                                     <BasicInfo info={data} />
                                                 </TabPane>
-                                                {DOCUMENT_VERIFICATION_REQUIRED ?
+                                                {/* {DOCUMENT_VERIFICATION_REQUIRED ?
                                                     <TabPane tab="Documents" key="2">
                                                         <Documents data={data.documents} id={data.id} />
                                                     </TabPane> :
-                                                    null}
+                                                    null} */}
                                                 {TASK_MODULE_VISIBLE &&
                                                     <TabPane tab="Performance" key="3">
                                                         <TaskList assignedTo={data.id} />

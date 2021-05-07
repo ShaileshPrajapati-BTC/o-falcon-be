@@ -127,9 +127,10 @@ module.exports = {
             type: "json",
             columnType: "array",
             description: {
-                userId: {model: "user"},
+                userId: { model: "user" },
                 dateTime: { type: "datetime" }
-            }
+            },
+            defaultsTo: []
         },
         taskStartDateTime: { type: "string" },
         taskEndDateTime: { type: "string" },
@@ -153,6 +154,14 @@ module.exports = {
                 remark: { type: "string" },
                 userId: { type: "string" },
             },
+        },
+        isIdealVehicleTask: {
+            type: "boolean",
+            defaultsTo: false,
+        },
+        lowBatteryTask: {
+            type: "boolean",
+            defaultsTo: false,
         },
     },
 };

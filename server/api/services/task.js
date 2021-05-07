@@ -17,6 +17,8 @@ module.exports = {
                 module: sails.config.modules.vehicle,
                 referenceId: option.vehicleId,
                 images: option.images,
+                canceledBy: [],
+                level: sails.config.TASK.TASK_LEVEL.ONE
             };
 
             let addTask = await Task.create(obj);
@@ -556,6 +558,7 @@ module.exports = {
         let matchParams = {
             assignedTo: null,
             isDeleted: false,
+            'canceledBy.userId': { $nin: [params.userId] }
         };
         if (params.taskType) {
             matchParams.taskType = params.taskType;
@@ -572,7 +575,13 @@ module.exports = {
         if (params.priority) {
             matchParams.priority = params.priority
         }
-
+        if (params.lowBatteryTask) {
+            matchParams.lowBatteryTask = params.lowBatteryTask
+        }
+        if (params.isIdealVehicleTask) {
+            matchParams.isIdealVehicleTask = params.isIdealVehicleTask
+        }
+        console.log('matchParams :>> ', matchParams);
         let match = [
             { $match: matchParams },
             {
@@ -592,13 +601,18 @@ module.exports = {
         if (results && results.length) {
             await Promise.all(
                 _.map(results[0].list, async function (result) {
+                    result.id = result._id;
+                    // delete result._id;
                     if (result.referenceId) {
-                        let vehicle = await Vehicle.findOne({
-                            where: { id: result.referenceId.toString() },
-                            select: ["name", "batteryLevel", "markedAs"],
-                        });
+                        let vehicle = await Vehicle.findOne({ id: result.referenceId.toString() });
                         if (vehicle && vehicle.id) {
                             result.referenceId = vehicle;
+                        }
+                    }
+                    if (result.nestId) {
+                        let nest = await Nest.findOne({ id: result.nestId.toString() });
+                        if (nest && nest.id) {
+                            result.nestId = nest;
                         }
                     }
                     return result;
@@ -950,5 +964,176 @@ module.exports = {
             .meta({ enableExperimentalDeepTargets: true });
 
         return cancelledTaskCount;
+    },
+
+    async createTaskForLowBatteryVehicle(vehicleId) {
+        try {
+            let vehicle = await Vehicle.findOne({
+                where: {
+                    id: vehicleId,
+                    isRideCompleted: true,
+                    isAvailable: true,
+                    isDeleted: false
+                }
+            });
+            if (vehicle.id) {
+                let alreadyOngoingTaskForVehicle = await Task.findOne({
+                    referenceId: vehicle.referenceId,
+                    taskWorkFlow: [
+                        sails.config.TASK.WORK_FLOW.OPEN,
+                        sails.config.TASK.WORK_FLOW.IN_PROGRESS
+                    ],
+                    isDeleted: false
+                });
+                if (!alreadyOngoingTaskForVehicle) {
+                    let nest = await Nest.find({
+                        where: {
+                            capacity: { '!=': 0 },
+                            type: sails.config.NEST_TYPE.RIDE,
+                            isActive: true
+                        }
+                    });
+                    if (nest && nest.length) {
+                        let newStatus = [{
+                            before: 0,
+                            after: sails.config.TASK.WORK_FLOW.OPEN,
+                            remark: 'System created task.',
+                            dateTime: UtilService.getTimeFromNow(),
+                            userId: null
+                        }];
+                        let taskObj = {
+                            taskType: sails.config.TASK.TASK_TYPE.LEVEL_2.CHARGE,
+                            taskHeading: sails.config.TASK.TASK_HEADING.CHARGE[1],
+                            timeLimitValue: sails.config.TASK_SETTING.chargeTask.timeLimitValue,
+                            incentiveRange: sails.config.TASK_SETTING.chargeTask.incentiveRange,
+                            incentiveRange: sails.config.TASK_SETTING.chargeTask.incentiveRange,
+                            taskWorkFlow: sails.config.TASK.WORK_FLOW.OPEN,
+                            module: sails.config.modules.vehicle,
+                            referenceId: vehicle.id,
+                            nestId: nest[0].id,
+                            statusTrack: newStatus,
+                            isSystemCreated: true,
+                            canceledBy: [],
+                            level: sails.config.TASK.TASK_LEVEL.TWO
+                        }
+                        let createdRecord = await Task.create(taskObj).fetch();
+                        if (createdRecord) {
+                            console.log("*****************Create task for vehicle charge*****************");
+                        }
+                        console.log(taskObj.referenceId, sails.config.message.TASK_CREATED);
+                    }
+                }
+            }
+        } catch (error) {
+            sails.log.error('Error while running cron createTaskForLowBatteryVehicle.', error);
+        }
+    },
+
+    async autoCreateTaskForVehicleDamage(notificationData, imei) {
+        try {
+            if (!data.imei) {
+                return true;
+            }
+            let taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.MOVE;
+            let taskHeading = 'System created task.';
+            let taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+            let incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+            let lowBatteryTask = false;
+            let level = sails.config.TASK.TASK_LEVEL.ONE;
+            for (let key in notificationData) {
+                if (notificationData[key].type === sails.config.NOTIFICATION.IOT_NOTIFICATION.LOW_POWER_ALARM.type) {
+                    taskType = sails.config.TASK.TASK_TYPE.LEVEL_2.CHARGE;
+                    taskValue = sails.config.TASK_SETTING.chargeTask.timeLimitValue;
+                    incentiveRange = sails.config.TASK_SETTING.chargeTask.incentiveRange;
+                    lowBatteryTask = true;
+                    level = sails.config.TASK.TASK_LEVEL.TWO;
+                } else if (notificationData[key].type === sails.config.NOTIFICATION.IOT_NOTIFICATION.UNAUTHORIZED_MOVEMENT.type) {
+                    taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.DAMAGE_MOVE;
+                    taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+                    incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+                    level = sails.config.TASK.TASK_LEVEL.ONE;
+                } else if (notificationData[key].type === sails.config.NOTIFICATION.IOT_NOTIFICATION.DOWN_GROUND_ALARM.type) {
+                    taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.DAMAGE_MOVE;
+                    taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+                    incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+                    level = sails.config.TASK.TASK_LEVEL.TWO;
+                } else if (notificationData[key].type === sails.config.NOTIFICATION.IOT_NOTIFICATION.ILLEGAL_REMOVAL_ALARM.type) {
+                    taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.DAMAGE_MOVE;
+                    taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+                    incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+                    level = sails.config.TASK.TASK_LEVEL.TWO;
+                }
+            }
+            if (notificationData === sails.config.NOTIFICATION.IOT_NOTIFICATION.OUTSIDE_ZONE) {
+                taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.MOVE;
+                taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+                incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+                level = sails.config.TASK.TASK_LEVEL.ONE;
+            } else if (notificationData === sails.config.IS_STOP_RIDE_OUT_SIDE_ZONE) {
+                taskType = sails.config.TASK.TASK_TYPE.LEVEL_1.MOVE;
+                taskValue = sails.config.TASK_SETTING.moveTask.timeLimitValue;
+                incentiveRange = sails.config.TASK_SETTING.moveTask.incentiveRange;
+                level = sails.config.TASK.TASK_LEVEL.ONE;
+            }
+            let vehicle = await Vehicle.findOne({
+                where: {
+                    imei: imei,
+                    isRideCompleted: true,
+                    isAvailable: true,
+                    isDeleted: false
+                }
+            });
+
+            if (vehicle) {
+                let alreadyOngoingTaskForVehicle = await Task.findOne({
+                    referenceId: vehicle.referenceId,
+                    taskWorkFlow: [
+                        sails.config.TASK.WORK_FLOW.OPEN,
+                        sails.config.TASK.WORK_FLOW.IN_PROGRESS
+                    ],
+                    isDeleted: false
+                });
+                if (!alreadyOngoingTaskForVehicle) {
+                    let nest = await Nest.find({
+                        where: {
+                            capacity: { '!=': 0 },
+                            type: sails.config.NEST_TYPE.RIDE,
+                            isActive: true
+                        }
+                    });
+                    if (nest && nest.length) {
+                        let newStatus = [{
+                            before: 0,
+                            after: sails.config.TASK.WORK_FLOW.OPEN,
+                            remark: 'System created task.',
+                            dateTime: UtilService.getTimeFromNow(),
+                            userId: null
+                        }];
+                        let taskObj = {
+                            taskType: taskType,
+                            taskHeading: taskHeading,
+                            timeLimitValue: taskValue,
+                            incentiveRange: incentiveRange,
+                            taskWorkFlow: sails.config.TASK.WORK_FLOW.OPEN,
+                            module: sails.config.modules.vehicle,
+                            referenceId: vehicle.id,
+                            nestId: nest[0].id,
+                            statusTrack: newStatus,
+                            isSystemCreated: true,
+                            lowBatteryTask: lowBatteryTask,
+                            canceledBy: [],
+                            level: level,
+                        }
+                        let createdRecord = await Task.create(taskObj).fetch();
+                        if (createdRecord) {
+                            console.log("*****************Create task for vehicle charge*****************");
+                        }
+                        console.log(taskObj.referenceId, sails.config.message.TASK_CREATED);
+                    }
+                }
+            }
+        } catch (error) {
+            sails.log.error('Error while running cron createTaskForLowBatteryVehicle.', error);
+        }
     }
 };

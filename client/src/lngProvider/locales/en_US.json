@@ -12,6 +12,8 @@
   "app.vehicles": "Vehicles",
   "app.user": "User",
   "app.rides": "Rides",
+  "app.rides.Remark": "Remark",
+  "app.rides.RemarkMsg":"Please Enter Remark",
   "app.ride": "Ride",
   "app.staff": "Staff",
   "app.users": "Users",
@@ -857,5 +859,10 @@
   "app.operationalHours": "Operational Hours",
   "app.deleteAccount":"Delete Account",
   "app.user.changePictureLabel":"Upload Document",
-  "app.user.updateDocumentLabel":"Update Document"
+  "app.user.updateDocumentLabel":"Update Document",
+  "app.rideSetting.scooterParkingImage": "Parking functionality enabled?",
+  "app.rideSetting.scooterParkingImageInfo": "Enable/Disable parking functionality.",
+  "app.fareManagement.parking": "Parking functionality enabled for zone?",
+  "app.faremanagement.parkingInfo":"Enable/Disable parking functionality for zone.",
+  "app.faremanagement.parkingFinePhotoUploadedMessage":"Admin can charge Customer, if parking photo is not properlly uploaded."
 }

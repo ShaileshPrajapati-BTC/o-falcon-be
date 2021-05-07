@@ -1,6 +1,7 @@
 const RideBookingService = require(`../../../../rideBooking`);
 const UtilService = require(`../../../../util`);
 const IotCallbackHandler = require('../../../../iotCallbackHandler');
+const TaskService = require('../../../../task');
 
 module.exports = {
     // No need to send callback other than L1, As per talk with Sharon(OMNI Support team)
@@ -14,6 +15,7 @@ module.exports = {
         data.batteryLevel = parseInt(reqData[5]);
         data.networkSignal = parseInt(reqData[6]);
         data.imei = reqData[2];
+        console.log('Q0', data.imei);
         await IotCallbackHandler.findAndUpdateVehicle(data);
         // console.log('--------Q0: sign in callback received End--------');
     },
@@ -193,6 +195,7 @@ module.exports = {
         const status = parseInt(reqData[4]);
         const notification = notificationData[status];
         await RideBookingService.sendIOTNotification(imei, notification);
+        await TaskService.autoCreateTaskForVehicleDamage(notificationData, imei);
         // console.log('--------W0: Alarming callback received End--------');
     },
 

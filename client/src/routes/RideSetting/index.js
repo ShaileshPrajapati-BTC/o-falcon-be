@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function */
-import { Button, Col, Form, Input, InputNumber, Row, Spin, message, TimePicker } from 'antd';
+import { Button, Col, Form, Input, InputNumber, Row, Spin, message, Switch, TimePicker } from 'antd';
 import React, { Component } from 'react';
 import CustomScrollbars from '../../util/CustomScrollbars';
-import { SETTING_TYPE, DEFAULT_DISTANCE_UNIT, PAGE_PERMISSION, RIDER_LABEL, DECIMAL_NUMBER_REG_EXP, DEFAULT_BASE_CURRENCY, ZONE_LABEL, MINIMUM_AGE_VISIBLE, BOOKING_PASS_VISIBLE, DAILY_LIGHT_ON_OFF, WORKING_HOURS_VISIBLE } from '../../constants/Common';
+import { SETTING_TYPE, DEFAULT_DISTANCE_UNIT, PAGE_PERMISSION, RIDER_LABEL, DECIMAL_NUMBER_REG_EXP, DEFAULT_BASE_CURRENCY, ZONE_LABEL, MINIMUM_AGE_VISIBLE, BOOKING_PASS_VISIBLE, DAILY_LIGHT_ON_OFF, WORKING_HOURS_VISIBLE, IS_PARKING_FINE_FEATURE } from '../../constants/Common';
 import axios from 'util/Api';
 import { connect } from 'react-redux';
 import ESInfoLabel from '../../components/ESInfoLabel';
@@ -17,7 +17,8 @@ class RideSetting extends Component {
         super(props);
         this.state = {
             loading: false,
-            loginUser: this.props.auth && this.props.auth.authUser ? this.props.auth.authUser : null
+            loginUser: this.props.auth && this.props.auth.authUser ? this.props.auth.authUser : null,
+            isCaptureParkingImage: 0
         };
     }
 
@@ -49,7 +50,7 @@ class RideSetting extends Component {
             }
             const { form } = this.props;
             form.setFieldsValue(formObj);
-            this.setState({ loading: false });
+            this.setState({ loading: false, isCaptureParkingImage: record.isCaptureParkingImage });
         } catch (error) {
             console.log('Error****:', error.message);
             message.error(`${error.message}`);
@@ -91,7 +92,7 @@ class RideSetting extends Component {
 
     render() {
         const { getFieldDecorator } = this.props.form;
-        const { loading } = this.state;
+        const { loading, isCaptureParkingImage } = this.state;
         const basicRadiusLabel = `Basic Radius (${DEFAULT_DISTANCE_UNIT})`;
         const unlockRadiusLabel = 'Unlock Radius (m)';
 
@@ -547,11 +548,26 @@ class RideSetting extends Component {
                                                 )}
                                             </Form.Item>
                                         </Col>
+                                        {IS_PARKING_FINE_FEATURE && isCaptureParkingImage !== 0 &&
+                                            <Col lg={8} md={8} sm={12} xs={24}>
+                                                <Form.Item>
+                                                    <ESInfoLabel
+                                                        label={<b><IntlMessages id="app.rideSetting.scooterParkingImage" defaultMessage="Parking funtionality enabled?" /></b>}
+                                                        message={<IntlMessages id="app.rideSetting.scooterParkingImageInfo" defaultMessage="Enable/Disable parking functionality." />}
+                                                    />
+                                                </Form.Item>
+                                                <Form.Item label="Parking">
+                                                    {getFieldDecorator('isCaptureParkingImage', {})(
+                                                        <Switch defaultChecked={isCaptureParkingImage} />
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
+                                        }
                                     </Row>
                                 </Form>
                             </div>
                         </CustomScrollbars >
-                    </div >
+                    </div>
                 </Spin >
 
 

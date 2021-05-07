@@ -232,4 +232,52 @@ module.exports = {
             throw sails.config.message.WALLET_TOP_UPS_INCORRECT;
         }
     },
+    async chargeCustomerForRideFine(ride,rideTotalParkingFine) {
+
+        const user = await User.findOne({ id: ride.userId });
+        let data = {
+            chargeType: sails.config.TRANSACTION_LOG.STATUS.PARKING_FINE,
+            transactionBy: ride.userId,
+            amount: rideTotalParkingFine,
+            // rideId: ride.id, ???
+            status: sails.config.STRIPE.STATUS.succeeded,
+            fees: { totalFee: rideTotalParkingFine },
+            type: sails.config.STRIPE.TRANSACTION_TYPE.DEBIT,
+            remark: `${sails.config.STRIPE.MESSAGE.RIDE_REQUEST_PARKING_FINE_CHARGE} ${ride.rideNumber}`,
+            rideType: ride.rideType,
+            isWalletTransaction: true,
+            transactionTo: ride.userId,
+            vehicleType: ride.vehicleType,
+            proxyPayReferenceId: 0,
+            paymentType: "WALLET",
+            rideCost: ride.fareData.parkingFine,
+            userId: user.id,
+            userCards: '',
+            rideNumber: ride.rideNumber,
+            isRideDepositTransaction: '',
+            isWalletTransaction: true,
+            planInvoiceId: null,
+        };
+        try {
+            const walletAmount = user.walletAmount - ride.fareData.parkingFine;
+            await User.update({ id: user.id }, { walletAmount: walletAmount });
+            data.transactionSuccess = true;
+            data.transactionObj = null;
+            data.tax = 0;
+            data.transactionFees = { parkingFine: ride.fareData.parkingFine };
+            data.transactionCard = null;
+            data.transactionAmount = ride.fareData.parkingFine;
+            data.paymentTransactionId = "";
+            data.chargeObj = { status: "paid" };
+        } catch (e) {
+            data.chargeObj = { status: "failed" };
+            data.transactionSuccess = false;
+            data.failedTransactionId = "";
+            data.errorData = e;
+            console.log("Payment error ******************", e);
+        }
+
+        return data;
+    },
+
 };

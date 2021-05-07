@@ -295,6 +295,20 @@ module.exports = {
             type: 'number',
             defaultsTo: 0
         },
+        walletExpiryDate: {
+            type: 'string',
+            columnType: 'datetime'
+        },
+        walletExpiredHistory:{
+            type: 'json',
+            columnType: 'array',
+            description: {
+                walletExpiredTime:{type:"datetime"},
+                walledExpiredPeriod:{type:"number"},
+                walletAmount:{type:"number"},
+                datetime:{type:"datetime"}
+            }
+        },
         activationDate: { type: 'string' }, // for franchisee
         designation: { type: 'string' },
         companyName: { type: 'string' },

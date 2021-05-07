@@ -34,8 +34,8 @@ module.exports = {
             paramsToUpdate[params.fieldName] = params.status
             await model.update({ id: params.id }, paramsToUpdate).fetch();
             //await model.update({id:{"!=":params.id}},  {isDefault:false})
-            if(params.model === 'vehicle' && !params.status){
-                await RideBookingService.stopeRideOnDeActiveVehicle({vehicleIds : [params.id]});
+            if (params.model === 'vehicle' && !params.status) {
+                await RideBookingService.stopeRideOnDeActiveVehicle({ vehicleIds: [params.id] });
             }
             return res.ok({}, sails.config.message.RECORDS_STATUS_UPDATE)
         } catch (e) {

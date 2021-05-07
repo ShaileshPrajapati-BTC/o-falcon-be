@@ -30,11 +30,10 @@
 
   cors: {
     allRoutes: true,
-    allowOrigins: '*',
     allowCredentials: false,
     allowRequestMethods: 'GET,POST,PUT,DELETE,OPTIONS,HEAD',
-    allowRequestHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Language, Accept-Language'
-    //allowOrigins: ['http://localhost:3000', 'http://test-react-app-1.s3-website.me-south-1.amazonaws.com', 'http://falconride-staging-lb-1308507947.me-south-1.elb.amazonaws.com', 'http://staging.falconride.io.s3-website.me-south-1.amazonaws.com', 'http://staging.falconride.io', 'http://lb.staging.falconride.io']
+    allowRequestHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Language, Accept-Language, Allow',
+    allowOrigins: ['http://localhost:3000', 'http://oadmin.falconride.io', 'https://oadmin.falconride.io', 'http://lb.o.falconride.io', 'https://lb.o.falconride.io']
 },
 
 

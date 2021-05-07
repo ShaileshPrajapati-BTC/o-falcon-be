@@ -75,8 +75,19 @@ module.exports = {
 
     async q0(reqData) {
         // console.log('--------Q0: sign in callback received Start--------');
+        let omniCode = reqData[1];
         let imei = reqData[2];
-        let batteryVolume = reqData[5];
+        let batteryLevel = parseInt(reqData[6]);
+        if (!batteryLevel) {
+            let batteryConfig = sails.config.OMNI_BICYCLE_BATTERY_LEVEL;
+            batteryLevel = IoTService.getBatteryPercentageFromVolt(reqData[5], batteryConfig);
+        }
+        let data = {
+            imei: imei,
+            omniCode: omniCode,
+            batteryLevel: batteryLevel
+        };
+        await IotCallbackHandler.findAndUpdateVehicle(data);
         // console.log('--------Q0: sign in callback received End--------');
     },
 
@@ -84,8 +95,11 @@ module.exports = {
         // console.log('--------H0: heartbeat callback received Start--------');
         let imei = reqData[2];
         let lockStatus = parseInt(reqData[5]) === 1; // 0-unlocked, 1-locked
-        let batteryConfig = sails.config.OMNI_BICYCLE_BATTERY_LEVEL;
-        let batteryLevel = IoTService.getBatteryPercentageFromVolt(reqData[6], batteryConfig);
+        let batteryLevel = parseInt(reqData[9]);
+        if (!batteryLevel) {
+            let batteryConfig = sails.config.OMNI_BICYCLE_BATTERY_LEVEL;
+            batteryLevel = IoTService.getBatteryPercentageFromVolt(reqData[6], batteryConfig);
+        }
         let gsmSignalValue = reqData[7];
 
         let data = {
@@ -95,14 +109,24 @@ module.exports = {
             omniCode: reqData[1]
         };
         await IotCallbackHandler.findAndUpdateRideAndVehicle(data);
+        let isSendNotification = parseInt(reqData[8]);
+        if (isSendNotification) {
+            let notification = isSendNotification === 1 ? 'Shocking' : 'E-Bike Down';
+            notification += ` Alarm from E-Bike ${imei}`;
+            await RideBookingService.sendIOTNotification(imei, notification);
+        }
         // console.log('--------H0: heartbeat callback received End--------');
     },
 
     async s5(reqData) {
         // console.log('--------S5: obtain lock status callback received Start--------');
         let imei = reqData[2];
-        let batteryConfig = sails.config.OMNI_BICYCLE_BATTERY_LEVEL;
-        let batteryLevel = IoTService.getBatteryPercentageFromVolt(reqData[5], batteryConfig);
+        let batteryLevel = parseInt(reqData[10]);
+        if (!batteryLevel) {
+            let batteryConfig = sails.config.OMNI_BICYCLE_BATTERY_LEVEL;
+            batteryLevel = IoTService.getBatteryPercentageFromVolt(reqData[5], batteryConfig);
+        }
+
         let gsmSignalValue = reqData[6];
         let reserveParameter = reqData[7];
         let lockStatus = parseInt(reqData[8]) === 1;
@@ -157,5 +181,31 @@ module.exports = {
         };
         await IotCallbackHandler.findAndUpdateVehicle(data);
         // console.log('--------I0: sim card iccid callback received End--------');
+    },
+
+    async m0(reqData) {
+        // console.log('--------I0: sim card iccid callback received Start--------');
+        let imei = reqData[2];
+        let mac = reqData[5];
+        let omniCode = reqData[1];
+        
+        let data = {
+            imei: imei,
+            mac: mac,
+            omniCode: omniCode
+        };
+        await IotCallbackHandler.findAndUpdateVehicle(data);
+        // console.log('--------I0: sim card iccid callback received End--------');
+    },
+
+    async l3(reqData) {
+        // console.log('--------L3: heartbeat callback received Start--------');
+        let imei = reqData[2];
+        const status = parseInt(reqData[5]) === 1 ? 'Failed to' : 'Successfully';
+        const operation = parseInt(reqData[6]) === 1 ? 'Off' : 'On';
+        let notification = `${status} Turn ${operation} the Power Of E-Bike: ${imei}`;
+
+        await RideBookingService.sendIOTNotification(imei, notification);
+        // console.log('--------L3: heartbeat callback received End--------');
     }
 };

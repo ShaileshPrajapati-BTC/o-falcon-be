@@ -561,7 +561,7 @@ module.exports = {
             if (ride.rideType === sails.config.RIDE_TYPE.SUBSCRIPTION) {
                 throw sails.config.message.CANT_RESUME_BOOK_PLAN_RIDE;
             }
-            if (ride.vehicleType !== sails.config.VEHICLE_TYPE.BICYCLE && !ride.isPaused) {
+            if (!ride.isPaused) {
                 throw sails.config.message.RIDE_IS_NOT_PAUSED;
             }
             if (ride.isRequested) {
@@ -873,6 +873,12 @@ module.exports = {
             commonValidator.checkRequiredParams(fields, params);
             let vehicle = await RideBookingService.getVehicleForIOT(params.vehicleId);
             let response = await RideBookingService.passCommandToPerformToIotService(params.command, vehicle, params);
+            if (params.command == "alarmOn") {
+                let setTime = setInterval(async () => {
+                    await RideBookingService.passCommandToPerformToIotService("alarmOff", vehicle, params);
+                    clearInterval(setTime);
+                }, sails.config.IOT_REQUEST_TIME_OUT_LIMIT * 1000);
+            }
             if (!response.isRequested) {
                 if (vehicle.connectionStatus && params.command !== 'track') {
                     await RideBookingService.markVehicleDisconnected(vehicle.id);
@@ -889,8 +895,12 @@ module.exports = {
                     msg = sails.config.message.BOOT_OPEN_COMMAND_SEND;
                     break;
                 case 'alarmOn':
-                    msg = sails.config.message.ALARM_COMMAND_SEND;
+                    msg = sails.config.message.ALARM_ON_CLICK;
+                    msg.message += "It will switch OFF in " + sails.config.IOT_REQUEST_TIME_OUT_LIMIT + " seconds";
                     break;
+                case 'lightOn':
+                    msg = sails.config.message.HEADLIGHT_ON;
+                    msg.message += "It will switch OFF in " + sails.config.IOT_REQUEST_TIME_OUT_LIMIT + " seconds";
                 default:
                     msg = sails.config.message.OK;
             }
@@ -900,6 +910,42 @@ module.exports = {
             console.log(error);
             res.serverError({}, error);
         }
-    }
+    },
 
+    checkParkingIsRequired: async (req, res) => {
+        try {
+            let resData = {
+                isCaptureParkingImage: false,
+                parkingFine: 0
+            };
+            if (!sails.config.IS_CAPTURE_PARKING_IMAGE) {
+                return res.ok(resData, sails.config.message.OK);
+            }
+            const fields = [
+                'imei'
+            ];
+            const params = req.allParams();
+            commonValidator.checkRequiredParams(fields, params);
+            let vehicle = await RideBookingService.getVehicle(params.imei);
+            let zoneData = await RideBookingService.findZoneDataForLocation(
+                vehicle.currentLocation.coordinates,
+                null,
+                vehicle.type
+            );
+            if (!zoneData || !zoneData[0]) {
+                return res.serverError({}, sails.config.message.ZONE_NOT_FOUND);
+            }
+            const zoneId = zoneData[0]._id.toString();
+            resData = await FareManagement.findOne({ zoneId: zoneId, vehicleType: vehicle.type, isDeleted: false })
+                .select(['isCaptureParkingImage', 'parkingFine']);
+            if (!resData) {
+                return res.serverError({}, sails.config.message.ZONE_AND_FARE_MANAGEMENT_NOT_FOUND);
+            }
+
+            return res.ok(resData, sails.config.message.OK);
+        } catch (error) {
+            console.log(error);
+            res.serverError({}, error);
+        }
+    }
 };

@@ -19,6 +19,7 @@
         "email-templates": "^4.0.1",
         "exceljs": "^4.2.0",
         "express-jwt": "^5.3.1",
+        "fast-xml-parser": "^3.17.6",
         "iplocation": "^6.1.0",
         "ipware": "^2.0.0",
         "json2csv": "^5.0.1",
@@ -53,7 +54,7 @@
         "faker": "^4.1.0",
         "istanbul": "^0.4.5",
         "mocha": "^6.0.0",
-        "nodemon": "^1.18.10",
+        "nodemon": "^1.19.4",
         "os": "^0.1.1"
     },
     "directories": {

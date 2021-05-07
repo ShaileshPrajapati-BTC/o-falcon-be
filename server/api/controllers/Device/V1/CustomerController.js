@@ -1166,5 +1166,17 @@ module.exports = {
 
             return res.serverError(null, error);
         }
+    },
+
+    async getProjectConfig(req, res) {
+        try {
+            let data = await CommonService.getMobileConfig();
+            let response = { isSystemEnableLanguage: data.isSystemEnableLanguage }
+            return res.ok(response, sails.config.message.OK);
+        } catch (error) {
+            console.log(error);
+
+            return res.serverError(null, error);
+        }
     }
 };

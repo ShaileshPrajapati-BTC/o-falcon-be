@@ -654,6 +654,18 @@ class ProjectSetting extends Component {
                                                     )}
                                                 </Form.Item>
                                             </Col>
+                                            <Col lg={4} md={12} sm={12} xs={24}>
+                                                <Form.Item label="System Language Enable">
+                                                    {getFieldDecorator(
+                                                        "isSystemEnableLanguage"
+                                                    )(
+                                                        <Radio.Group onChange={this.onChange} value={this.state.value}>
+                                                            <Radio value={true}>Yes</Radio>
+                                                            <Radio value={false}>No</Radio>
+                                                        </Radio.Group>
+                                                    )}
+                                                </Form.Item>
+                                            </Col>
                                             <Col lg={8} md={12} sm={12} xs={24}>
                                                 <Form.Item label="Max Cron Interval for light OnOff">
                                                     {getFieldDecorator(

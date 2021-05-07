@@ -165,10 +165,14 @@ module.exports = {
     },
     async checkDuplication(params) {
         let filter = { where: { isDeleted: false } };
-        if (params.type === sails.config.USER.TYPE.CUSTOMER) {
-            filter.where.type = sails.config.USER.TYPE.CUSTOMER;
-        } else if (params.type) {
-            filter.where.type = { "!=": sails.config.USER.TYPE.CUSTOMER };
+        if (params.type === sails.config.USER.TYPE.CUSTOMER || params.type === sails.config.USER.TYPE.FEEDER) {
+            if (params.type === sails.config.USER.TYPE.CUSTOMER) {
+                filter.where.type = sails.config.USER.TYPE.CUSTOMER;
+            } else if (params.type === sails.config.USER.TYPE.FEEDER) {
+                filter.where.type = sails.config.USER.TYPE.FEEDER;
+            } else if (params.type) {
+                filter.where.type = { "!=": [sails.config.USER.TYPE.CUSTOMER,sails.config.USER.TYPE.FEEDER] };
+            }
         }
         if (params.id) {
             filter.where.id = { '!=': params.id };
@@ -1174,6 +1178,25 @@ module.exports = {
         }
     },
     async sync(userId, lastSyncDate) {
+        let allVehicle = [{
+            "name": "All",
+            "type": 0
+        },
+        {
+            "name": sails.config.VEHICLE_TYPE.SCOOTER,
+            "type": 1
+
+        },
+        {
+            "name": sails.config.VEHICLE_TYPE.BICYCLE,
+            "type": 2
+
+        },
+        {
+            "name": sails.config.VEHICLE_TYPE.BIKE,
+            "type": 3
+        }
+        ]
         try {
             lastSyncDate = moment(lastSyncDate).toISOString();
             let user = await User.findOne({ id: userId })
@@ -1275,6 +1298,19 @@ module.exports = {
                 where: whereObj,
                 select: ["boundary"],
             });
+            if (sails.config.IS_NEST_ENABLED && availableZones && availableZones.length) {
+                let zoneIds = _.map(availableZones, 'id');
+                let subZones = await Nest.find({
+                    zoneId: zoneIds,
+                    isDeleted: false
+                });
+                if (subZones && subZones.length > 0) {
+                    _.each(availableZones, function (zone) {
+                        zone.subZones = _.filter(subZones, { zoneId: zone.id });
+                    });
+                }
+            }
+
             if (!setting) {
                 setting = {};
             }
@@ -1294,8 +1330,15 @@ module.exports = {
                 isDeleted: false,
                 isActive: true
             });
-
+            user.currentTime=moment().toISOString();
+            if (sails.config.WALLET_EXPIRED_TIME === sails.config.WALLET_EXPIRIES_TIME.NO_LIMIT || !user.walletExpiryDate || user.walletExpiryDate === '' ) {
+                user.currentTime = null;
+            } else {
+                user.currentTime = moment().toISOString();
+                user.walletExpiryDate = moment(user.walletExpiryDate).add(1,'minutes').toISOString();
+            }
             return {
+                allVehicle: allVehicle,
                 lastSyncDate: new Date(),
                 loggedInUser: user,
                 masters: { list: masters, deleted: deletedMasters },
@@ -2542,6 +2585,110 @@ module.exports = {
             console.log(error);
             throw new Error(error);
         }
+    },
+    async getAllCustomer(query) {
+        let users = await User.find(query);
+        return users;
+    },
+    async updateWalletExpriedTime(walletExpiredTime, userId) {
+        try {
+            console.log("in update wallet exp")
+            let query = {
+                type: sails.config.USER.TYPE.CUSTOMER,
+                walletAmount: { '>': 0 }
+            }
+            if (userId) {
+                query.id = userId
+            }
+            let users = await this.getAllCustomer(query);
+
+            if (!users && users.length === 0) {
+                throw new Error("users not found");
+            }
+            let unit = '';
+            let addValue = 0;
+            let period = '';
+            let expireDate = null;
+            switch (walletExpiredTime) {
+                case sails.config.WALLET_EXPIRIES_TIME["1_MONTH"]:
+                    unit = 'months';
+                    addValue = 1;
+                    period = sails.config.WALLET_EXPIRIES_TIME["1_MONTH"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["2_MONTH"]:
+                    unit = 'months';
+                    addValue = 2;
+                    period = sails.config.WALLET_EXPIRIES_TIME["2_MONTH"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["3_MONTH"]:
+                    unit = 'months';
+                    addValue = 3;
+                    period = sails.config.WALLET_EXPIRIES_TIME["3_MONTH"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["6_MONTH"]:
+                    unit = 'months';
+                    addValue = 6;
+                    period = sails.config.WALLET_EXPIRIES_TIME["6_MONTH"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["1_YEAR"]:
+                    unit = 'year';
+                    addValue = 1;
+                    period = sails.config.WALLET_EXPIRIES_TIME["1_YEAR"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["2_YEAR"]:
+                    unit = 'year';
+                    addValue = 2;
+                    period = sails.config.WALLET_EXPIRIES_TIME["2_YEAR"];
+                    break;
+                case sails.config.WALLET_EXPIRIES_TIME["NO_LIMIT"]:
+                    break;
+                default:
+                    break;
+            }
+
+            await Promise.all(_.map(users, async (v, k) => {
+                let userTranscation = await TransactionLog.find({
+                    remark: [sails.config.STRIPE.MESSAGE.CREDIT_WALLET_DONE, sails.config.TRANSACTION_LOG.REMARK.ADD_WALLET_BY_ADMIN],
+                    status: sails.config.STRIPE.STATUS.succeeded,
+                    transactionBy: v.id
+                }).sort('createdAt DESC').limit(1);
+                // console.log("User Transaction============", userTranscation)
+                if (userTranscation[0]) {
+                    if (addValue === 0 && unit === '') {
+                        expireDate = '';
+                    } else {
+                        expireDate = moment(userTranscation[0].createdAt).add(addValue, unit).toISOString();
+                    }
+                    let startDate = moment().toISOString();
+                    let endDate = expireDate;
+
+                    let days = moment(endDate).diff(startDate, 'days');
+                    startDate = moment(startDate).add(days, 'days');
+
+                    if (days <= 0) {
+                        await cron.expiringWalletOfUser(v.id);
+                    } else {
+                        let historyObj = {
+                            walletExpiredTime: expireDate,
+                            walledExpiredPeriod: period,
+                            walletAmount: v.walletAmount,
+                            datetime: moment().toISOString()
+                        }
+                        if (!v.walletExpiredHistory || _.size(v.walletExpiredHistory) === 0) {
+                            v.walletExpiredHistory = [];
+                        }
+                        // v.walletExpiredHistory = [];
+                        v.walletExpiredHistory.push(historyObj);
+                        await User.update({ id: v.id }, { walletExpiryDate: expireDate, walletExpiredHistory: v.walletExpiredHistory });
+                    }
+
+                }
+            }));
+        } catch (error) {
+            console.log(error)
+            throw new error;
+        }
+
     },
 
     // hook

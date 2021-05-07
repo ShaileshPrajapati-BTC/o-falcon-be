@@ -51,6 +51,7 @@ module.exports = {
             RIDE_REQUEST_CONFIRMED_CHARGE: 'Transaction on the initialization of ride request.',
             FAILED_PAYMENT_CHARGE: 'Transaction on the failed of the payment.',
             RIDE_REQUEST_DONE_CHARGE: 'Transaction on the completion of ride request.',
+            RIDE_REQUEST_PARKING_FINE_CHARGE: 'Parking fine for Ride',
             RIDE_REQUEST_DONE_PAYOUT: 'Transaction on the completion of ride request.',
             RIDE_REQUEST_REFUND: 'Transaction on the refund to customer.',
             CREDIT_WALLET_DONE: 'Successfully Added to the wallet.',

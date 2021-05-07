@@ -25,7 +25,14 @@ module.exports = {
             await RideBookingService.rideResumed(ride, data);
         }
     },
-
+    async createFirmwareUpdate(imei,data){
+        let vehicle=await Vehicle.findOne({imei:imei});
+        let params={};
+        params['vehicleId']=vehicle.id;
+        params['track']=data;
+        let createdRecord = await FirmwareUpdate.create(params).fetch();
+        return createdRecord;
+    },
     async lockCallbackReceived(data) {
         console.log('uid = ', data.uid);
         if (data.uid) {
@@ -73,25 +80,30 @@ module.exports = {
     async getVehicle(imei) {
         let vehicle;
         try {
+            // console.log('RedisDBService finding vehicle from imei', vehicle);
             vehicle = await RedisDBService.getData(imei);
+            // console.log('RedisDBService found vehicle  from imei', vehicle);
         } catch (e) {
-            console.log('IOT Callback Handler: getVehicle : can not get data from redis', e);
+            // console.log('IOT Callback Handler: getVehicle : can not get data from redis', e);
         }
         if (!vehicle || !vehicle.id) {
+            // console.log('vehicle 1 => ', vehicle);
             vehicle = await Vehicle.findOne({ imei: imei })
                 .select([
                     'id', 'imei', 'connectionStatus', 'currentLocation', 'lastSpeedSet',
                     'lastAlarmed', 'isRideCompleted', 'isAvailable', 'maxSpeedLimit',
-                    'pingInterval', 'ridePingInterval', 'type', 'franchiseeId', 'dealerId', 'lastLocation'
+                    'pingInterval', 'ridePingInterval', 'type', 'franchiseeId', 'dealerId', 'lastLocation', 'isVehicleOutsideZone'
                 ]);
 
             await RedisDBService.setData(imei, vehicle);
         }
+        // console.log('vehicle found', vehicle);
 
         return vehicle;
     },
 
     async updateVehicle(vehicle, data) {
+        // console.log('updateVehicle iotCallback Handler', vehicle.id);
         if (vehicle && vehicle.id && data) {
             data = this.modifyKeys(data, vehicle);
             data = this.filterVehicleData(data, vehicle);
@@ -114,10 +126,13 @@ module.exports = {
     },
 
     async findAndUpdateVehicle(data) {
+        // console.log('findAndUpdateVehicle', data);
         if (!data.imei) {
             return true;
         }
+        // console.log('after findAndUpdateVehicle, before getVehicle');
         let vehicle = await this.getVehicle(data.imei);
+        // console.log('findAndUpdateVehicle vehicle => ', vehicle);
         await this.updateVehicle(vehicle, data);
     },
 

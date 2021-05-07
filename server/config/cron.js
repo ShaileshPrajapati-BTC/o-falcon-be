@@ -60,7 +60,7 @@ module.exports.cron = {
         }
     },
     expirePaymentTransaction: {
-        schedule: '*/1 * * * *',
+        schedule: '0 * * * *',
         onTick: function () {
             console.log('expirePaymentTransaction', new Date());
             // CronService.expirePaymentTransaction();
@@ -183,16 +183,17 @@ module.exports.cron = {
         }
     },
 
-    // autoCreateTask: {
-    //     schedule: '*/5 * * * * *',
-    //     onTick: function () {
-    //         if (!sails.config.IS_AUTO_CREATE_TASK) {
-    //             return
-    //         }
-    //         console.log('autoCreateTask', new Date());
-    //         CronService.autoCreateTask();
-    //     }
-    // },
+    autoCreateTask: {
+        schedule: '*/1 * * * *',
+        onTick: function () {
+            console.log('autocreateTask test------------- :>> ');
+            if (!sails.config.IS_AUTO_CREATE_TASK) {
+                return;
+            }
+            console.log('autoCreateTask--------------------', new Date());
+            CronService.autoCreateTask();
+        }
+    },
     markTaskAsOverDue: {
         schedule: '*/1 * * * *',
         onTick: function () {
@@ -283,7 +284,7 @@ module.exports.cron = {
         // schedule: '*/1 * * * *',
         onTick: function () {
             console.log('emails :>> ', sails.config.EMAILS_FOR_EXPORT_EXCEL.length);
-            if (!sails.config.IS_EXCEL_EXPORT_DAILY && sails.config.EMAILS_FOR_EXPORT_EXCEL.length <= 0) {
+            if (!sails.config.IS_EXCEL_EXPORT_DAILY) {
                 return;
             }
             console.log('sendExcelReport******************88', new Date());
@@ -332,12 +333,32 @@ module.exports.cron = {
             CronService.sendOperationalHoursExpireNotification();
         }
     },
-
     checkTransactionStatus: {
         schedule: '*/1 * * * *',
         onTick: function () {
             console.log('checkTransactionStatus', new Date());
             CronService.checkTransactionStatus();
+        }
+    },
+    userWalletExpired: {
+        schedule: '*/1 * * * *',
+        onTick: function () {
+            // CSJ - 1
+            // if (!sails.config.IS_OPERATIONAL_HOUR_ENABLE) {
+            //     return;
+            // }
+            console.log('userWalletExpired', new Date());
+            CronService.expiringWalletOfUser(null);
+        }
+    },
+    sendMessageBeforeExpireWallet: {
+        schedule: '0 0 * * *',
+        onTick: function () {
+            // if (!sails.config.IS_OPERATIONAL_HOUR_ENABLE) {
+            //     return;
+            // }
+            console.log('sendMessageBeforeExpireWallet', new Date());
+            CronService.sendMessageBeforeExpireWallet();
         }
     }
 };

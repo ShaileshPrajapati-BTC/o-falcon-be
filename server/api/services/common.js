@@ -1253,7 +1253,8 @@ module.exports = {
             isShowSubZone: sails.config.IS_SHOW_SUB_ZONE,
             endWorkingTime: setting.endWorkingTime,
             startWorkingTime: setting.startWorkingTime,
-            canUserPauseRide: sails.config.PAUSE_RIDE_LIMIT_ENABLED
+            canUserPauseRide: sails.config.PAUSE_RIDE_LIMIT_ENABLED,
+            isSystemEnableLanguage: sails.config.IS_SYSTEM_ENABLE_LANGUAGE
         }
 
         return mobileConfig;
@@ -1267,5 +1268,56 @@ module.exports = {
         let duplicate = _.filter(data, (v, i, a) => a.indexOf(v) !== i);
 
         return duplicate;
+    },
+
+    async checkDuplicationDynamically(params) {
+        try {
+            let group = [
+
+                {
+                    "$group": {
+                        "_id": params.groupId,
+                        "count": { "$sum": 1 }
+                    }
+                },
+                {
+                    "$match": {
+                        "_id": { "$ne": null },
+                        "count": { "$gt": 1 }
+                    }
+                },
+                {
+                    "$project": {
+                        "data": "$_id", "_id": 0
+                    }
+                }
+            ]
+            let filter = group;
+            let result = await DbService.aggregate(params.modelName, filter);
+            let arrayOfData = []
+            if (params.groupId.includes(".")) {
+                for (let val of result) {
+                    let keys = Object.values(val)
+                    for (let key of keys) {
+                        for (let value of Object.values(key)) {
+                            arrayOfData.push(value)
+                        }
+                    }
+                }
+            }
+            else {
+                for (let val of result) {
+                    let keys = Object.values(val)
+                    for (let value of keys) {
+                        arrayOfData.push(value)
+                    }
+                }
+            }
+           
+            return arrayOfData;
+
+        } catch (e) {
+            throw e;
+        }
     }
 };

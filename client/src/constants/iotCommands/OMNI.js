@@ -45,3 +45,14 @@ export const OMNI_TCP_BICYCLE_SAMPLE_LOCK = [
     { label: 'Reconnect', command: 'track', icon: 'Track', isPopUp: false, types: [1] },
     { label: 'Get Location', command: 'location', icon: 'Locations', isPopUp: false, types: [1, 2] }
 ];
+
+export const OMNI_TCP_E_BIKE = [
+    { label: 'Alarm On', command: 'alarmOn', icon: 'AlarmOn', isPopUp: false, types: [1, 2] },
+    { label: 'Alarm Off', command: 'alarmOff', icon: 'AlarmOff', isPopUp: false, types: [1, 2] },
+    { label: 'Reconnect', command: 'track', icon: 'Track', isPopUp: false, types: [1, 2] },
+    { label: 'Get Location', command: 'location', icon: 'Locations', isPopUp: false, types: [1, 2] },
+    { label: 'Turn On', command: 'throttleOn', icon: 'LightOn', isPopUp: false, types: [1, 2] },
+    { label: 'Turn Off', command: 'throttleOff', icon: 'LightOff', isPopUp: false, types: [1, 2] },
+    { label: 'Get ICCID', command: 'getIccid', icon: 'BatUnlock', isPopUp: false, types: [1, 2] },
+    { label: 'Get Mac Address', command: 'getMacAddress', icon: 'BatUnlock', isPopUp: false, types: [1, 2] },
+];

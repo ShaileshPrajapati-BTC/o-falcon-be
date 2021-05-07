@@ -2,6 +2,7 @@ const UtilService = require('../../../../util');
 const IotCallbackHandler = require('../../../../iotCallbackHandler');
 const BL10IotService = require('./iot');
 const IoTService = require('../../../../iot');
+const TaskService = require('../../../../task');
 
 module.exports = {
     async decodeAcknowledgement(ack, serialNo) {
@@ -315,6 +316,7 @@ module.exports = {
             const imei = data.imei;
             const status = data.status;
             const notification = notificationData[status];
+            await TaskService.autoCreateTaskForVehicleDamage(notificationData, imei);
             if (notification) {
                 // await rideBooking.sendIOTNotification(imei, notification);
             }
