@@ -74,6 +74,7 @@ module.exports = {
         mpgsPassword: { type: 'string' },
         mpgsMerchantId: { type: 'string' },
         mpgsApiVersion: { type: 'string' },
-        mpgsBaseUrl: { type: 'string' }
+        mpgsBaseUrl: { type: 'string' },
+        mpgsCallbackUrl: { type: 'string' }
     }
 };

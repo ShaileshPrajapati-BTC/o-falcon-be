@@ -75,5 +75,6 @@ module.exports = {
     MPGS_PASSWORD: '',
     MPGS_MERCHANT_ID: '',
     MPGS_API_VERSION: '',
-    MPGS_BASE_URL: ''
+    MPGS_BASE_URL: '',
+    MPGS_CALLBACK_URL: ''
 };

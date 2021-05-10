@@ -52,7 +52,7 @@ module.exports = {
             },
             "3DSecure": {
                 authenticationRedirect: {
-                    responseUrl: `http://lb.staging.falconride.io/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
+                    responseUrl:sails.config.MPGS_CALLBACK_URL+`/mastercard/payment-callback?sessionId=${sessionId}&secureId=${dsSecureID}`,
                     pageGenerationMode: "SIMPLE",
                 },
             },
