@@ -359,6 +359,15 @@ class SetupConfig extends Component {
                                                         )}
                                                     </Form.Item>
                                                 </Col>
+                                                <Col lg={8} md={12} sm={12} xs={24}>
+                                                    <Form.Item label="MPGS CallbackUrl">
+                                                        {getFieldDecorator(
+                                                            "mpgsCallbackUrl"
+                                                        )(
+                                                            <Input placeholder="MPGS Callback URL" />
+                                                        )}
+                                                    </Form.Item>
+                                                </Col>
 
                                             </Row>
                                         </Card>
