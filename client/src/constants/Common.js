@@ -601,7 +601,7 @@ export const SORT_BY_REQUEST_DATE = [
 ];
 
 export const EMAIL_VERIFICATION_TYPE = ['OTP', 'LINK'];
-export const DEFAULT_PAYMENT_METHOD = ['STRIPE', 'NOQOODY','MASTER_CARD'];
+export const DEFAULT_PAYMENT_METHOD = ['STRIPE', 'NOQOODY','MASTERCARD'];
 export const SET_IOT_COMMAND_STATUS = {
     0: 'Pending',
     1: 'Success'
