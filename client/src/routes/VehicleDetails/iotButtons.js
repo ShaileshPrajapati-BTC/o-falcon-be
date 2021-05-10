@@ -184,7 +184,7 @@ class IotButtons extends Component {
                             null
                     }
                     {
-                        vehicleRecord.type !== VEHICLE_TYPES.BICYCLE ?
+                        vehicleRecord.type == VEHICLE_TYPES.BIKE ? /*vehicleRecord.type !== VEHICLE_TYPES.BICYCLE*/
                             <Col>
                                 <Card onClick={this.onLockUnlock.bind(this, 'lock')} className="iot-card">
                                     {this.returnComponent('Lock')}

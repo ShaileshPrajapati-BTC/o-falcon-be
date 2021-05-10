@@ -54,7 +54,7 @@ class TaskDashboard extends React.Component {
         this.state = {
             filter: {
                 filter: {
-                    vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+                    vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
                     dateRange: {
                         from: UtilService.getStartOfTheDay(moment().startOf('day')
                             .toISOString()),

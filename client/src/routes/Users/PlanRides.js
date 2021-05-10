@@ -37,7 +37,7 @@ class PlanRides extends React.Component {
                     userId: props.ridesObj.userId,
                     planInvoiceId: props.ridesObj.planInvoiceId,
                     status: RIDE_STATUS.ON_GOING,
-                    vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+                    vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
                 }
             },
             date: [moment().subtract(1, 'months'), moment()]

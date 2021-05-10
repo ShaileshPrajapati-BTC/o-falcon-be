@@ -39,9 +39,9 @@ class FareManagement extends Component {
             filter: {
                 page: 1,
                 limit: 20,
-                // filter: {
-                //     vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type
-                // }
+                //  filter: {
+                //      vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type
+                //  }
             },
             paginate: false,
             statusTrack: ""

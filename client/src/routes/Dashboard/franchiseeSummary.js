@@ -27,7 +27,7 @@ class FranchiseeSummary extends React.Component {
       title: FRANCHISEE_LABEL,
       filter: {
         filter: {
-          vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+          vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
           // franchiseeId: null
         }
       },

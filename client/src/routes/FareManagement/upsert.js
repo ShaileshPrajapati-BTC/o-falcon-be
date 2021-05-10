@@ -18,7 +18,7 @@ class FareManagementUpsert extends React.Component {
             id: props.match.params.id,
             record: [],
             fares: [],
-            vehicleType: VEHICLE_TYPES.SCOOTER.toString()
+            vehicleType: VEHICLE_TYPES.BIKE.toString()
         };
     }
     componentDidMount() {

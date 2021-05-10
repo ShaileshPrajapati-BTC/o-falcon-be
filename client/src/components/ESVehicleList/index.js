@@ -573,7 +573,7 @@ class VehicleList extends React.Component {
 
                                         <div className="ant-list-item-meta-content">
                                             <div className="gx-flex-row d-block-xs">
-                                                {item.type !== VEHICLE_TYPES.BICYCLE &&
+                                                {item.type == VEHICLE_TYPES.BIKE /*  item.type !== VEHICLE_TYPES.BICYCLE*/ &&
                                                     < div className="ant-list-item-meta-description m-r-20">
                                                         <Speed />
                                                         <IntlMessages id="app.maxSpeedLimit" />: &nbsp;

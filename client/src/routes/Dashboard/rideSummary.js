@@ -52,7 +52,7 @@ class RideSummary extends React.Component {
     constructor(props) {
         super(props);
 
-        let filter = { vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type };
+        let filter = { vehicleType: FILTER_BY_VEHICLE_TYPE[0].type };
         if (!FRANCHISEE_VISIBLE) {
             filter.franchiseeId = null;
         }

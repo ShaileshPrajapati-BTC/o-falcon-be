@@ -225,8 +225,9 @@ class FareUpsertTable extends Component {
                                         </Form.Item>
                                     </Col>
                                     {/* ridePauseFare */}
-                                    {form.getFieldValue("vehicleType") !==
-                                        VEHICLE_TYPES.BICYCLE && (
+                                    {/*form.getFieldValue("vehicleType") !==
+                                        VEHICLE_TYPES.BICYCLE */}
+                                 
                                             <Col lg={6} md={6} sm={12} xs={24}>
                                                 <Form.Item
                                                     label={
@@ -262,8 +263,7 @@ class FareUpsertTable extends Component {
                                                         />
                                                     )}
                                                 </Form.Item>
-                                            </Col>
-                                        )}
+                                            </Col>     
                                     {/* lateFare*/}
                                     {/* <Col lg={6} md={6} sm={12} xs={24}>
                                         <Form.Item label="Late Fare"

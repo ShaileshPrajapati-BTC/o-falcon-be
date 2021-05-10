@@ -336,13 +336,13 @@ class VehicleDetails extends Component {
         }
         let vehicleFullImage = image.scooter;
         let vehicleHalfImage = image.halfScooter;
-        if (vehicleRecord && (vehicleRecord.type === VEHICLE_TYPES.BIKE || (vehicleRecord.type === VEHICLE_TYPES.BICYCLE && vehicleRecord.manufacturer.code === 'OMNI_TCP_E_BIKE'))) {
+        if (vehicleRecord && (vehicleRecord.type === VEHICLE_TYPES.BIKE)) /*|| vehicleRecord.type === VEHICLE_TYPES.BICYCLE && vehicleRecord.manufacturer.code === 'OMNI_TCP_E_BIKE'*/ {
             vehicleFullImage = image.bike;
             vehicleHalfImage = image.halfbike;
-        } else if (vehicleRecord && vehicleRecord.type === VEHICLE_TYPES.BICYCLE) {
-            vehicleFullImage = image.bicycle;
-            vehicleHalfImage = image.halfbicycle;
-        }
+        } //else if (vehicleRecord && vehicleRecord.type === VEHICLE_TYPES.BICYCLE) {
+    //         vehicleFullImage = image.bicycle;
+    //         vehicleHalfImage = image.halfbicycle;
+    //  }
 
         return (
             <div className="gx-module-box gx-mw-100">
@@ -395,14 +395,14 @@ class VehicleDetails extends Component {
                                 <ul>
                                     <li>
                                         <div
-                                            className="cardListTitle">{vehicleRecord.type === VEHICLE_TYPES.SCOOTER ? <IntlMessages id="app.scooterID" defaultMessage="Scooter ID" /> : vehicleRecord.type === VEHICLE_TYPES.BIKE ? <IntlMessages id="app.bikeId" defaultMessage="Bike ID" /> : <IntlMessages id="app.bicycleId" defaultMessage="Bicycle ID" />}</div>
+                                            className="cardListTitle">{VEHICLE_TYPES.SCOOTER!=undefined  && vehicleRecord.type === VEHICLE_TYPES.SCOOTER ? <IntlMessages id="app.scooterID" defaultMessage="Scooter ID" /> : vehicleRecord.type === VEHICLE_TYPES.BIKE ? <IntlMessages id="app.bikeId" defaultMessage="Bike ID" /> : <IntlMessages id="app.bicycleId" defaultMessage="Bicycle ID" />}</div>
                                         <div>{vehicleRecord.registerId ? vehicleRecord.registerId : '-'}</div>
                                     </li>
                                     <li>
                                         <div className="cardListTitle"><IntlMessages id="app.power" defaultMessage="Power" /></div>
                                         <div>{data.batteryLevel ? data.batteryLevel : '0'} %</div>
                                     </li>
-                                    {vehicleRecord.type !== VEHICLE_TYPES.BICYCLE ?
+                                    {vehicleRecord.type == VEHICLE_TYPES.BIKE /*vehicleRecord.type !== VEHICLE_TYPES.BICYCLE*/?
                                         <>
                                             <li>
                                                 <div className="cardListTitle"><IntlMessages id="app.speedLimit" defaultMessage="Speed Limit" /></div>
@@ -576,7 +576,7 @@ class VehicleDetails extends Component {
                                                     <div
                                                         className="StatusLabel"><IntlMessages id="app.total" defaultMessage="Total" /> {DEFAULT_DISTANCE_UNIT}</div>
                                                 </div>
-                                                {vehicleRecord.type !== VEHICLE_TYPES.BICYCLE ?
+                                                {vehicleRecord.type == VEHICLE_TYPES.BIKE ?    /*vehicleRecord.type !== VEHICLE_TYPES.BICYCLE */
                                                     <div className="StatusVehicle">
                                                         <h4 className="gx-text-nowrap">{vehicleRecord ? vehicleRecord.speed : 0} {DEFAULT_DISTANCE_UNIT}/<IntlMessages id="app.hour" defaultMessage="hour" /></h4>
                                                         <div className="StatusLabel"><IntlMessages id="app.speed" defaultMessage="Speed" /></div>

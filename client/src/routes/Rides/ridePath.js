@@ -34,14 +34,14 @@ class Mapping extends Component {
 
   getVehicleIcon = vehicleType => {
     switch (vehicleType) {
-      case VEHICLE_TYPES.SCOOTER:
-        return ScooterMapMarker;
-      case VEHICLE_TYPES.BICYCLE:
-        return BicycleMapMarker;
+      // case VEHICLE_TYPES.SCOOTER:
+      //   return ScooterMapMarker;
+      // case VEHICLE_TYPES.BICYCLE:
+      //   return BicycleMapMarker;
       case VEHICLE_TYPES.BIKE:
         return BikeMapMarker;
       default:
-        return ScooterMapMarker;
+        return BikeMapMarker;
     }
   }
 

@@ -75,7 +75,7 @@ class RideDispute extends Component {
                         "<=": UtilService.getEndOfTheDay(moment().toISOString())
                     },
                     status: this.status,
-                    vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+                    vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
                     // userType: USER_TYPES.RIDER,
                 }
             },

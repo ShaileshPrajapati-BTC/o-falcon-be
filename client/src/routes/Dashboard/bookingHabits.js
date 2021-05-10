@@ -22,7 +22,7 @@ class BookingHabits extends React.Component {
     constructor(props) {
         super(props);
         let filter = {
-            vehicleType: FILTER_BY_VEHICLE_TYPE[DEFAULT_VEHICLE].type,
+            vehicleType: FILTER_BY_VEHICLE_TYPE[0].type,
             zoneId: '',
             // franchiseeId: null
         };

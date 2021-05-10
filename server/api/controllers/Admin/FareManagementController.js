@@ -66,6 +66,7 @@ module.exports = {
                 params.filter.dealerId = null;
             }
             params.filter.isDeleted = false;
+            params.filter.vehicleTypes = 3;
             let filter = await common.getFilter(params);
             let recordsList = await Zone.find(filter).select(['name']);
             if (!recordsList.length) {
@@ -74,6 +75,7 @@ module.exports = {
             await Promise.all(
                 _.map(recordsList, async (record) => {
                     let fares = await FareManagement.find({
+                        vehicleType:3,
                         zoneId: record.id,
                         isDeleted: false
                     });
