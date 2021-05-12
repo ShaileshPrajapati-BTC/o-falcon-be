@@ -439,7 +439,10 @@ class PromoCodeUpsert extends Component {
                                                 mode="multiple"
                                                 optionLabelProp="children"
                                                 filterOption={(input, option) => {
-                                                    return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                                                    if (typeof option.props.children === 'string'){
+                                                        return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                                                    }
+                                                    return option.props.children.props.defaultMessage.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                                                 }}
                                                 onChange={this.handleSelectChange}
                                             >
